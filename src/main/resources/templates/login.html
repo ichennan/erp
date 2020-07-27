@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>5Amazon ERP</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+    <link type="text/css" rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <link type="text/css" rel="stylesheet" th:href="@{/webjars/font-awesome/css/font-awesome.min.css}"/>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" th:href="@{'/css/login.css?v=' + ${version}}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{'/css/login-util.css?v=' + ${version}}"/>
+    <!--===============================================================================================-->
+</head>
+<body>
+
+<div class="limiter">
+    <div class="container-login100">
+        <div class="wrap-login100">
+            <div class="login100-form-title">
+					<span class="login100-form-title-1">
+						5A ERP
+					</span>
+            </div>
+
+            <form class="login100-form validate-form" th:action="@{/login}" method="post">
+                <div class="wrap-input100 validate-input m-b-26" data-validate="用户名不能为空">
+                    <span class="label-input100">用户名</span>
+                    <input class="input100" type="text" name="username" placeholder="username" />
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input m-b-18" data-validate = "密码不能为空">
+                    <span class="label-input100">密码</span>
+                    <input class="input100" type="password" name="password" placeholder="password" />
+                    <span class="focus-input100"></span>
+                </div>
+
+                <!--<div class="flex-sb-m w-full p-b-30">-->
+                    <!--<div class="contact100-form-checkbox">-->
+                        <!--<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me" />-->
+                        <!--<label class="label-checkbox100" for="ckb1">-->
+                            <!--Remember me-->
+                        <!--</label>-->
+                    <!--</div>-->
+
+                    <!--<div>-->
+                        <!--<a href="#" class="txt1">-->
+                            <!--Forgot Password?-->
+                        <!--</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+                <div class="container-login100-form-btn" style="margin-top:10px;">
+                    <button class="login100-form-btn"  type="submit">
+                        登录
+                    </button>
+                </div>
+
+
+                <div style="text-align: center; color: red; margin-top: 50px;">
+                    <span th:if="${param.logout}">您已成功退出</span>
+                    <span th:if="${param.invalidUsername}">用户名不存在</span>
+                    <span th:if="${param.invalidPassword}">用户名或密码错误</span>
+                    <span th:if="${param.invalidCaptcha}">验证码错误</span>
+                    <span th:if="${param.notAuthority}">您没有权限登录此系统</span>
+                    <span th:if="${param.accountForbidden}">当前账号已被禁用</span>
+                    <span th:if="${param.accountLocked}">当前账号已被锁，请联系管理员</span>
+                    <span th:if="${param.accountDisabled}">当前账号已失效</span>
+                    <span th:if="${param.error}">登录错误</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--===============================================================================================-->
+<script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<!--===============================================================================================-->
+<script type="text/javascript" th:src="@{'/js/login.js?v=' + ${version}}"></script>
+
+</body>
+</html>

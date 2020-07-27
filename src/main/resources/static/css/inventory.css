@@ -1,0 +1,16 @@
+td:nth-child(3){
+    font-weight: bold;
+    color: blue;
+}
+td:nth-child(4){
+    font-weight: bold;
+    color: green;
+}
+td:nth-child(5){
+    font-weight: bold;
+    color: red;
+}
+
+.chartDiv{
+    margin-bottom: 20px;
+}

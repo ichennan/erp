@@ -1,0 +1,13 @@
+html{
+    background: #fff;
+}
+.content-wrapper{
+    background: #fff
+}
+.skin-blue .wrapper{
+    background: #fff;
+}
+
+.skin-blue .main-header .logo{
+    background: #3c8dbc;
+}

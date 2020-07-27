@@ -1,0 +1,18 @@
+html{
+    background: #ddd;
+}
+.td-center {
+    text-align:center;
+    vertical-align:middle;
+    white-space: nowrap;
+}
+
+.content-wrapper{
+    background: #ddd;
+    margin-left:0px;
+}
+
+tbody tr{cursor: pointer;}
+tbody tr:hover{font-weight: bold;background: #eee}
+a{cursor: pointer}
+i {cursor: pointer}

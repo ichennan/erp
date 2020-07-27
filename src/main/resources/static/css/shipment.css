@@ -1,0 +1,82 @@
+.droppable-active{
+    /*background-color: red;*/
+}
+.droppable-hover{
+    background-color: red;
+}
+.droppable-done{
+    color: blue;
+}
+#detailListTableDiv input{
+    text-align: center;
+    width: 40px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+#detailListTableDiv tr.boxFather td{
+    border-top: 5px #888 solid !important;
+}
+
+#detailListTableDiv tr.boxChild td[tidKey=box] *,
+#detailListTableDiv tr.boxChild td[tidKey=weight] *{
+    display: none;
+}
+
+#detailListTableDiv tr.boxChild td[tidKey=box],
+#detailListTableDiv tr.boxChild td[tidKey=weight]{
+    border-top: 2px #fff solid;
+}
+
+#detailListTableDiv table{
+    border: 5px #888 solid !important;
+}
+#detailListTableDiv table td, #detailListTableDiv table th{
+    border-right: 2px #888 solid !important;
+    text-align: center;
+}
+#detailListTableDiv table tr td:nth-child(1){
+    width: 20%;
+}
+#detailListTableDiv table tr td:nth-child(2){
+    width: 10%;
+}
+#detailListTableDiv table tr td:nth-child(4){
+    width: 10%;
+}
+#detailListTableDiv table tr td:nth-child(5){
+    width: 10%;
+}
+
+.thumbnail .caption{
+    margin:0;
+    padding: 0;
+}
+
+.caption p, .caption h5{
+    margin: 0;
+}
+
+.planLess{
+    color: red;
+}
+
+.planEqual{
+    color: blue;
+}
+
+.planMore{
+    color: #00CED1;
+}
+
+.statusDelivery{
+}
+
+.statusDeliveryNo{
+    color: red;
+}
+
+.statusSign{
+    color: #aaa
+}

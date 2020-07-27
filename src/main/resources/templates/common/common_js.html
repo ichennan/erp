@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<footer th:fragment="js">
+    <div class="modal" id="errorModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" style="color: red">错误</h4>
+                </div>
+                <div class="modal-body">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-primary" id="messageModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">消息</h4>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body&hellip;</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/toastr/build/toastr.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.dataTables.extend.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/datatables/js/dataTables.bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/AdminLTE/dist/js/adminlte.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/select2/js/select2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery-confirm.js}"></script>
+
+    <script type="text/javascript" th:src="@{'/js/common.js?v=' + ${version}}"></script>
+    <script type="text/javascript" th:src="@{'/js/' + ${pageName} + '.js?v=' + ${version}}"></script>
+</footer>
+</html>
+

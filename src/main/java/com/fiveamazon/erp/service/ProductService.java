@@ -1,0 +1,29 @@
+package com.fiveamazon.erp.service;
+
+
+import com.fiveamazon.erp.dto.ProductDTO;
+import com.fiveamazon.erp.entity.ProductPO;
+
+import java.util.List;
+
+/**
+ * @author chennan
+ * @date 2018/8/7 15:51
+ */
+public interface ProductService {
+    Long countAll();
+
+    ProductPO getById(Integer id);
+
+    ProductPO getByName(String name);
+
+    List<ProductPO> findAll(String sort);
+
+    List<ProductPO> findEnablePacket();
+
+    ProductPO save(ProductPO productPO);
+
+    ProductPO save(ProductDTO productDTO);
+
+    ProductPO updatePurchasePrice(ProductDTO productDTO);
+}
