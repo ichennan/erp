@@ -4,6 +4,8 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
 import com.fiveamazon.erp.entity.SkuPO;
+import com.fiveamazon.erp.epo.TestEpo;
+import com.fiveamazon.erp.epo.TestEpo2;
 import com.fiveamazon.erp.repository.ProductRepository;
 import com.fiveamazon.erp.repository.SkuRepository;
 import com.fiveamazon.erp.service.ProductService;
@@ -75,5 +77,23 @@ public class SkuServiceImpl implements SkuService {
         rs.put("skuNameList", skuNameList);
         rs.put("skuStoreList", skuStoreList);
         return rs;
+    }
+
+    @Override
+    public void test1(List<TestEpo> testEpoList) {
+        log.warn("SkuServiceImpl.test1");
+        for(TestEpo testEpo : testEpoList){
+            log.warn("h1yr");
+            log.warn(new JSONObject(testEpo).toString());
+        }
+    }
+
+    @Override
+    public void test2(List<TestEpo2> testEpoList) {
+        log.warn("SkuServiceImpl.test2");
+        for(TestEpo2 testEpo2 : testEpoList){
+            log.warn("h2yr");
+            log.warn(new JSONObject(testEpo2).toString());
+        }
     }
 }

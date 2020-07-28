@@ -77,6 +77,14 @@ $(function () {
             targetType: "iframe-tab"
         },
         {
+            id: "9070",
+            text: "数据上传",
+            roles: "ROLE_Excel",
+            icon: "fa fa-hand-paper-o",
+            url: "excel",
+            targetType: "iframe-tab"
+        },
+        {
             id: "9100",
             text: "库存查看",
             roles: "",
