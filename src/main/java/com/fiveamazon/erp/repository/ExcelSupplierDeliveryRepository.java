@@ -1,7 +1,8 @@
 package com.fiveamazon.erp.repository;
 
 
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
+import com.fiveamazon.erp.entity.ExcelSupplierDeliveryPO;
+import com.fiveamazon.erp.entity.ProductPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,5 @@ import java.util.List;
  * @date 2018/8/7 15:51
  */
 @Repository
-public interface ExcelSupplierDeliveryOrderRepository extends JpaRepository<ExcelSupplierDeliveryOrderPO, Integer> {
-    List<ExcelSupplierDeliveryOrderPO> findByExcelId(Integer excelId);
+public interface ExcelSupplierDeliveryRepository extends JpaRepository<ExcelSupplierDeliveryPO, Integer> {
 }

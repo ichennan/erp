@@ -1,10 +1,11 @@
 package com.fiveamazon.erp.service;
 
 
-import cn.hutool.json.JSONObject;
-import com.fiveamazon.erp.dto.ProductDTO;
-import com.fiveamazon.erp.epo.SupplierDeliveryOrderEpo;
-import com.fiveamazon.erp.epo.TestEpo;
+import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderDetailPO;
+import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
+import com.fiveamazon.erp.entity.ExcelSupplierDeliveryPO;
+import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
+import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
 import com.fiveamazon.erp.epo.TestEpo2;
 
 import java.util.List;
@@ -14,8 +15,9 @@ import java.util.List;
  * @date 2018/8/7 15:51
  */
 public interface ExcelService {
-//    void save(ProductDTO productDTO);
-//    JSONObject getByProductId(Integer productId);
-    void insert(List<SupplierDeliveryOrderEpo> supplierDeliveryOrderEpoList);
-    void test2(List<TestEpo2> testEpoList);
+    void insertExcelSupplierDeliveryOrder(Integer excelId, List<ExcelSupplierDeliveryOrderEO> excelSupplierDeliveryOrderEOList);
+    void insertExcelSupplierDeliveryOrderDetail(Integer excelId, List<ExcelSupplierDeliveryOrderDetailEO> excelSupplierDeliveryOrderDetailEOList);
+    Integer saveExcelSupplierDelivery(ExcelSupplierDeliveryPO excelSupplierDeliveryPO);
+    List<ExcelSupplierDeliveryOrderPO> findOrderByExcelId(Integer excelId);
+    List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId);
 }

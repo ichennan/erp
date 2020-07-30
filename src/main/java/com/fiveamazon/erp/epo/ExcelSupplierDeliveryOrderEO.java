@@ -4,7 +4,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 
 @Data
-public class SupplierDeliveryOrderEpo {
+public class ExcelSupplierDeliveryOrderEO {
     @ExcelProperty("订单号")
     String dingdanhao;
     @ExcelProperty("店铺名")
