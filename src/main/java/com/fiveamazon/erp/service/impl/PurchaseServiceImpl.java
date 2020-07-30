@@ -1,12 +1,12 @@
 package com.fiveamazon.erp.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailViewDTO;
-import com.fiveamazon.erp.entity.PurchaseDetailPO;
-import com.fiveamazon.erp.entity.PurchasePO;
-import com.fiveamazon.erp.entity.PurchaseViewPO;
+import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
+import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
 import com.fiveamazon.erp.repository.PurchaseRepository;
 import com.fiveamazon.erp.repository.PurchaseViewRepository;
@@ -110,5 +110,37 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public List<PurchaseDetailViewDTO> findByProductId(Integer productId) {
         return purchaseDetailRepository.findByProductId(productId);
+    }
+
+    @Override
+    public void createByExcel(UploadSupplierDeliveryDTO uploadSupplierDeliveryDTO) {
+        List<ExcelSupplierDeliveryOrderPO> orderArray = uploadSupplierDeliveryDTO.getOrderArray();
+        List<ExcelSupplierDeliveryOrderDetailPO> orderDetailArray = uploadSupplierDeliveryDTO.getOrderDetailArray();
+
+        for(ExcelSupplierDeliveryOrderPO order : orderArray){
+            String dingdanhao = order.getDingdanhao();
+            String fahuoshijian = order.getFahuoshijian();
+            String deliveryDate = DateUtil.format(DateUtil.parse(fahuoshijian, "yyyy-MM-dd HH:mm:ss"), "yyyyMMdd");
+            //
+            PurchasePO purchasePO = new PurchasePO();
+            purchasePO.setCreateDate(new Date());
+            purchasePO.setDeliveryDate(deliveryDate);
+            purchasePO.setSupplier("fang jie");
+            purchasePO.setSupplierOrderNo(dingdanhao);
+            save(purchasePO);
+        }
+
+        for(ExcelSupplierDeliveryOrderDetailPO orderDetail : orderDetailArray){
+            String dingdanhao = orderDetail.getDingdanhao();
+            PurchasePO purchasePO = purchaseRepository.getBySupplierOrderNo(dingdanhao);
+            Integer purchaseId = purchasePO.getId();
+            PurchaseDetailPO purchaseDetailPO = new PurchaseDetailPO();
+            purchaseDetailPO.setReceivedQuantity(Integer.valueOf(orderDetail.getShuliang()));
+            purchaseDetailPO.setProductId(orderDetail.getProductId());
+            purchaseDetailPO.setPurchaseId(purchaseId);
+            //
+            purchaseDetailPO.setCreateDate(new Date());
+            saveDetail(purchaseDetailPO);
+        }
     }
 }

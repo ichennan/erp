@@ -15,6 +15,7 @@ public class ExcelSupplierDeliveryOrderPO extends ExcelSupplierDeliveryOrderEO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     Integer excelId;
+    String receivedDate;
     //
     String dingdanhao;
     String dianpuming;

@@ -1,2 +1,2 @@
 tbody tr:hover{font-weight: normal;background: #eee}
-tbody td:nth-child(3){min-width: 260px;}
+#tableDiv2nd tbody td:nth-child(3){min-width: 260px;}

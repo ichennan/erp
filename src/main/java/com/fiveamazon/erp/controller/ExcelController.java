@@ -6,13 +6,17 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
+import com.fiveamazon.erp.dto.ShipmentDetailDTO;
+import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderDetailPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryPO;
+import com.fiveamazon.erp.entity.ShipmentDetailPO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.ProductService;
+import com.fiveamazon.erp.service.PurchaseService;
 import com.fiveamazon.erp.util.CommonExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,8 @@ public class ExcelController extends SimpleCommonController {
 	ProductService productService;
 	@Autowired
 	ExcelService excelService;
+	@Autowired
+	PurchaseService purchaseService;
 
 	@Value("${simple.folder.image.product}")
 	private String productImageFolder;
@@ -98,6 +104,16 @@ public class ExcelController extends SimpleCommonController {
 
 	private Consumer<List<ExcelSupplierDeliveryOrderDetailEO>> batchInsertExcelSupplierDeliveryOrderDetail(Integer excelId){
 		return supplierDeliveryOrderDetailEpoList -> excelService.insertExcelSupplierDeliveryOrderDetail(excelId, supplierDeliveryOrderDetailEpoList);
+	}
+
+	@RequestMapping(value = "/uploadToPurchase", method= RequestMethod.POST)
+	public String uploadToPurchase(@RequestBody UploadSupplierDeliveryDTO uploadSupplierDeliveryDTO){
+		log.warn("ExcelController.uploadToPurchase");
+		log.warn(new JSONObject(uploadSupplierDeliveryDTO).toString());
+		purchaseService.createByExcel(uploadSupplierDeliveryDTO);
+		JSONObject rs = new JSONObject();
+		rs.put("error", false);
+		return rs.toString();
 	}
 }
 

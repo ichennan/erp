@@ -7,19 +7,29 @@
 <div class="wrapper">
     <div class="content-wrapper">
         <section class="content">
-            <!--<input id="file_upload_form" class="fileupload" type="file" name="file" style='display:none;'></input>-->
-            <input id="file_upload_form" class="fileupload" type="file" name="file"></input>
-
+            <div class="row">
+                <div class="col-md-12">
+                    <input id="file_upload_form" class="fileupload" type="file" name="file"></input>
+                </div>
+                <div class="col-md-12">
+                    <button type="button" class="btn btn-warning update" onclick="uploadToPurchase()">上传</button>
+                </div>
+            </div>
 
             <div class="row" id="tableBox">
                 <div class="col-md-12">
                     <div class="box box-info">
-                        <div class="box-body" id="tableDiv">
+                        <div class="box-body" id="tableDiv1st">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="box box-info">
+                        <div class="box-body" id="tableDiv2nd">
                         </div>
                     </div>
                 </div>
             </div>
-
         </section>
     </div>
 </div>

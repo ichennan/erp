@@ -17,6 +17,7 @@ public class PurchasePO extends SimpleCommonEntity {
     String receivedDate;
     BigDecimal freight;
     String supplier;
+    String supplierOrderNo;
 
     public JSONObject toJson(){
         return new JSONObject(this);
