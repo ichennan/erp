@@ -1,10 +1,7 @@
 package com.fiveamazon.erp.service;
 
 
-import com.fiveamazon.erp.entity.ExcelFbaPO;
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderDetailPO;
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryPO;
+import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.epo.ExcelFbaRowEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
@@ -23,4 +20,6 @@ public interface ExcelService {
     Integer saveExcelFba(ExcelFbaPO excelFbaPO);
     List<ExcelSupplierDeliveryOrderPO> findOrderByExcelId(Integer excelId);
     List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId);
+    ExcelFbaPO getFbaByExcelId(Integer excelId);
+    List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId);
 }

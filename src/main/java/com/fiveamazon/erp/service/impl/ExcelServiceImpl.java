@@ -178,4 +178,14 @@ public class ExcelServiceImpl implements ExcelService {
     public List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId) {
         return excelSupplierDeliveryOrderDetailRepository.findByExcelId(excelId);
     }
+
+    @Override
+    public ExcelFbaPO getFbaByExcelId(Integer excelId) {
+        return excelFbaRepository.getOne(excelId);
+    }
+
+    @Override
+    public List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId) {
+        return excelFbaPackListRepository.findByExcelId(excelId);
+    }
 }

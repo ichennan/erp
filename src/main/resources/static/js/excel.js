@@ -5,6 +5,7 @@ var ajaxCtx = 'excel/';
 var excelId = 0;
 var theadNames1st = ['订单号', '订单状态', '应收合计', '货品总数', '实际结算','处理时间','发货时间','物流方式','货运单号','货运单批次'];
 var theadNames2nd = ['订单号', '序号', '产品', '编号', '品名','规格','数量','单价','金额','备注'];
+var theadNames3rd = ['sku', 'asin', 'fnsku', 'expectedQty', 'boxedQty','box01','box02','box03','box04','box05','box06','box07','box08','box09','box10','box11','box12','box13','box14','box15','box16','box17','box18','box19','box20'];
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -33,7 +34,8 @@ $(document).ready(function(){
             if(data && data.result){
                 excelId = data.result.excelId;
             }
-            showList();
+            // showList();
+            showFbaList();
         },
         add: function (e, data) {
             var goUpload = true;
@@ -61,6 +63,33 @@ $(document).ready(function(){
     });
 
 });
+
+function showFbaList(){
+    console.log("showFbaList()");
+    $("#tableBox").show();
+    $("#contentBox").hide();
+    //
+    var table3rd = createTable3rd($("#tableDiv3rd"));
+    var data = {};
+    data.excelId = excelId;
+    var ajaxUrl = 'findFbaByExcelId'
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log(rs);
+            drawTable3rd(table3rd, rs.array);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $.showErrorModal(XMLHttpRequest.responseText);
+            console.log("error");
+        },
+        complete: function () {
+        }
+    });
+}
 
 function showList(){
     console.log("showList()");
@@ -121,6 +150,21 @@ function createTable2nd(tableDiv){
     return listTable;
 }
 
+function createTable3rd(tableDiv){
+    console.log("createTable3rd()");
+    $("#listTable3rd").remove();
+    $("#listTable3rd_wrapper").remove();
+    var listTable = $("<table class='table table-bordered data-table' id='listTable3rd'></table>");
+    var thead = $("<thead><tr></tr></thead>");
+    $.each(theadNames3rd, function (index, obj) {
+        thead.find("tr").append("<th>" + obj + "</th>");
+    })
+    var tbody = $("<tbody></tbody>");
+    listTable.append(thead).append(tbody);
+    tableDiv.append(listTable);
+    return listTable;
+}
+
 function drawTable1st(table, array){
     console.log("drawTable1st()");
     var tbody = table.find("tbody");
@@ -170,6 +214,37 @@ function drawTable2nd(table, array){
         var bianhao = bianhaoTd.find("span").text().split("-")[0];
         $("input.select2-search__field").val(bianhao).keydown().keypress().keyup();
     });
+}
+
+function drawTable3rd(table, array){
+    console.log("drawTable3rd()");
+    var tbody = table.find("tbody");
+    $.each(array, function (index, obj) {
+        var tr = $("<tr></tr>");
+        tr.attr("objJson", $.jsonToString(obj));
+        var tds = [obj.merchantSku, obj.asin, obj.fnsku, obj.expectedQty, obj.boxedQty, obj.box01Qty, obj.box02Qty, obj.box03Qty, obj.box04Qty, obj.box05Qty];
+        $.each(tds, function (index_2, obj_2) {
+            obj_2 = obj_2 ? obj_2 : "";
+            var tdContent = $("<span></span>");
+            tdContent.text(obj_2);
+            if(index_2 == 2){
+                tdContent = $("<select iid='productId'></select>");
+            }
+            var td = $("<td></td>");
+            td.attr("column", theadNames2nd[index_2]);
+            td.append(tdContent);
+            tr.append(td);
+        })
+        tbody.append(tr);
+    });
+    // parent.$.refreshProductsSelect(tbody.find("[iid=productId]"));
+    // tbody.find("[iid=productId]").val("").trigger("change");
+    // $(".select2-container").click(function(){
+    //     var $thisTd = $(this).parent("td");
+    //     var bianhaoTd = $thisTd.siblings("[column=编号]");
+    //     var bianhao = bianhaoTd.find("span").text().split("-")[0];
+    //     $("input.select2-search__field").val(bianhao).keydown().keypress().keyup();
+    // });
 }
 
 function showDetail(){

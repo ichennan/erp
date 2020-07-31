@@ -7,10 +7,7 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
-import com.fiveamazon.erp.entity.ExcelFbaPO;
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderDetailPO;
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryPO;
+import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.epo.ExcelFbaRowEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
@@ -74,6 +71,21 @@ public class ExcelController extends SimpleCommonController {
         rs.put("error", false);
         return rs.toString();
     }
+
+	@RequestMapping(value = "/findFbaByExcelId", method= RequestMethod.POST)
+	public String findFbaByExcelId(@RequestParam("excelId")Integer excelId){
+		JSONObject rs = new JSONObject();
+		ExcelFbaPO excelFbaPO = excelService.getFbaByExcelId(excelId);
+		List<ExcelFbaPackListPO> excelFbaPackListPOList = excelService.findFbaPackListByExcelId(excelId);
+		JSONArray array = new JSONArray();
+		for(ExcelFbaPackListPO excelFbaPackListPO: excelFbaPackListPOList){
+			array.put(excelFbaPackListPO.toJson());
+		}
+		rs.put("array", array);
+		rs.put("data", new JSONObject(excelFbaPO));
+		rs.put("error", false);
+		return rs.toString();
+	}
 
 	@PostMapping("/uploadSupplierDelivery")
 	public String uploadSupplierDelivery(@RequestParam(value="file",required=false) MultipartFile multipartFile) throws IOException{
