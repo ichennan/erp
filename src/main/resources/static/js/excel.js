@@ -22,7 +22,8 @@ $(document).ready(function(){
 
 
     $('#file_upload_form').fileupload({
-        url: ajaxCtx + "uploadSupplierDelivery",
+        // url: ajaxCtx + "uploadSupplierDelivery",
+        url: ajaxCtx + "uploadFba",
         dataType: 'json',
         previewSourceMaxFileSize: 0,
         process: null,

@@ -6,12 +6,12 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
-import com.fiveamazon.erp.dto.ShipmentDetailDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
+import com.fiveamazon.erp.entity.ExcelFbaPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderDetailPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryPO;
-import com.fiveamazon.erp.entity.ShipmentDetailPO;
+import com.fiveamazon.erp.epo.ExcelFbaRowEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
 import com.fiveamazon.erp.service.ExcelService;
@@ -89,21 +89,13 @@ public class ExcelController extends SimpleCommonController {
 		excelSupplierDeliveryPO.setFileName(originalFileName);
 		Integer excelId = excelService.saveExcelSupplierDelivery(excelSupplierDeliveryPO);
 		//
-		AnalysisEventListener<ExcelSupplierDeliveryOrderEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrder(excelId), 2);
+		AnalysisEventListener<ExcelSupplierDeliveryOrderEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrder(excelId), 100);
 		EasyExcel.read(multipartFile.getInputStream(), ExcelSupplierDeliveryOrderEO.class, userAnalysisEventListenerSheet1).sheet(0).doRead();
 		//
-		AnalysisEventListener<ExcelSupplierDeliveryOrderDetailEO> userAnalysisEventListenerSheet2 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrderDetail(excelId), 2);
+		AnalysisEventListener<ExcelSupplierDeliveryOrderDetailEO> userAnalysisEventListenerSheet2 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrderDetail(excelId), 100);
 		EasyExcel.read(multipartFile.getInputStream(), ExcelSupplierDeliveryOrderDetailEO.class, userAnalysisEventListenerSheet2).sheet(1).doRead();
 		rs.put("excelId", excelId);
 		return rs.toString();
-	}
-
-	private Consumer<List<ExcelSupplierDeliveryOrderEO>> batchInsertExcelSupplierDeliveryOrder(Integer excelId){
-		return supplierDeliveryOrderEpoList -> excelService.insertExcelSupplierDeliveryOrder(excelId, supplierDeliveryOrderEpoList);
-	}
-
-	private Consumer<List<ExcelSupplierDeliveryOrderDetailEO>> batchInsertExcelSupplierDeliveryOrderDetail(Integer excelId){
-		return supplierDeliveryOrderDetailEpoList -> excelService.insertExcelSupplierDeliveryOrderDetail(excelId, supplierDeliveryOrderDetailEpoList);
 	}
 
 	@RequestMapping(value = "/uploadToPurchase", method= RequestMethod.POST)
@@ -114,6 +106,38 @@ public class ExcelController extends SimpleCommonController {
 		JSONObject rs = new JSONObject();
 		rs.put("error", false);
 		return rs.toString();
+	}
+
+	@PostMapping("/uploadFba")
+	public String uploadFba(@RequestParam(value="file",required=false) MultipartFile multipartFile) throws IOException{
+		log.warn("ExcelController.uploadFba");
+		JSONObject rs = new JSONObject();
+		if(multipartFile == null){
+			throw new SimpleCommonException("file is null o");
+		}
+		String originalFileName = multipartFile.getOriginalFilename();
+		log.info("Original File Name:" + originalFileName);
+		//
+		ExcelFbaPO excelFbaPO = new ExcelFbaPO();
+		excelFbaPO.setFileName(originalFileName);
+		Integer excelId = excelService.saveExcelFba(excelFbaPO);
+		//
+		AnalysisEventListener<ExcelFbaRowEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelFbaPackList(excelId), 100);
+		EasyExcel.read(multipartFile.getInputStream(), ExcelFbaRowEO.class, userAnalysisEventListenerSheet1).sheet(0).doRead();
+		rs.put("excelId", excelId);
+		return rs.toString();
+	}
+
+	private Consumer<List<ExcelSupplierDeliveryOrderEO>> batchInsertExcelSupplierDeliveryOrder(Integer excelId){
+		return supplierDeliveryOrderEOList -> excelService.insertExcelSupplierDeliveryOrder(excelId, supplierDeliveryOrderEOList);
+	}
+
+	private Consumer<List<ExcelSupplierDeliveryOrderDetailEO>> batchInsertExcelSupplierDeliveryOrderDetail(Integer excelId){
+		return supplierDeliveryOrderDetailEOList -> excelService.insertExcelSupplierDeliveryOrderDetail(excelId, supplierDeliveryOrderDetailEOList);
+	}
+
+	private Consumer<List<ExcelFbaRowEO>> batchInsertExcelFbaPackList(Integer excelId){
+		return fbaPackListEoList -> excelService.insertFbaPackList(excelId, fbaPackListEoList);
 	}
 }
 

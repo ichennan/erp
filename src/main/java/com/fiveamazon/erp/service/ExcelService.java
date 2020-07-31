@@ -1,12 +1,13 @@
 package com.fiveamazon.erp.service;
 
 
+import com.fiveamazon.erp.entity.ExcelFbaPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderDetailPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
 import com.fiveamazon.erp.entity.ExcelSupplierDeliveryPO;
+import com.fiveamazon.erp.epo.ExcelFbaRowEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
-import com.fiveamazon.erp.epo.TestEpo2;
 
 import java.util.List;
 
@@ -17,7 +18,9 @@ import java.util.List;
 public interface ExcelService {
     void insertExcelSupplierDeliveryOrder(Integer excelId, List<ExcelSupplierDeliveryOrderEO> excelSupplierDeliveryOrderEOList);
     void insertExcelSupplierDeliveryOrderDetail(Integer excelId, List<ExcelSupplierDeliveryOrderDetailEO> excelSupplierDeliveryOrderDetailEOList);
+    void insertFbaPackList(Integer excelId, List<ExcelFbaRowEO> excelFbaRow);
     Integer saveExcelSupplierDelivery(ExcelSupplierDeliveryPO excelSupplierDeliveryPO);
+    Integer saveExcelFba(ExcelFbaPO excelFbaPO);
     List<ExcelSupplierDeliveryOrderPO> findOrderByExcelId(Integer excelId);
     List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId);
 }
