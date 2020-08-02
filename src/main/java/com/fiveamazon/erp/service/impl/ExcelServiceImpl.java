@@ -1,6 +1,5 @@
 package com.fiveamazon.erp.service.impl;
 
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.epo.ExcelFbaRowEO;
@@ -67,6 +66,7 @@ public class ExcelServiceImpl implements ExcelService {
     public void insertFbaPackList(Integer excelId, List<ExcelFbaRowEO> excelFbaRow) {
         log.warn("ExcelServiceImpl.insertFbaPackList");
         int row = 0;
+        int boxCount = 0;
         ExcelFbaPO excelFbaPO = excelFbaRepository.getOne(excelId);
         List<ExcelFbaPackListPO> excelFbaPackListPOList = new ArrayList<ExcelFbaPackListPO>();
         Boolean isDetail = false;
@@ -128,11 +128,21 @@ public class ExcelServiceImpl implements ExcelService {
                     excelFbaPackListPOList.add(excelFbaPackListPO);
                 }
             }else{
-                if(column00.contains("Name:")){
+                if(column00.contains("Shipment ID")){
+                    excelFbaPO.setShipmentId(excelFbaRowEO.getColumn01());
+                }else if(column00.contains("Name:")){
                     log.warn("Name: " + column00.replace("Name: ", ""));
                     excelFbaPO.setFbaName(column00.replace("Name: ", ""));
                 }else if(column00.contains("Merchant SKU")){
                     log.warn("Merchant SKU");
+                    JSONObject boxCountJson = new JSONObject(excelFbaRowEO);
+                    for(int i=11; i <= 40; i++){
+                        String cellString = boxCountJson.getStr("column" + i);
+                        if(StringUtils.isBlank(cellString)){
+                            break;
+                        }
+                        boxCount ++;
+                    }
                     isDetail = true;
                 }else if(column00.contains("Ship To:")){
                     log.warn("Ship To: " + column00.replace("Ship To: ", ""));
@@ -145,6 +155,7 @@ public class ExcelServiceImpl implements ExcelService {
             row++;
         }
 
+        excelFbaPO.setBoxCount(boxCount);
         excelFbaRepository.save(excelFbaPO);
         for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
             excelFbaPackListPO.setExcelId(excelId);

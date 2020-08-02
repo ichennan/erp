@@ -22,7 +22,8 @@
                     <input id="file_upload_form" class="fileupload" type="file" name="file"></input>
                 </div>
                 <div class="col-md-12">
-                    <button type="button" class="btn btn-warning update" onclick="uploadToPurchase()">上传</button>
+                    <button type="button" class="btn btn-warning update" onclick="uploadToPurchase()">上传到采购表</button>
+                    <button type="button" class="btn btn-warning update" onclick="uploadToShipment()">上传到FBA</button>
                 </div>
             </div>
 
@@ -46,6 +47,61 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row" id="contentBox">
+                <div class="col-xs-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">详情</h3>
+                        </div>
+                        <form id="contentForm" action="#" class="form-horizontal">
+                            <div class="box-body">
+                                <input type="hidden" pid="id"/>
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">文件名 </label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" readonly pid="fileName"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">FBA Shipment ID </label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" readonly pid="shipmentId"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">FBA Name </label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" readonly pid="fbaName"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">Plan ID </label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" readonly pid="planId"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">Ship To </label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" readonly pid="shipTo"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-3 control-label">箱子数 </label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" readonly pid="boxCount"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+
         </section>
     </div>
 </div>

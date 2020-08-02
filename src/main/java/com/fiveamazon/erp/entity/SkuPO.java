@@ -16,6 +16,9 @@ public class SkuPO extends SimpleCommonEntity {
     Integer productId;
     String name;
     String store;
+    Integer storeId;
+    String fnsku;
+    String asin;
 
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);

@@ -5,7 +5,7 @@ var ajaxCtx = 'excel/';
 var excelId = 0;
 var theadNames1st = ['订单号', '订单状态', '应收合计', '货品总数', '实际结算','处理时间','发货时间','物流方式','货运单号','货运单批次'];
 var theadNames2nd = ['订单号', '序号', '产品', '编号', '品名','规格','数量','单价','金额','备注'];
-var theadNames3rd = ['sku', 'asin', 'fnsku', 'expectedQty', 'boxedQty','box01','box02','box03','box04','box05','box06','box07','box08','box09','box10','box11','box12','box13','box14','box15','box16','box17','box18','box19','box20'];
+var theadNames3rd = ['sku', 'asin', '产品', 'fnsku', 'qty'];
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -67,7 +67,7 @@ $(document).ready(function(){
 function showFbaList(){
     console.log("showFbaList()");
     $("#tableBox").show();
-    $("#contentBox").hide();
+    $("#contentBox").show();
     //
     var table3rd = createTable3rd($("#tableDiv3rd"));
     var data = {};
@@ -80,7 +80,11 @@ function showFbaList(){
         dataType: "json",
         success: function (rs) {
             console.log(rs);
-            drawTable3rd(table3rd, rs.array);
+            $contentForm.find("[pid]").each(function () {
+                var jpa = rs.data[$(this).attr("pid")];
+                $(this).val(jpa).trigger("change");
+            });
+            drawTable3rd(table3rd, rs.array, rs.data.boxCount);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
@@ -216,25 +220,41 @@ function drawTable2nd(table, array){
     });
 }
 
-function drawTable3rd(table, array){
+function drawTable3rd(table, array, boxCount){
     console.log("drawTable3rd()");
     var tbody = table.find("tbody");
+    var thead = table.find("thead");
+    for(var i = 1; i <= boxCount; i++){
+        var td = $("<td>" + i + "</td>");
+        thead.find('tr').append(td);
+    }
+
     $.each(array, function (index, obj) {
         var tr = $("<tr></tr>");
         tr.attr("objJson", $.jsonToString(obj));
-        var tds = [obj.merchantSku, obj.asin, obj.fnsku, obj.expectedQty, obj.boxedQty, obj.box01Qty, obj.box02Qty, obj.box03Qty, obj.box04Qty, obj.box05Qty];
+        var tds = [obj.merchantSku, obj.asin, '', obj.fnsku, obj.boxedQty];
+        for(var i = 1; i <= boxCount; i++){
+            var iString = i < 10 ? "0" + i : "" + i;
+            var boxQty = "box" + iString + "Qty";
+            tds.push(obj[boxQty]);
+        }
+        console.log("tds");
+        console.log(tds);
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var tdContent = $("<span></span>");
             tdContent.text(obj_2);
             if(index_2 == 2){
-                tdContent = $("<select iid='productId'></select>");
+                var tdContent = $("<select iid='productId'></select>");
+
             }
             var td = $("<td></td>");
             td.attr("column", theadNames2nd[index_2]);
             td.append(tdContent);
             tr.append(td);
         })
+        parent.$.refreshProductsSelect(tr.find("select"));
+        tr.find("select").val("").trigger("change");
         tbody.append(tr);
     });
     // parent.$.refreshProductsSelect(tbody.find("[iid=productId]"));
@@ -297,6 +317,47 @@ function uploadToPurchase(){
         },
         complete: function () {
             console.log("uploadToPurchase.complete");
+        }
+    });
+}
+
+function uploadToShipment(){
+    console.log("uploadToShipment");
+    if(!validateForm()){
+        return false;
+    }
+    var data = {};
+    $contentForm.find("[pid]").each(function () {
+        data[$(this).attr("pid")] = $(this).val();
+    });
+    var array = [];
+    $("#tableDiv3rd").find("tbody tr").each(function(){
+        var $this = $(this);
+        var obj = $.stringToJson($this.attr("objJson"));
+        obj.productId = $this.find("[iid=productId]").val();
+        array.push(obj);
+    })
+    data.array = array;
+    console.log(data);
+    var ajaxUrl = 'uploadToShipment';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        success: function (rs) {
+            console.log("uploadToShipment.success");
+            console.log(rs);
+            $.showToastr();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("uploadToShipment.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("uploadToShipment.complete");
         }
     });
 }

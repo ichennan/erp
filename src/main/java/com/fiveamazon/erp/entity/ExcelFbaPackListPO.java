@@ -14,6 +14,7 @@ public class ExcelFbaPackListPO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     Integer excelId;
+    Integer productId;
     //
     String merchantSku;
     String asin;

@@ -1,24 +1,27 @@
 package com.fiveamazon.erp.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleConstant;
-import com.fiveamazon.erp.dto.ShipmentDTO;
-import com.fiveamazon.erp.dto.ShipmentDetailDTO;
-import com.fiveamazon.erp.dto.ShipmentDetailViewDTO;
-import com.fiveamazon.erp.entity.ShipmentDetailPO;
-import com.fiveamazon.erp.entity.ShipmentPO;
-import com.fiveamazon.erp.entity.ShipmentViewPO;
+import com.fiveamazon.erp.dto.*;
+import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.ShipmentDetailRepository;
 import com.fiveamazon.erp.repository.ShipmentRepository;
 import com.fiveamazon.erp.repository.ShipmentViewRepository;
 import com.fiveamazon.erp.service.ShipmentService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class ShipmentServiceImpl implements ShipmentService {
@@ -104,11 +107,72 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public List<ShipmentDetailPO> findAllDetail(Integer shipmentId) {
-        return shipmentDetailRepository.findAllByShipmentId(shipmentId);
+        return shipmentDetailRepository.findAllByShipmentIdOrderByBox(shipmentId);
     }
 
     @Override
     public List<ShipmentDetailViewDTO> findByProductId(Integer productId) {
         return shipmentDetailRepository.findByProductId(productId);
+    }
+
+    @Override
+    public void createByExcel(UploadFbaDTO uploadFbaDTO) {
+        Date today = new Date();
+        Integer boxCount = uploadFbaDTO.getBoxCount();
+        List<ExcelFbaPackListPO> array = uploadFbaDTO.getArray();
+
+        ShipmentPO shipmentPO = new ShipmentPO();
+        shipmentPO.setBoxCount(uploadFbaDTO.getBoxCount());
+        shipmentPO.setFbaNo(uploadFbaDTO.getShipmentId());
+        shipmentPO.setCreateDate(today);
+        shipmentPO.setDeliveryDate(DateUtil.format(today, "yyyyMMdd"));
+        save(shipmentPO);
+        Integer shipmentId = shipmentPO.getId();
+        //
+        JSONObject allJson = new JSONObject();
+        for(Integer i = 1; i <= boxCount; i++){
+            String iString = StringUtils.leftPad(i.toString(), 2, "0");
+            allJson.put("box" + iString, new JSONArray());
+        }
+
+        for(ExcelFbaPackListPO excelFbaPackListPO : array){
+            JSONObject excelFbaPackListJson = new JSONObject(excelFbaPackListPO);
+            Integer productId = excelFbaPackListJson.getInt("productId");
+
+            String sku = excelFbaPackListPO.getMerchantSku();
+            for(Integer i = 1; i <= boxCount; i++){
+                String iString = StringUtils.leftPad(i.toString(), 2, "0");
+                if(StringUtils.isNotBlank(excelFbaPackListJson.getStr("box" + iString + "Qty"))){
+                    String boxString = "box" + iString;
+                    JSONArray boxArray = allJson.getJSONArray(boxString);
+                    JSONObject productJson = new JSONObject();
+                    productJson.put("productId", productId);
+                    productJson.put("quantity", excelFbaPackListJson.getStr(boxString + "Qty"));
+                    boxArray.add(productJson);
+                }
+            }
+        }
+
+        log.warn("allJson");
+        log.warn(allJson.toString());
+
+        for(String boxString : allJson.keySet()){
+            log.warn("boxString: " + boxString);
+            String boxNumber = boxString.substring(3, 5);
+            log.warn("boxNumber: " + boxString);
+            JSONArray boxArray = allJson.getJSONArray(boxString);
+            log.warn(boxString + " size: " + boxArray.size());
+            for(JSONObject boxJson : boxArray.jsonIter()){
+                log.warn("boxJson: " + boxJson.toString());
+                ShipmentDetailPO shipmentDetailPO = new ShipmentDetailPO();
+                shipmentDetailPO.setBox(boxNumber);
+                shipmentDetailPO.setQuantity(boxJson.getInt("quantity"));
+                shipmentDetailPO.setProductId(boxJson.getInt("productId"));
+                shipmentDetailPO.setShipmentId(shipmentId);
+                shipmentDetailPO.setWeight(new BigDecimal(0));
+                saveDetail(shipmentDetailPO);
+            }
+        }
+
     }
 }

@@ -6,6 +6,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
+import com.fiveamazon.erp.dto.UploadFbaDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.epo.ExcelFbaRowEO;
@@ -14,6 +15,7 @@ import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.ProductService;
 import com.fiveamazon.erp.service.PurchaseService;
+import com.fiveamazon.erp.service.ShipmentService;
 import com.fiveamazon.erp.util.CommonExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ public class ExcelController extends SimpleCommonController {
 	ExcelService excelService;
 	@Autowired
 	PurchaseService purchaseService;
+	@Autowired
+	ShipmentService shipmentService;
 
 	@Value("${simple.folder.image.product}")
 	private String productImageFolder;
@@ -135,8 +139,18 @@ public class ExcelController extends SimpleCommonController {
 		Integer excelId = excelService.saveExcelFba(excelFbaPO);
 		//
 		AnalysisEventListener<ExcelFbaRowEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelFbaPackList(excelId), 100);
-		EasyExcel.read(multipartFile.getInputStream(), ExcelFbaRowEO.class, userAnalysisEventListenerSheet1).sheet(0).doRead();
+		EasyExcel.read(multipartFile.getInputStream(), ExcelFbaRowEO.class, userAnalysisEventListenerSheet1).sheet(0).headRowNumber(0).doRead();
 		rs.put("excelId", excelId);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/uploadToShipment", method= RequestMethod.POST)
+	public String uploadToShipment(@RequestBody UploadFbaDTO uploadFbaDTO){
+		log.warn("ExcelController.uploadToShipment");
+		log.warn(new JSONObject(uploadFbaDTO).toString());
+		shipmentService.createByExcel(uploadFbaDTO);
+		JSONObject rs = new JSONObject();
+		rs.put("error", false);
 		return rs.toString();
 	}
 

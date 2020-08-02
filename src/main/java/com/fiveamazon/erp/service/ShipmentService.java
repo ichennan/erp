@@ -1,9 +1,7 @@
 package com.fiveamazon.erp.service;
 
 
-import com.fiveamazon.erp.dto.ShipmentDTO;
-import com.fiveamazon.erp.dto.ShipmentDetailDTO;
-import com.fiveamazon.erp.dto.ShipmentDetailViewDTO;
+import com.fiveamazon.erp.dto.*;
 import com.fiveamazon.erp.entity.ShipmentDetailPO;
 import com.fiveamazon.erp.entity.ShipmentPO;
 import com.fiveamazon.erp.entity.ShipmentViewPO;
@@ -34,4 +32,6 @@ public interface ShipmentService {
     ShipmentDetailPO saveDetail(ShipmentDetailDTO shipmentDetailDTO);
 
     List<ShipmentDetailViewDTO> findByProductId(Integer productId);
+
+    void createByExcel(UploadFbaDTO uploadFbaDTO);
 }
