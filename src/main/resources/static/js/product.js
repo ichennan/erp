@@ -17,6 +17,8 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 
+    setStore();
+
 
     $('#file_upload_form').fileupload({
         url: ajaxCtx + "uploadProductImage",
@@ -135,6 +137,9 @@ function showDetail(){
     $contentForm.find("[pid]").each(function () {
         $(this).val("").trigger("change");
     });
+    $contentForm.find("[sid]").each(function () {
+        $(this).val("").trigger("change");
+    });
     if(detailId - 0 == 0){
         $contentForm.find("button.update").hide();
         $contentForm.find("button.create").show();
@@ -161,6 +166,16 @@ function showDetail(){
                 var jpa = rs.data[$(this).attr("pid")];
                 $(this).val(jpa).trigger("change");
             });
+            if(rs.skuArray){
+                $.each(rs.skuArray, function(index, obj){
+                    var skuDivNo = index + 1;
+                    var skuDiv = $contentForm.find("[skuDiv=" + skuDivNo + "]");
+                    skuDiv.find("[sid]").each(function () {
+                        var jpa = obj[$(this).attr("sid")];
+                        $(this).val(jpa).trigger("change");
+                    });
+                })
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("getDetail.error");
@@ -180,16 +195,29 @@ function saveDetail(action){
     }
     var data = {};
     data.action = action;
+    var skuArray = [];
     $contentForm.find("[pid]").each(function () {
         data[$(this).attr("pid")] = $(this).val();
     });
+    $contentForm.find("[skuDiv]").each(function () {
+        var $this = $(this);
+        var skuJson = {};
+        $this.find("[sid]").each(function () {
+            skuJson[$(this).attr("sid")] = $(this).val();
+        });
+        if(skuJson.sku && skuJson.fnsku && skuJson.storeId){
+            skuArray.push(skuJson);
+        }
+    });
+    data.skuArray = skuArray;
     console.log(data);
     var ajaxUrl = 'saveDetail';
     $.ajax({
         type: "POST",
         url: ajaxCtx + ajaxUrl,
-        data: data,
+        data: JSON.stringify(data),
         dataType: "json",
+        contentType: "application/json",
         success: function (rs) {
             console.log("saveDetail.success");
             console.log(rs);
@@ -227,4 +255,34 @@ function renewProductImage(noCache){
         $("#productImage img").attr("src", "product/getProductImage/" + uploadFileName + "");
     }
     console.log("get image done : " + uploadFileName);
+}
+
+function setStore(){
+    var ajaxUrl = 'findAllStore';
+    var data = {};
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log("findAllStore.success");
+            console.log(rs);
+            $.each(rs.array, function (index, obj) {
+                var option = $("<option></option>");
+                option.val(obj.id);
+                option.text(obj.name);
+                $("[sid=storeId]").append(option);
+            })
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("findAllStore.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("findAllStore.complete");
+        }
+    });
+
 }

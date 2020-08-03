@@ -3,6 +3,7 @@ package com.fiveamazon.erp.service;
 
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
+import com.fiveamazon.erp.entity.StorePO;
 
 import java.util.List;
 
@@ -26,4 +27,8 @@ public interface ProductService {
     ProductPO save(ProductDTO productDTO);
 
     ProductPO updatePurchasePrice(ProductDTO productDTO);
+
+    List<StorePO> findAllStore();
+
+    StorePO getStoreById(Integer storeId);
 }

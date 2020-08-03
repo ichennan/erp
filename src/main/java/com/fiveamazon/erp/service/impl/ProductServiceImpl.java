@@ -3,9 +3,11 @@ package com.fiveamazon.erp.service.impl;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
+import com.fiveamazon.erp.entity.StorePO;
 import com.fiveamazon.erp.repository.ProductRepository;
+import com.fiveamazon.erp.repository.StoreRepository;
 import com.fiveamazon.erp.service.ProductService;
-import com.fiveamazon.erp.service.SkuService;
+import com.fiveamazon.erp.service.SkuInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
-    private SkuService skuService;
+    private StoreRepository storeRepository;
+    @Autowired
+    private SkuInfoService skuInfoService;
 
     @Override
     public Long countAll() {
@@ -66,11 +70,11 @@ public class ProductServiceImpl implements ProductService {
             BeanUtils.copyProperties(productDTO, productPO, "id");
             productPO = save(productPO);
             productDTO.setId(productPO.getId());
-            skuService.save(productDTO);
+            skuInfoService.save(productDTO);
         }else{
             productPO = getById(productId);
             if("updateSku".equalsIgnoreCase(productDTO.getAction())){
-                skuService.save(productDTO);
+                skuInfoService.save(productDTO);
             }else{
                 productPO.setUpdateDate(new Date());
                 productPO.setUpdateUser(productDTO.getUsername());
@@ -89,5 +93,15 @@ public class ProductServiceImpl implements ProductService {
         productPO.setUpdateDate(new Date());
         productPO.setUpdateUser(productDTO.getUsername());
         return save(productPO);
+    }
+
+    @Override
+    public List<StorePO> findAllStore() {
+        return storeRepository.findAll();
+    }
+
+    @Override
+    public StorePO getStoreById(Integer storeId) {
+        return storeRepository.getById(storeId);
     }
 }

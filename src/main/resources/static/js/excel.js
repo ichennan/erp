@@ -232,7 +232,7 @@ function drawTable3rd(table, array, boxCount){
     $.each(array, function (index, obj) {
         var tr = $("<tr></tr>");
         tr.attr("objJson", $.jsonToString(obj));
-        var tds = [obj.merchantSku, obj.asin, '', obj.fnsku, obj.boxedQty];
+        var tds = [obj.merchantSku, obj.asin, obj.productId, obj.fnsku, obj.boxedQty];
         for(var i = 1; i <= boxCount; i++){
             var iString = i < 10 ? "0" + i : "" + i;
             var boxQty = "box" + iString + "Qty";
@@ -240,13 +240,14 @@ function drawTable3rd(table, array, boxCount){
         }
         console.log("tds");
         console.log(tds);
+        var productId = "";
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var tdContent = $("<span></span>");
             tdContent.text(obj_2);
             if(index_2 == 2){
                 var tdContent = $("<select iid='productId'></select>");
-
+                productId = obj_2;
             }
             var td = $("<td></td>");
             td.attr("column", theadNames2nd[index_2]);
@@ -254,7 +255,11 @@ function drawTable3rd(table, array, boxCount){
             tr.append(td);
         })
         parent.$.refreshProductsSelect(tr.find("select"));
-        tr.find("select").val("").trigger("change");
+        console.log("-----------------select size: " + tr.find("select").length);
+        console.log("-----------------select size: " + tr.find("select").val());
+        console.log("-----------------product id: " + productId);
+        tr.find("select").val(productId).trigger("change");
+        console.log("-----------------select size: " + tr.find("select").val());
         tbody.append(tr);
     });
     // parent.$.refreshProductsSelect(tbody.find("[iid=productId]"));

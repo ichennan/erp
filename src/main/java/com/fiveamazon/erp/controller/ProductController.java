@@ -6,17 +6,15 @@ import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
+import com.fiveamazon.erp.entity.SkuInfoPO;
+import com.fiveamazon.erp.entity.StorePO;
 import com.fiveamazon.erp.service.ProductService;
-import com.fiveamazon.erp.service.SkuService;
+import com.fiveamazon.erp.service.SkuInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -39,7 +37,7 @@ public class ProductController extends SimpleCommonController {
 	@Autowired
 	ProductService productService;
 	@Autowired
-	SkuService skuService;
+	SkuInfoService skuInfoService;
 
 	@Value("${simple.folder.image.product}")
 	private String productImageFolder;
@@ -50,6 +48,19 @@ public class ProductController extends SimpleCommonController {
 		this.parameters.put("pageName", "product");
 		ModelAndView mv = new ModelAndView("product", parameters);
 		return mv;
+	}
+
+	@RequestMapping(value = "/findAllStore", method= RequestMethod.POST)
+	public String findAllStore(){
+		JSONObject rs = new JSONObject();
+		JSONArray array = new JSONArray();
+		List<StorePO> storePOList = productService.findAllStore();
+		for(StorePO storePO: storePOList){
+			array.put(storePO.toJson());
+		}
+		rs.put("array", array);
+		rs.put("error", false);
+		return rs.toString();
 	}
 
 	@RequestMapping(value = "/findAll", method= RequestMethod.POST)
@@ -91,14 +102,21 @@ public class ProductController extends SimpleCommonController {
 		JSONObject rs = new JSONObject();
 		ProductPO productPO = productService.getById(id);
 		JSONObject dataJson = productPO.toJson();
-		dataJson.putAll(skuService.getByProductId(id));
+		JSONArray skuArray = new JSONArray();
+		List<SkuInfoPO> skuInfoPOList = skuInfoService.findByProductId(id);
+		for(SkuInfoPO skuInfoPO : skuInfoPOList){
+			JSONObject skuJson = new JSONObject(skuInfoPO);
+			skuArray.put(skuJson);
+		}
 		rs.put("data", dataJson);
+		rs.put("skuArray", skuArray);
 		rs.put("error", false);
 		return rs.toString();
 	}
 
 	@RequestMapping(value = "/saveDetail", method= RequestMethod.POST)
-	public String saveDetail(ProductDTO productDTO){
+	public String saveDetail(@RequestBody ProductDTO productDTO){
+		log.warn("ProductController.saveDetail: " + new JSONObject(productDTO));
 		productDTO.setUsername(getUsername());
 		JSONObject rs = new JSONObject();
 		ProductPO productPO = productService.save(productDTO);

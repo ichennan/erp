@@ -3,22 +3,17 @@ package com.fiveamazon.erp.entity;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonEntity;
 import lombok.Data;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.math.BigDecimal;
+import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "tbl_sku")
-public class SkuPO extends SimpleCommonEntity {
-    Integer productId;
+@Table(name = "tbl_store")
+public class StorePO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
     String name;
-    String store;
-    Integer storeId;
-    String fnsku;
-    String asin;
 
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);

@@ -1,7 +1,6 @@
 package com.fiveamazon.erp.repository;
 
-
-import com.fiveamazon.erp.entity.SkuPO;
+import com.fiveamazon.erp.entity.StorePO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,8 +11,7 @@ import java.util.List;
  * @date 2018/8/7 15:51
  */
 @Repository
-public interface SkuRepository extends JpaRepository<SkuPO, Integer> {
-	SkuPO getByName(String name);
-	List<SkuPO> findByProductId(Integer productId);
-	void deleteAllByProductId(Integer productId);
+public interface StoreRepository extends JpaRepository<StorePO, Integer> {
+	StorePO getById(Integer id);
+//	List<StorePO> findAll();
 }
