@@ -19,5 +19,6 @@ public interface SkuInfoService {
     List<SkuInfoPO> findByProductId(Integer productId);
     void test1(List<TestEpo> testEpoList);
     void test2(List<TestEpo2> testEpoList);
-    Integer getProductIdBySku(Integer storeId, String sku);
+    Integer getProductIdBySku(String sku);
+    Integer getStoreIdBySku(String sku);
 }

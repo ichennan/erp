@@ -16,5 +16,4 @@ public interface SkuInfoRepository extends JpaRepository<SkuInfoPO, Integer> {
 	SkuInfoPO getBySku(String sku);
 	List<SkuInfoPO> findByProductId(Integer productId);
 	void deleteAllByProductId(Integer productId);
-	SkuInfoPO getByStoreIdAndSku(Integer storeId, String sku);
 }

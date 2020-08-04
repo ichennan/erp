@@ -83,14 +83,26 @@ public class SkuInfoServiceImpl implements SkuInfoService {
     }
 
     @Override
-    public Integer getProductIdBySku(Integer storeId, String sku) {
-        log.warn("storeId: " + storeId + " sku: " + sku);
-        SkuInfoPO skuInfoPO = skuInfoRepository.getByStoreIdAndSku(storeId, sku);
+    public Integer getProductIdBySku(String sku) {
+        log.warn("sku: " + sku);
+        SkuInfoPO skuInfoPO = skuInfoRepository.getBySku(sku);
         if(skuInfoPO == null){
             log.warn("null");
             return null;
         }
         log.warn("" + skuInfoPO.getProductId());
         return skuInfoPO.getProductId();
+    }
+
+    @Override
+    public Integer getStoreIdBySku(String sku) {
+        log.warn("sku: " + sku);
+        SkuInfoPO skuInfoPO = skuInfoRepository.getBySku(sku);
+        if(skuInfoPO == null){
+            log.warn("null");
+            return null;
+        }
+        log.warn("" + skuInfoPO.getStoreId());
+        return skuInfoPO.getStoreId();
     }
 }

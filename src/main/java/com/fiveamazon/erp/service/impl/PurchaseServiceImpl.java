@@ -141,12 +141,16 @@ public class PurchaseServiceImpl implements PurchaseService {
         for(ExcelSupplierDeliveryOrderDetailPO orderDetail : orderDetailArray){
             Integer excelId = orderDetail.getExcelId();
             String dingdanhao = orderDetail.getDingdanhao();
+            BigDecimal danjia = new BigDecimal(orderDetail.getDanjia());
+            Integer shuliang = Integer.valueOf(orderDetail.getShuliang());
             PurchasePO purchasePO = purchaseRepository.getByExcelIdAndExcelDingdan(excelId, dingdanhao);
             Integer purchaseId = purchasePO.getId();
             PurchaseDetailPO purchaseDetailPO = new PurchaseDetailPO();
-            purchaseDetailPO.setReceivedQuantity(Integer.valueOf(orderDetail.getShuliang()));
+            purchaseDetailPO.setReceivedQuantity(shuliang);
+            purchaseDetailPO.setBookQuantity(shuliang);
             purchaseDetailPO.setProductId(orderDetail.getProductId());
             purchaseDetailPO.setPurchaseId(purchaseId);
+            purchaseDetailPO.setUnitPrice(danjia);
             //
             purchaseDetailPO.setCreateDate(new Date());
             saveDetail(purchaseDetailPO);

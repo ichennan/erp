@@ -18,6 +18,7 @@ public class ExcelFbaPO extends SimpleCommonEntity {
     String planId;
     String shipTo;
     Integer boxCount;
+    Integer storeId;
 
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);

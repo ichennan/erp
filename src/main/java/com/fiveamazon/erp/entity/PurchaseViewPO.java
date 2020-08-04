@@ -17,6 +17,8 @@ public class PurchaseViewPO extends SimpleCommonEntity {
     String receivedDate;
     BigDecimal freight;
     String supplier;
+    String excelDate;
+    BigDecimal amount;
     //
     String productIdGroup;
 

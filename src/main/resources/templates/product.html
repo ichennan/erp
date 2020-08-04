@@ -23,7 +23,7 @@
             </div>
 
             <div class="row" id="contentBox">
-                <div class="col-xs-6">
+                <div class="col-xs-7">
                     <!-- Horizontal Form -->
                     <div class="box box-info">
                         <div class="box-header with-border">
@@ -54,41 +54,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-xs-3 control-label">Size <span class="required hide">*</span></label>
-                                    <div class="col-xs-9">
-                                        <input class="form-control" pid="size" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
                                     <label class="col-xs-3 control-label">采购价 <span class="required hide">*</span></label>
                                     <div class="col-xs-9">
                                         <input class="form-control" pid="purchasePrice" type="number" step="0.01"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-xs-3 control-label">店铺 <span class="required hide">*</span></label>
-                                    <div class="col-xs-9">
-                                        <input class="form-control" pid="store" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
                                     <label class="col-xs-3 control-label">备注 <span class="required hide">*</span></label>
                                     <div class="col-xs-9">
                                         <input class="form-control" pid="remark" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">SKU 店铺 <span class="required hide">*</span></label>
-                                    <div class="col-xs-9">
-                                        <input class="form-control" pid="skuStoreList" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">SKU <span class="required hide">*</span></label>
-                                    <div class="col-xs-9">
-                                        <input class="form-control" pid="skuNameList" />
                                     </div>
                                 </div>
 
@@ -107,194 +81,161 @@
 
                             <div class="box-body" id="skuBox">
                                 <div class="form-group">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <span>Store</span>
                                     </div>
                                     <div class="col-xs-4">
                                         <span>SKU</span>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <span>FNSKU</span>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <span>ASIN</span>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="1">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="2">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="3">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="4">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="5">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="6">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="7">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="8">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                                 <div class="form-group" skuDiv="9">
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-2">
                                         <select class="form-control" sid="storeId">
                                             <option value=""></option>
-                                            <option value="111">庙美国</option>
-                                            <option value="112">庙加拿大</option>
-                                            <option value="121">庙欧洲</option>
-                                            <option value="211">燕子美国</option>
-                                            <option value="221">燕子欧洲</option>
-                                            <option value="311">聪美美国</option>
-                                            <option value="411">拾子美国</option>
                                         </select>
                                     </div>
                                     <div class="col-xs-4">
                                         <input class="form-control" sid="sku"/>
                                     </div>
-                                    <div class="col-xs-4">
+                                    <div class="col-xs-3">
                                         <input class="form-control" sid="fnsku"/>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control" sid="asin"/>
                                     </div>
                                 </div>
                             </div>
@@ -305,7 +246,7 @@
                 </div>
 
 
-                <div class="col-xs-6 createHidden">
+                <div class="col-xs-5 createHidden">
                     <!-- Horizontal Form -->
                     <div class="box box-info">
                         <div class="box-header with-border">

@@ -22,4 +22,5 @@ public interface ExcelService {
     List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId);
     ExcelFbaPO getFbaByExcelId(Integer excelId);
     List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId);
+    ExcelSupplierDeliveryOrderPO getExcelSupplierDeliveryOrderByExcelIdAndDingdanhao(Integer excelId, String dingdanghao);
 }

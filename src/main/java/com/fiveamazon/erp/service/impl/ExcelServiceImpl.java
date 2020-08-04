@@ -160,13 +160,17 @@ public class ExcelServiceImpl implements ExcelService {
 
         excelFbaPO.setBoxCount(boxCount);
         excelFbaRepository.save(excelFbaPO);
+        Integer storeId = null;
         for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
             String sku = excelFbaPackListPO.getMerchantSku();
             excelFbaPackListPO.setExcelId(excelId);
-            excelFbaPackListPO.setProductId(skuInfoService.getProductIdBySku(1, sku));
+            excelFbaPackListPO.setProductId(skuInfoService.getProductIdBySku(sku));
+            if(storeId == null || storeId == 0){
+                storeId = skuInfoService.getStoreIdBySku(sku);
+            }
             excelFbaPackListRepository.save(excelFbaPackListPO);
         }
-
+        excelFbaPO.setStoreId(storeId);
     }
 
     @Override
@@ -203,5 +207,13 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId) {
         return excelFbaPackListRepository.findByExcelId(excelId);
+    }
+
+    @Override
+    public ExcelSupplierDeliveryOrderPO getExcelSupplierDeliveryOrderByExcelIdAndDingdanhao(Integer excelId, String dingdanghao) {
+        if(excelId == null || excelId == 0 || StringUtils.isBlank(dingdanghao)){
+            return null;
+        }
+        return excelSupplierDeliveryOrderRepository.getByExcelIdAndDingdanhao(excelId, dingdanghao);
     }
 }

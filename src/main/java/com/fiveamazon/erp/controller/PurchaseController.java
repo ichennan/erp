@@ -7,6 +7,7 @@ import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
 import com.fiveamazon.erp.dto.ShipmentDetailDTO;
 import com.fiveamazon.erp.entity.*;
+import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.PurchaseService;
 import com.fiveamazon.erp.service.ShipmentService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ import java.util.List;
 public class PurchaseController extends SimpleCommonController {
 	@Autowired
 	PurchaseService purchaseService;
+	@Autowired
+	ExcelService excelService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView showView() {
@@ -68,7 +71,12 @@ public class PurchaseController extends SimpleCommonController {
 	public String getDetail(@RequestParam("id")Integer id){
 		JSONObject rs = new JSONObject();
 		PurchasePO purchasePO = purchaseService.getById(id);
-		rs.put("data", purchasePO.toJson());
+		Integer excelId = purchasePO.getExcelId();
+		String excelDingdan = purchasePO.getExcelDingdan();
+		ExcelSupplierDeliveryOrderPO excelSupplierDeliveryOrderPO = excelService.getExcelSupplierDeliveryOrderByExcelIdAndDingdanhao(excelId, excelDingdan);
+		JSONObject dataJson = new JSONObject(excelSupplierDeliveryOrderPO);
+		dataJson.putAll(purchasePO.toJson());
+		rs.put("data", dataJson);
 		rs.put("error", false);
 		return rs.toString();
 	}
