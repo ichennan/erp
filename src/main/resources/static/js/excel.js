@@ -21,25 +21,44 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 
+    $('input:radio[name=fileCategoryRadio]').change(function () {
+        console.log("fileCategoryRadio change");
+        var fileCategory = $('input:radio[name=fileCategoryRadio]:checked').val();
+        $("[fileCategory]").hide();
+        $("[fileCategory=" + fileCategory + "]").show();
+        console.log("fileCategoryRadio val: " + fileCategory);
+        console.log($("[fileCategory=" + fileCategory + "]").length);
+    });
 
     $('#file_upload_form').fileupload({
-        // url: ajaxCtx + "uploadSupplierDelivery",
-        url: ajaxCtx + "uploadFba",
+        url: ajaxCtx + "upload",
         dataType: 'json',
         previewSourceMaxFileSize: 0,
         process: null,
         done: function (e, data) {
             console.log("fileUpload done");
             console.log(data);
+            var fileCategory;
             if(data && data.result){
                 excelId = data.result.excelId;
+                fileCategory = data.result.fileCategory;
             }
-            // showList();
-            showFbaList();
+            if(fileCategory == "fba"){
+                showFbaList();
+            }else if(fileCategory == "supplierDelivery"){
+                showList();
+            }
         },
         add: function (e, data) {
             var goUpload = true;
             var uploadFile = data.files[0];
+            var fileCategory = $('input:radio[name=fileCategoryRadio]:checked').val();
+            if(!fileCategory){
+                $.showErrorModal("请选择上传文件类型");
+                goUpload = false;
+                data.fileCategory = uploadFileData;
+            }
+
             if (!(/\.(xls|xlsx)$/i).test(uploadFile.name)) {
                 $.showErrorModal("Only excel files (xls, xlsx) files allowed");
                 goUpload = false;
@@ -49,9 +68,9 @@ $(document).ready(function(){
                 goUpload = false;
             }
             if (goUpload == true) {
-                // var uploadImageData = {};
-                // uploadImageData.productId = detailId;
-                // data.formData = {'uploadImageData': JSON.stringify(uploadImageData)};
+                var uploadFileData = {};
+                uploadFileData.fileCategory = fileCategory;
+                data.formData = {'uploadFileData': JSON.stringify(uploadFileData)};
                 data.submit();
                 console.log("excel uploaded: " + uploadFile.name);
             }
@@ -201,7 +220,7 @@ function drawTable2nd(table, array){
             var tdContent = $("<span></span>");
             tdContent.text(obj_2);
             if(index_2 == 2){
-                tdContent = $("<select iid='productId'></select>");
+                tdContent = $("<select iid='productId' required class='required'></select>");
             }
             var td = $("<td></td>");
             td.attr("column", theadNames2nd[index_2]);
@@ -282,9 +301,7 @@ function saveDetail(action){
 
 function uploadToPurchase(){
     console.log("uploadToPurchase");
-    if(!validateForm()){
-        return false;
-    }
+    var isError = false;
     var data = {};
     var orderArray = [];
     var orderDetailArray = [];
@@ -297,12 +314,19 @@ function uploadToPurchase(){
         var $this = $(this);
         var obj = $.stringToJson($this.attr("objJson"));
         obj.productId = $this.find("[iid=productId]").val();
+        if(!obj.productId){
+            isError = true;
+            return false;
+        }
         orderDetailArray.push(obj);
     })
     data.orderArray = orderArray;
     data.orderDetailArray = orderDetailArray;
-
     console.log(data);
+    if(isError){
+        $.showErrorModal("请确认产品后上传");
+        return;
+    }
     var ajaxUrl = 'uploadToPurchase';
     $.ajax({
         type: "POST",
@@ -328,9 +352,7 @@ function uploadToPurchase(){
 
 function uploadToShipment(){
     console.log("uploadToShipment");
-    if(!validateForm()){
-        return false;
-    }
+    var isError = false;
     var data = {};
     $contentForm.find("[pid]").each(function () {
         data[$(this).attr("pid")] = $(this).val();
@@ -340,10 +362,18 @@ function uploadToShipment(){
         var $this = $(this);
         var obj = $.stringToJson($this.attr("objJson"));
         obj.productId = $this.find("[iid=productId]").val();
+        if(!obj.productId){
+            isError = true;
+            return false;
+        }
         array.push(obj);
     })
     data.array = array;
     console.log(data);
+    if(isError){
+        $.showErrorModal("请确认产品后上传");
+        return;
+    }
     var ajaxUrl = 'uploadToShipment';
     $.ajax({
         type: "POST",

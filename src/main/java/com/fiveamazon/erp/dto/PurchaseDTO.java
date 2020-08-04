@@ -12,4 +12,5 @@ public class PurchaseDTO extends SimpleCommonDTO {
     String receivedDate;
     BigDecimal freight;
     String supplier;
+    BigDecimal amount;
 }

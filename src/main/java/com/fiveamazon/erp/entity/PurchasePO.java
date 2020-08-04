@@ -18,6 +18,10 @@ public class PurchasePO extends SimpleCommonEntity {
     BigDecimal freight;
     String supplier;
     String supplierOrderNo;
+    BigDecimal amount;
+    Integer excelId;
+    String excelDingdan;
+    String excelDate;
 
     public JSONObject toJson(){
         return new JSONObject(this);

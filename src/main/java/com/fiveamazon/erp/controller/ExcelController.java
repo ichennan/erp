@@ -91,26 +91,39 @@ public class ExcelController extends SimpleCommonController {
 		return rs.toString();
 	}
 
-	@PostMapping("/uploadSupplierDelivery")
-	public String uploadSupplierDelivery(@RequestParam(value="file",required=false) MultipartFile multipartFile) throws IOException{
-		log.warn("ExcelController.uploadSupplierDelivery");
+	@PostMapping("/upload")
+	public String upload(@RequestParam(value="file",required=false) MultipartFile multipartFile, String uploadFileData) throws IOException{
+		log.warn("ExcelController.upload uploadFileData: " + uploadFileData);
+		JSONObject uploadFileJson = new JSONObject(uploadFileData);
+		String fileCategory = uploadFileJson.getStr("fileCategory");
 		JSONObject rs = new JSONObject();
+		rs.put("fileCategory", fileCategory);
 		if(multipartFile == null){
 			throw new SimpleCommonException("file is null o");
 		}
 		String originalFileName = multipartFile.getOriginalFilename();
 		log.info("Original File Name:" + originalFileName);
 		//
-		ExcelSupplierDeliveryPO excelSupplierDeliveryPO = new ExcelSupplierDeliveryPO();
-		excelSupplierDeliveryPO.setFileName(originalFileName);
-		Integer excelId = excelService.saveExcelSupplierDelivery(excelSupplierDeliveryPO);
-		//
-		AnalysisEventListener<ExcelSupplierDeliveryOrderEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrder(excelId), 100);
-		EasyExcel.read(multipartFile.getInputStream(), ExcelSupplierDeliveryOrderEO.class, userAnalysisEventListenerSheet1).sheet(0).doRead();
-		//
-		AnalysisEventListener<ExcelSupplierDeliveryOrderDetailEO> userAnalysisEventListenerSheet2 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrderDetail(excelId), 100);
-		EasyExcel.read(multipartFile.getInputStream(), ExcelSupplierDeliveryOrderDetailEO.class, userAnalysisEventListenerSheet2).sheet(1).doRead();
-		rs.put("excelId", excelId);
+		if("fba".equalsIgnoreCase(fileCategory)){
+			ExcelFbaPO excelFbaPO = new ExcelFbaPO();
+			excelFbaPO.setFileName(originalFileName);
+			Integer excelId = excelService.saveExcelFba(excelFbaPO);
+			//
+			AnalysisEventListener<ExcelFbaRowEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelFbaPackList(excelId), 100);
+			EasyExcel.read(multipartFile.getInputStream(), ExcelFbaRowEO.class, userAnalysisEventListenerSheet1).sheet(0).headRowNumber(0).doRead();
+			rs.put("excelId", excelId);
+		}else if("supplierDelivery".equalsIgnoreCase(fileCategory)){
+			ExcelSupplierDeliveryPO excelSupplierDeliveryPO = new ExcelSupplierDeliveryPO();
+			excelSupplierDeliveryPO.setFileName(originalFileName);
+			Integer excelId = excelService.saveExcelSupplierDelivery(excelSupplierDeliveryPO);
+			//
+			AnalysisEventListener<ExcelSupplierDeliveryOrderEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrder(excelId), 100);
+			EasyExcel.read(multipartFile.getInputStream(), ExcelSupplierDeliveryOrderEO.class, userAnalysisEventListenerSheet1).sheet(0).doRead();
+			//
+			AnalysisEventListener<ExcelSupplierDeliveryOrderDetailEO> userAnalysisEventListenerSheet2 = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrderDetail(excelId), 100);
+			EasyExcel.read(multipartFile.getInputStream(), ExcelSupplierDeliveryOrderDetailEO.class, userAnalysisEventListenerSheet2).sheet(1).doRead();
+			rs.put("excelId", excelId);
+		}
 		return rs.toString();
 	}
 
@@ -121,26 +134,6 @@ public class ExcelController extends SimpleCommonController {
 		purchaseService.createByExcel(uploadSupplierDeliveryDTO);
 		JSONObject rs = new JSONObject();
 		rs.put("error", false);
-		return rs.toString();
-	}
-
-	@PostMapping("/uploadFba")
-	public String uploadFba(@RequestParam(value="file",required=false) MultipartFile multipartFile) throws IOException{
-		log.warn("ExcelController.uploadFba");
-		JSONObject rs = new JSONObject();
-		if(multipartFile == null){
-			throw new SimpleCommonException("file is null o");
-		}
-		String originalFileName = multipartFile.getOriginalFilename();
-		log.info("Original File Name:" + originalFileName);
-		//
-		ExcelFbaPO excelFbaPO = new ExcelFbaPO();
-		excelFbaPO.setFileName(originalFileName);
-		Integer excelId = excelService.saveExcelFba(excelFbaPO);
-		//
-		AnalysisEventListener<ExcelFbaRowEO> userAnalysisEventListenerSheet1 = CommonExcelUtils.getListener(this.batchInsertExcelFbaPackList(excelId), 100);
-		EasyExcel.read(multipartFile.getInputStream(), ExcelFbaRowEO.class, userAnalysisEventListenerSheet1).sheet(0).headRowNumber(0).doRead();
-		rs.put("excelId", excelId);
 		return rs.toString();
 	}
 

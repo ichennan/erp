@@ -8,39 +8,56 @@
     <div class="content-wrapper">
         <section class="content">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="col-md-4">
-                        <input type="radio" name="fileType" id="fileTypeSupplierDelivery">
-                        <span>芳姐发货表</span>
+                <div class="col-xs-12">
+                    <div class="box box-info">
+                        <form action="#" class="form-horizontal">
+
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <div class="col-md-3">
+                                        <input id="file_upload_form" class="fileupload" type="file" name="file" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="radio" name="fileCategoryRadio" value="supplierDelivery">
+                                        <span>芳姐发货表</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="radio" name="fileCategoryRadio" value="fba">
+                                        <span>FBA发货表</span>
+                                    </div>
+                                    <div class="col-md-3" fileCategory="fba">
+                                        <select class="form-control" id="fbaStoreId">
+                                            <option value="">店铺选择</option>
+                                            <option value="111">庙美国</option>
+                                            <option value="112">庙加拿大</option>
+                                            <option value="121">庙欧洲</option>
+                                            <option value="211">燕子美国</option>
+                                            <option value="221">燕子欧洲</option>
+                                            <option value="311">聪美美国</option>
+                                            <option value="411">拾子美国</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-md-4">
-                        <input type="radio" name="fileType" id="fileTypeFba">
-                        <span>FBA发货表</span>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <input id="file_upload_form" class="fileupload" type="file" name="file"></input>
-                </div>
-                <div class="col-md-12">
-                    <button type="button" class="btn btn-warning update" onclick="uploadToPurchase()">上传到采购表</button>
-                    <button type="button" class="btn btn-warning update" onclick="uploadToShipment()">上传到FBA</button>
                 </div>
             </div>
 
             <div class="row" id="tableBox">
-                <div class="col-md-12">
+                <div class="col-md-12" fileCategory="supplierDelivery">
                     <div class="box box-info">
                         <div class="box-body" id="tableDiv1st">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-12" fileCategory="supplierDelivery">
                     <div class="box box-info">
                         <div class="box-body" id="tableDiv2nd">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-12" fileCategory="fba">
                     <div class="box box-info">
                         <div class="box-body" id="tableDiv3rd">
                         </div>
@@ -49,7 +66,7 @@
             </div>
 
             <div class="row" id="contentBox">
-                <div class="col-xs-12">
+                <div class="col-xs-12" fileCategory="fba">
                     <div class="box box-info">
                         <div class="box-header with-border">
                             <h3 class="box-title">详情</h3>
@@ -92,6 +109,23 @@
                                     <div class="col-xs-9">
                                         <input class="form-control" readonly pid="boxCount"/>
                                     </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="box box-info">
+                        <form action="#" class="form-horizontal">
+                            <div class="box-footer">
+                                <div>
+                                    <button type="button" class="btn btn-warning update" fileCategory="supplierDelivery" onclick="uploadToPurchase()">上传到采购表</button>
+                                    <button type="button" class="btn btn-warning update" fileCategory="fba" onclick="uploadToShipment()">上传到FBA</button>
                                 </div>
                             </div>
                         </form>

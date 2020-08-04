@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -118,21 +119,29 @@ public class PurchaseServiceImpl implements PurchaseService {
         List<ExcelSupplierDeliveryOrderDetailPO> orderDetailArray = uploadSupplierDeliveryDTO.getOrderDetailArray();
 
         for(ExcelSupplierDeliveryOrderPO order : orderArray){
+            Integer excelId = order.getExcelId();
             String dingdanhao = order.getDingdanhao();
             String fahuoshijian = order.getFahuoshijian();
+            String shijijiesuan = order.getShijijiesuan();
             String deliveryDate = DateUtil.format(DateUtil.parse(fahuoshijian, "yyyy-MM-dd HH:mm:ss"), "yyyyMMdd");
+            String excelDate = DateUtil.format(new Date(), "yyyyMMdd");
             //
             PurchasePO purchasePO = new PurchasePO();
+            purchasePO.setExcelId(excelId);
+            purchasePO.setExcelDingdan(dingdanhao);
+            purchasePO.setAmount(new BigDecimal(shijijiesuan));
             purchasePO.setCreateDate(new Date());
             purchasePO.setDeliveryDate(deliveryDate);
-            purchasePO.setSupplier("fang jie");
-            purchasePO.setSupplierOrderNo(dingdanhao);
+            purchasePO.setSupplier("芳姐");
+            purchasePO.setSupplierOrderNo(order.getWuliufangshi() + " " + order.getHuoyundanhao());
+            purchasePO.setExcelDate(excelDate);
             save(purchasePO);
         }
 
         for(ExcelSupplierDeliveryOrderDetailPO orderDetail : orderDetailArray){
+            Integer excelId = orderDetail.getExcelId();
             String dingdanhao = orderDetail.getDingdanhao();
-            PurchasePO purchasePO = purchaseRepository.getBySupplierOrderNo(dingdanhao);
+            PurchasePO purchasePO = purchaseRepository.getByExcelIdAndExcelDingdan(excelId, dingdanhao);
             Integer purchaseId = purchasePO.getId();
             PurchaseDetailPO purchaseDetailPO = new PurchaseDetailPO();
             purchaseDetailPO.setReceivedQuantity(Integer.valueOf(orderDetail.getShuliang()));

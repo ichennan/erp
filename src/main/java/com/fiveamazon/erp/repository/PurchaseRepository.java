@@ -12,5 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PurchaseRepository extends JpaRepository<PurchasePO, Integer> {
-    PurchasePO getBySupplierOrderNo(String supplierOrderNo);
+    PurchasePO getByExcelIdAndExcelDingdan(Integer excelId, String excelDingdan);
 }
