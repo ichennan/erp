@@ -28,7 +28,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['名称', '编号','库存','FBA途中','采购途中', '总采购', '总小包','总FBA'];
+    var theadNames = ['名称', '库存','FBA途中','采购途中', '总采购', '总小包','总FBA'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -47,7 +47,7 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.name, obj.sn, obj.inventoryQuantity, obj.onthewayShipmentQuantity, obj.onthewayPurchaseQuantity, obj.allPurchaseQuantity, obj.allPacketQuantity, obj.allShipmentQuantity];
+                var tds = [obj.sn + obj.color + obj.name, obj.inventoryQuantity, obj.onthewayShipmentQuantity, obj.onthewayPurchaseQuantity, obj.allPurchaseQuantity, obj.allPacketQuantity, obj.allShipmentQuantity];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");
@@ -64,8 +64,8 @@ function showList(){
                 "ordering": true,
                 "bSort": true,
                 "language": $.dataTablesLanguage,
-                "pageLength": 100,
-                "order": [[ 0, "desc" ]],
+                "pageLength": 200,
+                "order": [[ 0, "asc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");

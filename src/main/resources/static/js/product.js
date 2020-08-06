@@ -64,7 +64,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['名称', '编号', '颜色', '采购价','备注'];
+    var theadNames = ['编号', '名称', '采购价','备注'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -83,7 +83,7 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.name, obj.sn, obj.color, obj.purchasePrice, obj.remark];
+                var tds = [obj.sn, obj.snname, obj.purchasePrice, obj.remark];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");
@@ -100,8 +100,8 @@ function showList(){
                 "ordering": true,
                 "bSort": true,
                 "language": $.dataTablesLanguage,
-                "pageLength": 100,
-                "order": [[ 0, "desc" ]],
+                "pageLength": 200,
+                "order": [[ 0, "asc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");

@@ -99,6 +99,7 @@ $(function () {
 });
 
 $.refreshCacheProducts = function () {
+    console.log("home.js.refreshCacheProducts()");
     var data = {};
     $.ajax({
         type: "POST",
@@ -120,6 +121,7 @@ $.refreshCacheProducts = function () {
 }
 
 $.refreshProductsSelect = function($select){
+    console.log("home.js.refreshProductsSelect()");
     var data = [];
     for(key in $.cacheProducts){
         var optionObj = {};
@@ -137,7 +139,7 @@ $.refreshProductsSelect = function($select){
 }
 
 $.showProductNameGroupByProductIdGroup = function(productIdGroupString){
-    console.log("$.showProductNameGroupByProductIdGroup");
+    console.log("home.js.showProductNameGroupByProductIdGroup(): " + productIdGroupString);
     var productNameGroup = [];
     if(!productIdGroupString){
         return productNameGroup;
