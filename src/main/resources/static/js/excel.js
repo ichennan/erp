@@ -259,7 +259,15 @@ function drawTable3rd(table, array, boxCount){
         }
         previousSku = sku;
         tr.attr("objJson", $.jsonToString(obj));
-        var tds = [obj.merchantSku, obj.asin, obj.productId, obj.fnsku, obj.boxedQty];
+        // var tds = [obj.merchantSku, obj.asin, obj.productId, obj.fnsku, obj.boxedQty];
+        var snname = "";
+        if(parent.$.cacheProducts["id" + obj.productId]){
+            snname = parent.$.cacheProducts["id" + obj.productId].snname;
+        }else{
+            tr.addClass("errorRow");
+        }
+        var storeDesc = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name + " " : "";
+        var tds = [storeDesc + obj.merchantSku, obj.asin, snname, obj.fnsku, obj.boxedQty];
         for(var i = 1; i <= boxCount; i++){
             var iString = i < 10 ? "0" + i : "" + i;
             var boxQty = "box" + iString + "Qty";
@@ -267,36 +275,24 @@ function drawTable3rd(table, array, boxCount){
         }
         console.log("tds");
         console.log(tds);
-        var productId = "";
+        // var productId = "";
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var tdContent = $("<span></span>");
             tdContent.text(obj_2);
-            if(index_2 == 2){
-                var tdContent = $("<select iid='productId'></select>");
-                productId = obj_2;
-            }
+            // if(index_2 == 2){
+            //     var tdContent = $("<select iid='productId'></select>");
+            //     productId = obj_2;
+            // }
             var td = $("<td></td>");
             td.attr("column", theadNames2nd[index_2]);
             td.append(tdContent);
             tr.append(td);
         })
-        parent.$.refreshProductsSelect(tr.find("select"));
-        console.log("-----------------select size: " + tr.find("select").length);
-        console.log("-----------------select size: " + tr.find("select").val());
-        console.log("-----------------product id: " + productId);
-        tr.find("select").val(productId).trigger("change");
-        console.log("-----------------select size: " + tr.find("select").val());
+        // parent.$.refreshProductsSelect(tr.find("select"));
+        // tr.find("select").val(productId).trigger("change");
         tbody.append(tr);
     });
-    // parent.$.refreshProductsSelect(tbody.find("[iid=productId]"));
-    // tbody.find("[iid=productId]").val("").trigger("change");
-    // $(".select2-container").click(function(){
-    //     var $thisTd = $(this).parent("td");
-    //     var bianhaoTd = $thisTd.siblings("[column=编号]");
-    //     var bianhao = bianhaoTd.find("span").text().split("-")[0];
-    //     $("input.select2-search__field").val(bianhao).keydown().keypress().keyup();
-    // });
 }
 
 function showDetail(){
@@ -369,7 +365,6 @@ function uploadToShipment(){
     $("#tableDiv3rd").find("tbody tr").each(function(){
         var $this = $(this);
         var obj = $.stringToJson($this.attr("objJson"));
-        obj.productId = $this.find("[iid=productId]").val();
         if(!obj.productId){
             isError = true;
             return false;
@@ -379,7 +374,7 @@ function uploadToShipment(){
     data.array = array;
     console.log(data);
     if(isError){
-        $.showErrorModal("请确认产品后上传");
+        $.showErrorModal("请完善产品信息后重新上传");
         return;
     }
     var ajaxUrl = 'uploadToShipment';

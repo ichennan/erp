@@ -15,6 +15,7 @@ public class ExcelFbaPackListPO {
     Integer id;
     Integer excelId;
     Integer productId;
+    Integer storeId;
     //
     String merchantSku;
     String asin;

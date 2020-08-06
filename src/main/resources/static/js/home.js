@@ -1,6 +1,7 @@
 
 $(function () {
     $.cacheProducts = {};
+    $.cacheStores = {};
     App.setbasePath("../");
     addTabs({
         id: '10008',
@@ -96,6 +97,7 @@ $(function () {
     $('.sidebar-menu').sidebarMenu({data: menus});
 
     $.refreshCacheProducts();
+    $.refreshCacheStores();
 });
 
 $.refreshCacheProducts = function () {
@@ -110,6 +112,28 @@ $.refreshCacheProducts = function () {
             $.cacheProducts = rs;
             console.log("$.cacheProducts");
             console.log($.cacheProducts);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $.showErrorModal(XMLHttpRequest.responseText);
+            console.log("error");
+        },
+        complete: function () {
+        }
+    });
+}
+
+$.refreshCacheStores = function () {
+    console.log("home.js.refreshCacheStores()");
+    var data = {};
+    $.ajax({
+        type: "POST",
+        url: "product/refreshCacheStores",
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            $.cacheStores = rs;
+            console.log("$.cacheStores");
+            console.log($.cacheStores);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);

@@ -173,6 +173,7 @@ public class ExcelServiceImpl implements ExcelService {
                 ExcelFbaPackListPO skuExcelFbaPackListPO = new ExcelFbaPackListPO();
                 BeanUtils.copyProperties(excelFbaPackListPO, skuExcelFbaPackListPO);
                 skuExcelFbaPackListPO.setProductId(skuInfoPO.getProductId());
+                skuExcelFbaPackListPO.setStoreId(skuInfoPO.getStoreId());
                 storeId = skuInfoPO.getStoreId();
                 excelFbaPackListRepository.save(skuExcelFbaPackListPO);
             }

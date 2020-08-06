@@ -76,6 +76,16 @@ public class ProductController extends SimpleCommonController {
 		return rs.toString();
 	}
 
+	@RequestMapping(value = "/refreshCacheStores", method= RequestMethod.POST)
+	public String refreshCacheStores(){
+		JSONObject rs = new JSONObject();
+		List<StorePO> storePOList = productService.findAllStore();
+		for(StorePO storePO: storePOList){
+			rs.put("id" + storePO.getId(), new JSONObject(storePO));
+		}
+		return rs.toString();
+	}
+
 	@RequestMapping(value = "/refreshCacheProducts", method= RequestMethod.POST)
 	public String refreshCacheProducts(){
 		JSONObject rs = new JSONObject();
