@@ -164,11 +164,18 @@ public class ExcelServiceImpl implements ExcelService {
         for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
             String sku = excelFbaPackListPO.getMerchantSku();
             excelFbaPackListPO.setExcelId(excelId);
-            excelFbaPackListPO.setProductId(skuInfoService.getProductIdBySku(sku));
-            if(storeId == null || storeId == 0){
-                storeId = skuInfoService.getStoreIdBySku(sku);
+            List<SkuInfoPO> skuInfoPOList = skuInfoService.findBySku(sku);
+            if(skuInfoPOList == null || skuInfoPOList.size() == 0){
+                excelFbaPackListRepository.save(excelFbaPackListPO);
+                continue;
             }
-            excelFbaPackListRepository.save(excelFbaPackListPO);
+            for(SkuInfoPO skuInfoPO : skuInfoPOList){
+                ExcelFbaPackListPO skuExcelFbaPackListPO = new ExcelFbaPackListPO();
+                BeanUtils.copyProperties(excelFbaPackListPO, skuExcelFbaPackListPO);
+                skuExcelFbaPackListPO.setProductId(skuInfoPO.getProductId());
+                storeId = skuInfoPO.getStoreId();
+                excelFbaPackListRepository.save(skuExcelFbaPackListPO);
+            }
         }
         excelFbaPO.setStoreId(storeId);
     }

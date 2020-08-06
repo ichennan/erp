@@ -205,7 +205,7 @@ function saveDetail(action){
         $this.find("[sid]").each(function () {
             skuJson[$(this).attr("sid")] = $(this).val();
         });
-        if(skuJson.sku && skuJson.fnsku && skuJson.storeId){
+        if(skuJson.storeId){
             skuArray.push(skuJson);
         }
     });

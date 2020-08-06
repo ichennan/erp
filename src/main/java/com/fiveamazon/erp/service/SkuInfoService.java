@@ -14,11 +14,11 @@ import java.util.List;
  * @date 2018/8/7 15:51
  */
 public interface SkuInfoService {
+    void save(SkuInfoPO skuInfoPO);
     void save(ProductDTO productDTO);
     JSONObject getByProductId(Integer productId);
     List<SkuInfoPO> findByProductId(Integer productId);
     void test1(List<TestEpo> testEpoList);
     void test2(List<TestEpo2> testEpoList);
-    Integer getProductIdBySku(String sku);
-    Integer getStoreIdBySku(String sku);
+    List<SkuInfoPO> findBySku(String sku);
 }

@@ -2,3 +2,5 @@ tbody tr:hover{font-weight: normal;background: #eee}
 #tableDiv2nd tbody td:nth-child(3){min-width: 260px;}
 #tableDiv3rd tbody td:nth-child(3){min-width: 260px;}
 thead{background: #999; font-weight: bold}
+tbody tr.combineSku td span{color: #fff}
+tbody tr.combineSku:hover{background: #fff}

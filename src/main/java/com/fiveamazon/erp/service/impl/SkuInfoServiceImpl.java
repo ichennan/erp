@@ -29,6 +29,16 @@ public class SkuInfoServiceImpl implements SkuInfoService {
     private SkuInfoRepository skuInfoRepository;
 
     @Override
+    public void save(SkuInfoPO skuInfoPO) {
+        //for unique key sku
+        if(StringUtils.isEmpty(skuInfoPO.getSku())){
+            skuInfoPO.setSku(null);
+        }
+        skuInfoPO.setCombineId(1);
+        skuInfoRepository.save(skuInfoPO);
+    }
+
+    @Override
     public void save(ProductDTO productDTO) {
         log.warn("SkuInfoServiceImpl.save");
         log.warn(new JSONObject(productDTO).toString());
@@ -40,7 +50,7 @@ public class SkuInfoServiceImpl implements SkuInfoService {
             BeanUtils.copyProperties(skuInfoDTO, skuInfoPO, "id");
             skuInfoPO.setCreateDate(new Date());
             skuInfoPO.setProductId(productId);
-            skuInfoRepository.save(skuInfoPO);
+            save(skuInfoPO);
         }
     }
 
@@ -83,26 +93,7 @@ public class SkuInfoServiceImpl implements SkuInfoService {
     }
 
     @Override
-    public Integer getProductIdBySku(String sku) {
-        log.warn("sku: " + sku);
-        SkuInfoPO skuInfoPO = skuInfoRepository.getBySku(sku);
-        if(skuInfoPO == null){
-            log.warn("null");
-            return null;
-        }
-        log.warn("" + skuInfoPO.getProductId());
-        return skuInfoPO.getProductId();
-    }
-
-    @Override
-    public Integer getStoreIdBySku(String sku) {
-        log.warn("sku: " + sku);
-        SkuInfoPO skuInfoPO = skuInfoRepository.getBySku(sku);
-        if(skuInfoPO == null){
-            log.warn("null");
-            return null;
-        }
-        log.warn("" + skuInfoPO.getStoreId());
-        return skuInfoPO.getStoreId();
+    public List<SkuInfoPO> findBySku(String sku) {
+        return skuInfoRepository.findBySku(sku);
     }
 }

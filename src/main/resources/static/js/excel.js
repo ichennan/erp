@@ -248,8 +248,16 @@ function drawTable3rd(table, array, boxCount){
         thead.find('tr').append(td);
     }
 
+    var previousSku;
     $.each(array, function (index, obj) {
         var tr = $("<tr></tr>");
+        var sku = obj.merchantSku;
+        console.log("sku: " + sku);
+        console.log("previousSku: " + previousSku);
+        if(sku == previousSku){
+            tr.addClass("combineSku");
+        }
+        previousSku = sku;
         tr.attr("objJson", $.jsonToString(obj));
         var tds = [obj.merchantSku, obj.asin, obj.productId, obj.fnsku, obj.boxedQty];
         for(var i = 1; i <= boxCount; i++){
