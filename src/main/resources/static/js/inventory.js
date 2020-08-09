@@ -53,7 +53,7 @@ function showList(){
                     tr.append("<td>" + obj_2 + "</td>");
                 })
                 tr.click(function () {
-                    toDetail(obj.id);
+                    // toDetail(obj.id);
                 });
                 tbody.append(tr);
             });

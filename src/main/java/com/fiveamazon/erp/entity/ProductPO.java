@@ -23,7 +23,10 @@ public class ProductPO extends SimpleCommonEntity {
 
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);
-        toJson.put("snname", (StringUtils.isEmpty(getSn()) ? "" : getSn() + "") + getColor() + getName());
+        toJson.put("snname", (StringUtils.isEmpty(getSn()) ? "" : getSn() + " ")
+                + getName()
+                + (StringUtils.isEmpty(getColor()) ? "" : " " + getColor())
+        );
         return toJson;
     }
 

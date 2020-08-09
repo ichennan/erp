@@ -5,7 +5,7 @@ var ajaxCtx = 'excel/';
 var excelId = 0;
 var theadNames1st = ['订单号', '订单状态', '应收合计', '货品总数', '实际结算','处理时间','发货时间','物流方式','货运单号','货运单批次'];
 var theadNames2nd = ['订单号', '序号', '产品', '编号', '品名','规格','数量','单价','金额','备注'];
-var theadNames3rd = ['sku', 'asin', '产品', 'fnsku', 'qty'];
+var theadNames3rd = ['店铺', 'sku', '产品', 'qty'];
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -103,6 +103,11 @@ function showFbaList(){
                 var jpa = rs.data[$(this).attr("pid")];
                 $(this).val(jpa).trigger("change");
             });
+            var storeId = rs.data["storeId"];
+            var storeName = parent.$.cacheStores["id" + storeId] ? parent.$.cacheStores["id" + storeId].name + " " : "";
+            $contentForm.find("[pid=storeName]").val(storeName);
+
+
             drawTable3rd(table3rd, rs.array, rs.data.boxCount);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -267,7 +272,7 @@ function drawTable3rd(table, array, boxCount){
             tr.addClass("errorRow");
         }
         var storeDesc = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name + " " : "";
-        var tds = [storeDesc + obj.merchantSku, obj.asin, snname, obj.fnsku, obj.boxedQty];
+        var tds = [storeDesc, obj.merchantSku, snname, obj.boxedQty];
         for(var i = 1; i <= boxCount; i++){
             var iString = i < 10 ? "0" + i : "" + i;
             var boxQty = "box" + iString + "Qty";
