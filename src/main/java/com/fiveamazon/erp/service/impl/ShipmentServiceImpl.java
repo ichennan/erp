@@ -3,6 +3,7 @@ package com.fiveamazon.erp.service.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.*;
 import com.fiveamazon.erp.entity.*;
@@ -120,10 +121,13 @@ public class ShipmentServiceImpl implements ShipmentService {
         Date today = new Date();
         Integer boxCount = uploadFbaDTO.getBoxCount();
         List<ExcelFbaPackListPO> array = uploadFbaDTO.getArray();
-
+        String fbaNo = uploadFbaDTO.getShipmentId();
+        if(shipmentRepository.countByFbaNo(fbaNo) > 0){
+            throw new SimpleCommonException("Duplicate FBA Found !");
+        }
         ShipmentPO shipmentPO = new ShipmentPO();
         shipmentPO.setBoxCount(uploadFbaDTO.getBoxCount());
-        shipmentPO.setFbaNo(uploadFbaDTO.getShipmentId());
+        shipmentPO.setFbaNo(fbaNo);
         shipmentPO.setCreateDate(today);
         shipmentPO.setDeliveryDate(DateUtil.format(today, "yyyyMMdd"));
         save(shipmentPO);

@@ -54,6 +54,14 @@ $(function () {
             targetType: "iframe-tab"
         },
         {
+            id: "9080",
+            text: "SKU",
+            roles: "ROLE_Product",
+            icon: "fa fa-star-half-o",
+            url: "sku",
+            targetType: "iframe-tab"
+        },
+        {
             id: "9040",
             text: "FBA管理",
             roles: "ROLE_Shipment",

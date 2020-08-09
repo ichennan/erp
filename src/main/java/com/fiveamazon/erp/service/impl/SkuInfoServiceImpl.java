@@ -4,9 +4,11 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.dto.SkuInfoDTO;
 import com.fiveamazon.erp.entity.SkuInfoPO;
+import com.fiveamazon.erp.entity.SkuViewPO;
 import com.fiveamazon.erp.epo.TestEpo;
 import com.fiveamazon.erp.epo.TestEpo2;
 import com.fiveamazon.erp.repository.SkuInfoRepository;
+import com.fiveamazon.erp.repository.SkuViewRepository;
 import com.fiveamazon.erp.service.SkuInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +29,9 @@ public class SkuInfoServiceImpl implements SkuInfoService {
 
     @Autowired
     private SkuInfoRepository skuInfoRepository;
+
+    @Autowired
+    private SkuViewRepository skuViewRepository;
 
     @Override
     public void save(SkuInfoPO skuInfoPO) {
@@ -95,5 +100,10 @@ public class SkuInfoServiceImpl implements SkuInfoService {
     @Override
     public List<SkuInfoPO> findBySku(String sku) {
         return skuInfoRepository.findBySku(sku);
+    }
+
+    @Override
+    public List<SkuViewPO> findAll() {
+        return skuViewRepository.findAll();
     }
 }

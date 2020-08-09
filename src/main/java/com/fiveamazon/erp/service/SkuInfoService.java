@@ -4,6 +4,7 @@ package com.fiveamazon.erp.service;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.SkuInfoPO;
+import com.fiveamazon.erp.entity.SkuViewPO;
 import com.fiveamazon.erp.epo.TestEpo;
 import com.fiveamazon.erp.epo.TestEpo2;
 
@@ -21,4 +22,5 @@ public interface SkuInfoService {
     void test1(List<TestEpo> testEpoList);
     void test2(List<TestEpo2> testEpoList);
     List<SkuInfoPO> findBySku(String sku);
+    List<SkuViewPO> findAll();
 }
