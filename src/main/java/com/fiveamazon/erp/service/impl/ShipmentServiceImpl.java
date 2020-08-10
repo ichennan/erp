@@ -129,7 +129,11 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentPO.setBoxCount(uploadFbaDTO.getBoxCount());
         shipmentPO.setFbaNo(fbaNo);
         shipmentPO.setCreateDate(today);
-        shipmentPO.setDeliveryDate(DateUtil.format(today, "yyyyMMdd"));
+        shipmentPO.setDeliveryDate(uploadFbaDTO.getDeliveryDate());
+        shipmentPO.setCarrier(uploadFbaDTO.getCarrier());
+        shipmentPO.setRoute(uploadFbaDTO.getRoute());
+        shipmentPO.setStoreId(uploadFbaDTO.getStoreId());
+        shipmentPO.setUnitPrice(uploadFbaDTO.getUnitPrice());
         save(shipmentPO);
         Integer shipmentId = shipmentPO.getId();
         //

@@ -177,6 +177,7 @@ function showDetail(){
                 var jpa = rs.data[$(this).attr("pid")];
                 $(this).val(jpa).trigger("change");
             });
+            $contentForm.find("[pid=storeName]").val(parent.$.retrieveStoreName(rs.data["storeId"]));
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("getDetail.error");

@@ -185,3 +185,9 @@ $.showProductNameGroupByProductIdGroup = function(productIdGroupString){
     })
     return productNameGroup;
 }
+
+$.retrieveStoreName = function(storeId){
+    console.log("retrieveStoreName(): " + storeId);
+    var storeName = $.cacheStores["id" + storeId] ? $.cacheStores["id" + storeId].name + " " : "";
+    return storeName;
+}
