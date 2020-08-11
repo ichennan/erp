@@ -5,6 +5,7 @@ import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
 import com.fiveamazon.erp.entity.StorePO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -31,4 +32,6 @@ public interface ProductService {
     List<StorePO> findAllStore();
 
     StorePO getStoreById(Integer storeId);
+
+    void updatePurchasePrice(Integer productId, BigDecimal purchasePrice);
 }

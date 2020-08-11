@@ -1,6 +1,7 @@
 package com.fiveamazon.erp.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
@@ -10,7 +11,9 @@ import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
 import com.fiveamazon.erp.repository.PurchaseRepository;
 import com.fiveamazon.erp.repository.PurchaseViewRepository;
+import com.fiveamazon.erp.service.ProductService;
 import com.fiveamazon.erp.service.PurchaseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class PurchaseServiceImpl implements PurchaseService {
@@ -29,6 +33,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     private PurchaseViewRepository purchaseViewRepository;
     @Autowired
     private PurchaseDetailRepository purchaseDetailRepository;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public Long countAll() {
@@ -115,6 +121,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public void createByExcel(UploadSupplierDeliveryDTO uploadSupplierDeliveryDTO) {
+        log.info("PurchaseServiceImpl.createByExcel: " + new JSONObject(uploadSupplierDeliveryDTO).toString());
         List<ExcelSupplierDeliveryOrderPO> orderArray = uploadSupplierDeliveryDTO.getOrderArray();
         List<ExcelSupplierDeliveryOrderDetailPO> orderDetailArray = uploadSupplierDeliveryDTO.getOrderDetailArray();
 
@@ -123,7 +130,11 @@ public class PurchaseServiceImpl implements PurchaseService {
             String dingdanhao = order.getDingdanhao();
             String fahuoshijian = order.getFahuoshijian();
             String shijijiesuan = order.getShijijiesuan();
-            String deliveryDate = DateUtil.format(DateUtil.parse(fahuoshijian, "yyyy-MM-dd HH:mm:ss"), "yyyyMMdd");
+            String deliveryDate = "";
+            try{
+                deliveryDate = DateUtil.format(DateUtil.parse(fahuoshijian, "yyyy-MM-dd HH:mm:ss"), "yyyyMMdd");
+            }catch (Exception e){
+            }
             String excelDate = DateUtil.format(new Date(), "yyyyMMdd");
             //
             PurchasePO purchasePO = new PurchasePO();
@@ -140,20 +151,31 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         for(ExcelSupplierDeliveryOrderDetailPO orderDetail : orderDetailArray){
             Integer excelId = orderDetail.getExcelId();
+            Integer productId = orderDetail.getProductId();
             String dingdanhao = orderDetail.getDingdanhao();
-            BigDecimal danjia = new BigDecimal(orderDetail.getDanjia());
-            Integer shuliang = Integer.valueOf(orderDetail.getShuliang());
+            BigDecimal danjia = new BigDecimal(0);
+            Integer shuliang = 0;
+            try{
+                danjia = new BigDecimal(orderDetail.getDanjia());
+            }catch (Exception e){
+            }
+            try{
+                shuliang = Integer.valueOf(orderDetail.getShuliang());
+            }catch (Exception e){
+            }
             PurchasePO purchasePO = purchaseRepository.getByExcelIdAndExcelDingdan(excelId, dingdanhao);
             Integer purchaseId = purchasePO.getId();
             PurchaseDetailPO purchaseDetailPO = new PurchaseDetailPO();
             purchaseDetailPO.setReceivedQuantity(shuliang);
             purchaseDetailPO.setBookQuantity(shuliang);
-            purchaseDetailPO.setProductId(orderDetail.getProductId());
+            purchaseDetailPO.setProductId(productId);
             purchaseDetailPO.setPurchaseId(purchaseId);
             purchaseDetailPO.setUnitPrice(danjia);
             //
             purchaseDetailPO.setCreateDate(new Date());
             saveDetail(purchaseDetailPO);
+            //
+            productService.updatePurchasePrice(productId, danjia);
         }
     }
 }

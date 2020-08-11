@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -103,5 +104,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public StorePO getStoreById(Integer storeId) {
         return storeRepository.getById(storeId);
+    }
+
+    @Override
+    public void updatePurchasePrice(Integer productId, BigDecimal purchasePrice){
+        log.info("ProductServiceImpl.updatePurchasePrice: productId: " + productId + " purchasePrice: " + purchasePrice);
+        if(purchasePrice == null || purchasePrice.compareTo(BigDecimal.ZERO) == 0){
+            return;
+        }
+        ProductPO productPO = getById(productId);
+        if(productPO != null){
+            if(productPO.getPurchasePrice().compareTo(purchasePrice) != 0){
+                productPO.setPurchasePrice(purchasePrice);
+                save(productPO);
+            }
+        }
     }
 }

@@ -103,11 +103,7 @@ function showFbaList(){
                 var jpa = rs.data[$(this).attr("pid")];
                 $(this).val(jpa).trigger("change");
             });
-            var storeId = rs.data["storeId"];
-            var storeName = parent.$.cacheStores["id" + storeId] ? parent.$.cacheStores["id" + storeId].name + " " : "";
-            $contentForm.find("[pid=storeName]").val(storeName);
-
-
+            $contentForm.find("[pid=storeName]").val(parent.$.retrieveStoreName(rs.data["storeId"]));
             drawTable3rd(table3rd, rs.array, rs.data.boxCount);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
