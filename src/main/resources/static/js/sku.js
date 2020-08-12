@@ -1,7 +1,7 @@
 ;
 var detailId = 0;
 var $contentForm = $("#contentForm");
-var ajaxCtx = 'sku/'
+var ajaxCtx = 'sku/';
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -17,45 +17,11 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 
-
-    $('#file_upload_form').fileupload({
-        url: ajaxCtx + "uploadProductImage",
-        dataType: 'json',
-        previewSourceMaxFileSize: 0,
-        process: null,
-        done: function (e, data) {
-            renewProductImage(true);
-        },
-        add: function (e, data) {
-            var goUpload = true;
-            var uploadFile = data.files[0];
-            if (!(/\.(jpg|jpeg|png)$/i).test(uploadFile.name)) {
-                $.showErrorModal("Only image files (gif, jpg, jpeg, png) files allowed");
-                goUpload = false;
-            }
-            if (uploadFile.size > 2100000) { // 1mb
-                $.showErrorModal("Please upload a smaller image, max size is 1 MB");
-                goUpload = false;
-            }
-            if (goUpload == true) {
-                var uploadImageData = {};
-                uploadImageData.productId = detailId;
-                data.formData = {'uploadImageData': JSON.stringify(uploadImageData)};
-                data.submit();
-                console.log("image uploaded submit productId: " + uploadImageData.productId);
-            }
-        }
-    });
-
-    $("#productImage").click(function(){
-        $('#file_upload_form').trigger("click");
-    });
-
     $("#fbaStoreId").change(function () {
         $("#tableDiv").find("tr").removeClass("selected");
         var storeId = $(this).val();
         var storeName = parent.$.cacheStores["id" + storeId] ? parent.$.cacheStores["id" + storeId].name : "";
-        $("#tableDiv").find(".theadSearch").find("th:nth-child(4)").find("input").val(storeName).trigger("change");
+        $("#tableDiv").find(".theadSearch").find("th:nth-child(3)").find("input").val(storeName).trigger("change");
     })
 });
 
@@ -69,7 +35,8 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['库存', 'SKU', '产品', '店铺','FNSKU','ASIN'];
+    var theadNames = ['SKU', '产品', '店铺', '库存', 'FBA途中', '总采购', '总FBA'];
+
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -91,13 +58,24 @@ function showList(){
                 var storeName = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name : "";
 
                 var tr = $("<tr></tr>");
-                var tds = [obj.inventoryQuantity, obj.sku, snname, storeName, obj.fnsku, obj.asin];
+                var tds = [obj.skuDesc, snname, storeName, obj.inventoryQuantity, obj.onthewayShipmentQuantity, obj.allPurchaseQuantity, obj.allShipmentQuantity];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
-                    tr.append("<td>" + obj_2 + "</td>");
+                    var td = $("<td>" + obj_2 + "</td>");
+                    if(index_2 == 3){
+                        td.addClass("inventoryQuantity");
+                        if(!obj_2){
+                            td.text(0);
+                            td.addClass("inventoryLack");
+                        }else if(obj_2 < 10){
+                            td.addClass("inventoryLack");
+                        }
+                    }
+                    tr.append(td);
                 })
                 tr.click(function () {
-                    $(this).toggleClass("selected");
+                    // $(this).toggleClass("selected");
+                    toDetail(obj.productId);
                 });
                 tbody.append(tr);
             });
@@ -137,27 +115,27 @@ function toDetail(id){
     location.hash == "#detailId=" + id ? $(window).trigger('hashchange') : location.hash = "#detailId=" + id;
 }
 
+function validateForm(contentForm) {
+    var contentForm = contentForm ? contentForm : $("#contentForm");
+    if (contentForm.get(0).checkValidity()){
+        return true;
+    }else{
+        contentForm.find("[type='submit']").trigger("click");
+        return false;
+    }
+}
+
+function createPlan() {
+    $("#tableDiv").find("tr").hide();
+    $("#tableDiv").find("tr.selected").show();
+}
+
 function showDetail(){
     console.log("showDetail: " + detailId);
     $("#tableBox").hide();
     $("#contentBox").show();
+    $("#contentBox div.chartDiv").empty();
     //
-    $contentForm.find("[pid]").each(function () {
-        $(this).val("").trigger("change");
-    });
-    $contentForm.find("[sid]").each(function () {
-        $(this).val("").trigger("change");
-    });
-    if(detailId - 0 == 0){
-        $contentForm.find("button.update").hide();
-        $contentForm.find("button.create").show();
-        $(".createHidden").hide();
-        return;
-    }
-    $(".createHidden").show();
-    $contentForm.find("button.update").show();
-    $contentForm.find("button.create").hide();
-    renewProductImage();
 
     var data = {};
     data.id = detailId;
@@ -170,20 +148,89 @@ function showDetail(){
         success: function (rs) {
             console.log("getDetail.success");
             console.log(rs);
-            $contentForm.find("[pid]").each(function () {
-                var jpa = rs.data[$(this).attr("pid")];
-                $(this).val(jpa).trigger("change");
+            //  inventoryChart
+            var inventoryChartData = {};
+            var dateArray = [];
+            var inventoryArray = [];
+            var allShipmentArray = [];
+            var allPurchaseArray = [];
+            var allPacketArray = [];
+            var onthewayShipmentArray = [];
+            var onthewayPurchaseArray = [];
+            $.each(rs.inventoryArray, function (index, obj) {
+                dateArray.push(obj.snapshotDate);
+                inventoryArray.push(null2zero(obj.inventoryQuantity));
+                allShipmentArray.push(null2zero(obj.allShipmentQuantity));
+                allPurchaseArray.push(null2zero(obj.allPurchaseQuantity));
+                allPacketArray.push(null2zero(obj.allPacketQuantity));
+                onthewayShipmentArray.push(null2zero(obj.onthewayShipmentQuantity));
+                onthewayPurchaseArray.push(null2zero(obj.onthewayPurchaseQuantity));
             });
-            if(rs.skuArray){
-                $.each(rs.skuArray, function(index, obj){
-                    var skuDivNo = index + 1;
-                    var skuDiv = $contentForm.find("[skuDiv=" + skuDivNo + "]");
-                    skuDiv.find("[sid]").each(function () {
-                        var jpa = obj[$(this).attr("sid")];
-                        $(this).val(jpa).trigger("change");
-                    });
-                })
-            }
+            inventoryChartData.dateArray = dateArray;
+            inventoryChartData.inventoryArray = inventoryArray;
+            inventoryChartData.allShipmentArray = allShipmentArray;
+            inventoryChartData.allPurchaseArray = allPurchaseArray;
+            inventoryChartData.allPacketArray = allPacketArray;
+            inventoryChartData.onthewayShipmentArray = onthewayShipmentArray;
+            inventoryChartData.onthewayPurchaseArray = onthewayPurchaseArray;
+            createInventoryChart(inventoryChartData);
+            //  shipmentChart
+            var shipmentChartData = {};
+            var dateArray = [];
+            var quantityArray = [];
+            var preDeliveryDate = undefined;
+            var preShipmentId = undefined;
+            $.each(rs.shipmentArray, function (index, obj) {
+                var deliveryDate = obj.deliveryDate;
+                var shipmentId = obj.shipmentId;
+                if(deliveryDate == preDeliveryDate && shipmentId == preShipmentId){
+                    var preQuantity = null2zero(quantityArray.pop());
+                    quantityArray.push(null2zero(obj.quantity) + preQuantity);
+                }else{
+                    dateArray.push(obj.deliveryDate);
+                    quantityArray.push(null2zero(obj.quantity));
+                }
+                preDeliveryDate = deliveryDate;
+                preShipmentId = shipmentId;
+            });
+            shipmentChartData.dateArray = dateArray;
+            shipmentChartData.quantityArray = quantityArray;
+            var minusQuantityArray = [];
+            $.each(quantityArray, function (index, obj) {
+                minusQuantityArray.push(-1 * obj);
+            })
+            shipmentChartData.quantityArray = minusQuantityArray;
+            //
+            createShipmentChart(shipmentChartData);
+            //  purchaseChart
+            var purchaseChartData = {};
+            var dateArray = [];
+            var quantityArray = [];
+            $.each(rs.purchaseArray, function (index, obj) {
+                dateArray.push(obj.receivedDate);
+                quantityArray.push(null2zero(obj.receivedQuantity));
+            });
+            purchaseChartData.dateArray = dateArray;
+            purchaseChartData.quantityArray = quantityArray;
+            createPurchaseChart(purchaseChartData);
+            //  packetChart
+            var packetChartData = {};
+            var dateArray = [];
+            var quantityArray = [];
+            $.each(rs.packetArray, function (index, obj) {
+                dateArray.push(obj.deliveryDate);
+                quantityArray.push(null2zero(obj.quantity));
+            });
+            packetChartData.dateArray = dateArray;
+            packetChartData.quantityArray = quantityArray;
+            createPacketChart(packetChartData);
+
+            var chartData = {};
+            chartData.shipmentChartData = shipmentChartData;
+            chartData.purchaseChartData = purchaseChartData;
+            createChart($.dateArray, chartData);
+            //
+
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("getDetail.error");
@@ -196,76 +243,457 @@ function showDetail(){
     });
 }
 
-function saveDetail(action){
-    console.log("saveDetail: " + action);
-    if(action != 'delete' && !validateForm()){
-        return false;
-    }
-    var data = {};
-    data.action = action;
-    var skuArray = [];
-    $contentForm.find("[pid]").each(function () {
-        data[$(this).attr("pid")] = $(this).val();
-    });
-    $contentForm.find("[skuDiv]").each(function () {
-        var $this = $(this);
-        var skuJson = {};
-        $this.find("[sid]").each(function () {
-            skuJson[$(this).attr("sid")] = $(this).val();
-        });
-        if(skuJson.storeId){
-            skuArray.push(skuJson);
-        }
-    });
-    data.skuArray = skuArray;
-    console.log(data);
-    var ajaxUrl = 'saveDetail';
-    $.ajax({
-        type: "POST",
-        url: ajaxCtx + ajaxUrl,
-        data: JSON.stringify(data),
-        dataType: "json",
-        contentType: "application/json",
-        success: function (rs) {
-            console.log("saveDetail.success");
-            console.log(rs);
-            toDetail(rs.data.id);
-            $.showToastr();
+function createInventoryChart(chartData){
+    console.log("createInventoryChart");
+    console.log(chartData);
+    $('#inventoryChart').highcharts({
+        title: {
+            text: '每日库存明细',
+            x: -20 //center
         },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            console.log("saveDetail.error");
-            console.log(XMLHttpRequest);
-            $.showErrorModal(XMLHttpRequest.responseText);
+        subtitle: {
+            text: '',
+            x: -20
         },
-        complete: function () {
-            console.log("saveDetail.complete");
-        }
+        xAxis: {
+            categories: chartData.dateArray
+        },
+        yAxis: {
+            title: {
+                text: '数量'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            backgroundColor:'#CCCCCC',
+            borderWidth: 2
+        },
+        series: [{
+            name: '库存',
+            data: chartData.inventoryArray
+        }, {
+            name: '总FBA',
+            data: chartData.allShipmentArray
+        }, {
+            name: '总采购',
+            data: chartData.allPurchaseArray
+        }, {
+            name: '总小包',
+            data: chartData.allPacketArray
+        }, {
+            name: 'FBA途中',
+            data: chartData.onthewayShipmentArray
+        }, {
+            name: '采购途中',
+            data: chartData.onthewayPurchaseArray
+        }]
     });
 }
 
-function validateForm(contentForm) {
-    var contentForm = contentForm ? contentForm : $("#contentForm");
-    if (contentForm.get(0).checkValidity()){
-        return true;
-    }else{
-        contentForm.find("[type='submit']").trigger("click");
-        return false;
-    }
+function createShipmentChart(chartData){
+    console.log("createShipmentChart");
+    console.log(chartData);
+    $('#shipmentChart').highcharts({
+        title: {
+            text: 'FBA明细',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: chartData.dateArray
+        },
+        yAxis: {
+            title: {
+                text: '数量'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            backgroundColor:'#CCCCCC',
+            borderWidth: 2
+        },
+        series: [{
+            name: '发货数量',
+            data: chartData.quantityArray
+        }]
+    });
 }
 
-function renewProductImage(noCache){
-    $("#productImage").empty().append("<img src=" + "product/getProductImage/empty.jpg " + "/>");
-    var uploadFileName = "id" + detailId +".jpg";
-    console.log("image uploaded done : " + uploadFileName);
-    if(noCache){
-        $("#productImage img").attr("src", "product/getProductImage/" + uploadFileName + "?noCache=" + new Date().getTime());
-    }else{
-        $("#productImage img").attr("src", "product/getProductImage/" + uploadFileName + "");
-    }
-    console.log("get image done : " + uploadFileName);
+function createPurchaseChart(chartData){
+    $.dateArray = [];
+    $.dateArray.push("20200701");
+    $.dateArray.push("20200702");
+    $.dateArray.push("20200703");
+    $.dateArray.push("20200704");
+    $.dateArray.push("20200705");
+    $.dateArray.push("20200706");
+    $.dateArray.push("20200707");
+    $.dateArray.push("20200708");
+    $.dateArray.push("20200709");
+    $.dateArray.push("20200710");
+    $.dateArray.push("20200711");
+    $.dateArray.push("20200712");
+    $.dateArray.push("20200713");
+    $.dateArray.push("20200714");
+    $.dateArray.push("20200715");
+    $.dateArray.push("20200716");
+    $.dateArray.push("20200717");
+    $.dateArray.push("20200718");
+    $.dateArray.push("20200719");
+    $.dateArray.push("20200720");
+    $.dateArray.push("20200721");
+    $.dateArray.push("20200722");
+    $.dateArray.push("20200723");
+    $.dateArray.push("20200724");
+    $.dateArray.push("20200725");
+    $.dateArray.push("20200726");
+    $.dateArray.push("20200727");
+    $.dateArray.push("20200728");
+    $.dateArray.push("20200729");
+    $.dateArray.push("20200730");
+    $.dateArray.push("20200731");
+    $.dateArray.push("20200801");
+    $.dateArray.push("20200802");
+    $.dateArray.push("20200803");
+    $.dateArray.push("20200804");
+    $.dateArray.push("20200805");
+    $.dateArray.push("20200806");
+    $.dateArray.push("20200807");
+    $.dateArray.push("20200808");
+    $.dateArray.push("20200809");
+    $.dateArray.push("20200810");
+    $.dateArray.push("20200811");
+
+
+    $.purchaseArray = [];
+    $.purchaseArray.push(01);
+    $.purchaseArray.push(02);
+    $.purchaseArray.push(03);
+    $.purchaseArray.push(04);
+    $.purchaseArray.push(05);
+    $.purchaseArray.push(06);
+    $.purchaseArray.push(07);
+    $.purchaseArray.push(null);
+    $.purchaseArray.push(null);
+    $.purchaseArray.push(10);
+    $.purchaseArray.push(11);
+    $.purchaseArray.push(12);
+    $.purchaseArray.push(13);
+    $.purchaseArray.push(14);
+    $.purchaseArray.push(15);
+    $.purchaseArray.push(null);
+    $.purchaseArray.push(17);
+    $.purchaseArray.push(18);
+    $.purchaseArray.push(19);
+    $.purchaseArray.push(20);
+    $.purchaseArray.push(0);
+    $.purchaseArray.push(0);
+    $.purchaseArray.push(0);
+    $.purchaseArray.push(24);
+    $.purchaseArray.push(25);
+    $.purchaseArray.push(26);
+    $.purchaseArray.push(27);
+    $.purchaseArray.push(28);
+    $.purchaseArray.push(29);
+    $.purchaseArray.push(30);
+    $.purchaseArray.push(31);
+    $.purchaseArray.push(01);
+    $.purchaseArray.push(02);
+    $.purchaseArray.push(03);
+    $.purchaseArray.push(04);
+    $.purchaseArray.push(05);
+    $.purchaseArray.push(06);
+    $.purchaseArray.push(07);
+    $.purchaseArray.push(08);
+    $.purchaseArray.push(09);
+    $.purchaseArray.push(10);
+    $.purchaseArray.push(11);
+
+
+    $.shipmentArray = [];
+    $.shipmentArray.push(-01);
+    $.shipmentArray.push(-02);
+    $.shipmentArray.push(-03);
+    $.shipmentArray.push(-04);
+    $.shipmentArray.push(-05);
+    $.shipmentArray.push(-06);
+    $.shipmentArray.push(-07);
+    $.shipmentArray.push(-08);
+    $.shipmentArray.push(-09);
+    $.shipmentArray.push(-10);
+    $.shipmentArray.push(-11);
+    $.shipmentArray.push(-12);
+    $.shipmentArray.push(-13);
+    $.shipmentArray.push(-14);
+    $.shipmentArray.push(-15);
+    $.shipmentArray.push(-16);
+    $.shipmentArray.push(-17);
+    $.shipmentArray.push(-18);
+    $.shipmentArray.push(-19);
+    $.shipmentArray.push(-20);
+    $.shipmentArray.push(-21);
+    $.shipmentArray.push(-22);
+    $.shipmentArray.push(-23);
+    $.shipmentArray.push(-24);
+    $.shipmentArray.push(-25);
+    $.shipmentArray.push(-26);
+    $.shipmentArray.push(-27);
+    $.shipmentArray.push(-28);
+    $.shipmentArray.push(-29);
+    $.shipmentArray.push(-30);
+    $.shipmentArray.push(-31);
+    $.shipmentArray.push(-01);
+    $.shipmentArray.push(-02);
+    $.shipmentArray.push(-03);
+    $.shipmentArray.push(-04);
+    $.shipmentArray.push(-05);
+    $.shipmentArray.push(-06);
+    $.shipmentArray.push(-07);
+    $.shipmentArray.push(-08);
+    $.shipmentArray.push(-09);
+    $.shipmentArray.push(-10);
+    $.shipmentArray.push(-11);
+
+    $.inventoryArray = [];
+    $.inventoryArray.push(1);
+    $.inventoryArray.push(12);
+    $.inventoryArray.push(3);
+    $.inventoryArray.push(24);
+    $.inventoryArray.push(15);
+    $.inventoryArray.push(36);
+    $.inventoryArray.push(17);
+    $.inventoryArray.push(18);
+    $.inventoryArray.push(9);
+    $.inventoryArray.push(10);
+    $.inventoryArray.push(21);
+    $.inventoryArray.push(12);
+    $.inventoryArray.push(33);
+    $.inventoryArray.push(14);
+    $.inventoryArray.push(25);
+    $.inventoryArray.push(-16);
+    $.inventoryArray.push(-17);
+    $.inventoryArray.push(-18);
+    $.inventoryArray.push(-19);
+    $.inventoryArray.push(-20);
+    $.inventoryArray.push(-21);
+    $.inventoryArray.push(-22);
+    $.inventoryArray.push(-23);
+    $.inventoryArray.push(-24);
+    $.inventoryArray.push(-25);
+    $.inventoryArray.push(-26);
+    $.inventoryArray.push(-27);
+    $.inventoryArray.push(-28);
+    $.inventoryArray.push(-29);
+    $.inventoryArray.push(-30);
+    $.inventoryArray.push(-31);
+    $.inventoryArray.push(-01);
+    $.inventoryArray.push(-02);
+    $.inventoryArray.push(-03);
+    $.inventoryArray.push(-04);
+    $.inventoryArray.push(-05);
+    $.inventoryArray.push(-06);
+    $.inventoryArray.push(-07);
+    $.inventoryArray.push(-08);
+    $.inventoryArray.push(-09);
+    $.inventoryArray.push(-10);
+    $.inventoryArray.push(-11);
+
+
+    console.log("createPurchaseChart");
+    console.log(chartData);
+    // $('#purchaseChart').highcharts({
+    //     chart: {
+    //         type: 'column'
+    //     },
+    //     title: {
+    //         text: '收货明细',
+    //         x: -20 //center
+    //     },
+    //     subtitle: {
+    //         text: '',
+    //         x: -20
+    //     },
+    //     xAxis: {
+    //         categories: $.dateArray,
+    //     },
+    //     yAxis: {
+    //         title: {
+    //             text: '数量'
+    //         },
+    //     },
+    //     tooltip: {
+    //         valueSuffix: '个'
+    //     },
+    //     series: [{
+    //         type: 'column',
+    //         name: '收货数量',
+    //         data: setPurchaseChartData($.dateArray, chartData)
+    //     },{
+    //         type: 'column',
+    //         name: '发货数量',
+    //         data: $.shipmentArray
+    //     },{
+    //         type: 'spline',
+    //         name: '库存数量',
+    //         data: $.inventoryArray
+    //     }
+    //     ]
+    // });
 }
 
-function createPlan() {
-    $("#tableDiv").find("tr").hide();
-    $("#tableDiv").find("tr.selected").show();
+function createChart(dateArray, chartData){
+    console.log("createChart");
+    console.log(chartData);
+    $('#myChart').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '明细',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: $.dateArray,
+        },
+        yAxis: {
+            title: {
+                text: '数量'
+            },
+        },
+        plotOptions: {
+            column: {
+                dataLabels:{
+                    enabled: true
+                }
+            }
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        series: [{
+            type: 'column',
+            name: '收货数量',
+            data: setChartData($.dateArray, chartData.purchaseChartData)
+        },{
+            type: 'column',
+            name: '发货数量',
+            data: setChartData($.dateArray, chartData.shipmentChartData)
+        },{
+            type: 'spline',
+            name: '库存数量',
+            data: []
+        }
+        ]
+    });
+
+}
+
+function setChartData(dateArray, chartData){
+    console.log("dateArray");
+    console.log(dateArray);
+    console.log("chartData");
+    console.log(chartData);
+    var dataArray = [];
+    $.each(dateArray, function (index, obj) {
+        var targetDate = obj;
+        var targetValue = null;
+        $.each(chartData.dateArray, function(index_2, obj_2){
+            if(obj_2 == targetDate){
+                targetValue = chartData.quantityArray[index_2];
+            }
+        })
+        dataArray.push(targetValue);
+    })
+    return dataArray;
+}
+
+// function setShipmentChartData(dateArray, chartData){
+//     var dataArray = [];
+//     $.each(dateArray, function (index, obj) {
+//         var targetDate = obj;
+//         var targetValue = null;
+//         $.each(chartData.dateArray, function(index_2, obj_2){
+//             if(obj_2 == targetDate){
+//                 targetValue = chartData.quantityArray[index_2];
+//             }
+//         })
+//         dataArray.push(targetValue);
+//     })
+//     return dataArray;
+// }
+
+function createPacketChart(chartData){
+    console.log("createPacketChart");
+    console.log(chartData);
+    $('#packetChart').highcharts({
+        title: {
+            text: '小包明细',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: chartData.dateArray
+        },
+        yAxis: {
+            title: {
+                text: '数量'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '个'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            backgroundColor:'#CCCCCC',
+            borderWidth: 2
+        },
+        series: [{
+            name: '发货数量',
+            data: chartData.quantityArray
+        }]
+    });
+}
+
+function null2zero(abc){
+    if(abc){
+        return abc * 1;
+    }
+    return 0;
 }

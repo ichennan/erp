@@ -104,6 +104,6 @@ public class SkuInfoServiceImpl implements SkuInfoService {
 
     @Override
     public List<SkuViewPO> findAll() {
-        return skuViewRepository.findAll();
+        return skuViewRepository.findBySkuIsNotNull();
     }
 }

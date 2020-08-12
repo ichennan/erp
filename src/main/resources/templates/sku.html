@@ -87,11 +87,30 @@
                                     <button type="submit" class="hide"></button>
                                 </div>
                             </div>
-
                             <!-- /.box-footer -->
                         </form>
                     </div>
                     <!-- /.box -->
+                </div>
+            </div>
+
+
+
+            <div class="row" id="contentBox2">
+                <div class="col-md-12 hidden">
+                    <div id="inventoryChart" class="chartDiv"></div>
+                </div>
+                <div class="col-md-12 hidden">
+                    <div id="shipmentChart" class="chartDiv"></div>
+                </div>
+                <div class="col-md-12 hidden">
+                    <div id="purchaseChart" class="chartDiv"></div>
+                </div>
+                <div class="col-md-12 hidden">
+                    <div id="packetChart" class="chartDiv"></div>
+                </div>
+                <div class="col-md-12">
+                    <div id="myChart" class="chartDiv"></div>
                 </div>
             </div>
 
@@ -100,6 +119,7 @@
 </div>
 <div th:replace="common/common_js :: js"></div>
 <script type="text/javascript" th:src="@{/webjars/jquery-file-upload/js/jquery.fileupload.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/highcharts/highcharts.js}"></script>
 </body>
 </html>
 

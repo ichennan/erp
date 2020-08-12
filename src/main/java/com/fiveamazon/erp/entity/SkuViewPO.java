@@ -15,14 +15,27 @@ import java.math.BigDecimal;
 @Table(name = "view_sku")
 public class SkuViewPO extends SimpleCommonView {
     @Id
-    Integer id;
+    String skuDesc;
+    Integer skuId;
     Integer productId;
     String sku;
     Integer storeId;
     String fnsku;
     String asin;
     Integer combineId;
+    Integer combineCount;
+    //
+    String name;
+    String sn;
+    String color;
+    String size;
+    Integer allPurchaseQuantity;
+    Integer allPacketQuantity;
+    Integer allStocktakingQuantity;
+    Integer allShipmentQuantity;
     Integer inventoryQuantity;
+    Integer onthewayShipmentQuantity;
+    Integer onthewayPurchaseQuantity;
 
     public JSONObject toJson(){
         return new JSONObject(this);

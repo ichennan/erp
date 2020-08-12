@@ -1,1 +1,4 @@
 tbody tr.selected{background: #27ae60}
+
+td.inventoryQuantity{color: blue; font-weight: bold}
+td.inventoryLack{color: red !important;}
