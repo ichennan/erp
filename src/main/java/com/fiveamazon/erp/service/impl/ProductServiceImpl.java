@@ -7,7 +7,7 @@ import com.fiveamazon.erp.entity.StorePO;
 import com.fiveamazon.erp.repository.ProductRepository;
 import com.fiveamazon.erp.repository.StoreRepository;
 import com.fiveamazon.erp.service.ProductService;
-import com.fiveamazon.erp.service.SkuInfoService;
+import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private StoreRepository storeRepository;
     @Autowired
-    private SkuInfoService skuInfoService;
+    private SkuService skuService;
 
     @Override
     public Long countAll() {
@@ -71,11 +71,11 @@ public class ProductServiceImpl implements ProductService {
             BeanUtils.copyProperties(productDTO, productPO, "id");
             productPO = save(productPO);
             productDTO.setId(productPO.getId());
-            skuInfoService.save(productDTO);
+            skuService.save(productDTO);
         }else{
             productPO = getById(productId);
             if("updateSku".equalsIgnoreCase(productDTO.getAction())){
-                skuInfoService.save(productDTO);
+                skuService.save(productDTO);
             }else{
                 productPO.setUpdateDate(new Date());
                 productPO.setUpdateUser(productDTO.getUsername());

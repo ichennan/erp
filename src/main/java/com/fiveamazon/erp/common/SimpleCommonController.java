@@ -16,6 +16,8 @@ import java.util.Map;
 public class SimpleCommonController {
 	@Value("${spring.application.version}")
 	String applicationVersion;
+	@Value("${spring.profiles.active}")
+	String activeProfile;
 
 	protected Map<String, Object> parameters;
 	public SimpleCommonController() {
@@ -26,8 +28,10 @@ public class SimpleCommonController {
 		this.parameters = new HashMap();
 		this.parameters.put("msg", "test");
 		this.parameters.put("version", applicationVersion);
+		this.parameters.put("profile", activeProfile);
 		this.parameters.put("pageTitle", "5Amazon ERP");
 		this.parameters.put("pageName", "5Amazon");
+		this.parameters.put("title", "TestTitle");
 	}
 
 	public final static String getUsername(){

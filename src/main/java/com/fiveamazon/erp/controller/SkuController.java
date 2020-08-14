@@ -3,9 +3,7 @@ package com.fiveamazon.erp.controller;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonController;
-import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.dto.PacketDetailViewDTO;
-import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailViewDTO;
 import com.fiveamazon.erp.dto.ShipmentDetailViewDTO;
 import com.fiveamazon.erp.entity.*;
@@ -13,16 +11,9 @@ import com.fiveamazon.erp.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.imageio.stream.FileImageInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,9 +28,7 @@ public class SkuController extends SimpleCommonController {
 	@Autowired
 	ProductService productService;
 	@Autowired
-	SkuInfoService skuInfoService;
-	@Autowired
-	InventoryService inventoryService;
+	SkuService skuService;
 	@Autowired
 	ShipmentService shipmentService;
 	@Autowired
@@ -62,7 +51,7 @@ public class SkuController extends SimpleCommonController {
 	public String findAll(){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
-		List<SkuViewPO> skuViewPOList = skuInfoService.findAll();
+		List<SkuViewPO> skuViewPOList = skuService.findAll();
 		for(SkuViewPO skuViewPO: skuViewPOList){
 			array.put(skuViewPO.toJson());
 		}
@@ -78,32 +67,36 @@ public class SkuController extends SimpleCommonController {
 		JSONObject rs = new JSONObject();
 		//
 		JSONArray inventoryArray = new JSONArray();
-		List<InventorySnapshotPO> inventorySnapshotPOS = inventoryService.findSnapshotByProductId(id);
-		for(InventorySnapshotPO inventorySnapshotPO: inventorySnapshotPOS){
-			inventoryArray.put(inventorySnapshotPO.toJson());
+		List<SnapshotSkuInventoryPO> snapshotSkuInventoryPOList = skuService.findSnapshotBySkuId(id);
+		for(SnapshotSkuInventoryPO snapshotSkuInventoryPO: snapshotSkuInventoryPOList){
+			inventoryArray.put(snapshotSkuInventoryPO.toJson());
 		}
 		rs.put("inventoryArray", inventoryArray);
 		//
+		SkuInfoPO skuInfoPO = skuService.getById(id);
+		Integer productId = skuInfoPO.getProductId();
+		//
 		JSONArray shipmentArray = new JSONArray();
-		List<ShipmentDetailViewDTO> shipmentDetailViewDTOS = shipmentService.findByProductId(id);
+		List<ShipmentDetailViewDTO> shipmentDetailViewDTOS = shipmentService.findByProductId(productId);
 		for(ShipmentDetailViewDTO shipmentDetailViewDTO: shipmentDetailViewDTOS){
 			shipmentArray.put(shipmentDetailViewDTO.toJson());
 		}
 		rs.put("shipmentArray", shipmentArray);
 		//
 		JSONArray purchaseArray = new JSONArray();
-		List<PurchaseDetailViewDTO> purchaseDetailViewDTOS = purchaseService.findByProductId(id);
+		List<PurchaseDetailViewDTO> purchaseDetailViewDTOS = purchaseService.findByProductId(productId);
 		for(PurchaseDetailViewDTO purchaseDetailViewDTO: purchaseDetailViewDTOS){
 			purchaseArray.put(purchaseDetailViewDTO.toJson());
 		}
 		rs.put("purchaseArray", purchaseArray);
 		//
 		JSONArray packetArray = new JSONArray();
-		List<PacketDetailViewDTO> packetDetailViewDTOS = packetService.findByProductId(id);
+		List<PacketDetailViewDTO> packetDetailViewDTOS = packetService.findByProductId(productId);
 		for(PacketDetailViewDTO packetDetailViewDTO: packetDetailViewDTOS){
 			packetArray.put(packetDetailViewDTO.toJson());
 		}
 		rs.put("packetArray", packetArray);
+		rs.put("productId", productId);
 		//
 		rs.put("error", false);
 		return rs.toString();

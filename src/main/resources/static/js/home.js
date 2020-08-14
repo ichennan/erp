@@ -92,14 +92,14 @@ $(function () {
             icon: "fa fa-hand-paper-o",
             url: "excel",
             targetType: "iframe-tab"
-        },
-        {
-            id: "9100",
-            text: "库存查看",
-            roles: "",
-            icon: "fa fa-balance-scale",
-            url: "inventory",
-            targetType: "iframe-tab"
+        // },
+        // {
+        //     id: "9100",
+        //     text: "库存查看",
+        //     roles: "",
+        //     icon: "fa fa-balance-scale",
+        //     url: "inventory",
+        //     targetType: "iframe-tab"
         }
     ];
     $('.sidebar-menu').sidebarMenu({data: menus});

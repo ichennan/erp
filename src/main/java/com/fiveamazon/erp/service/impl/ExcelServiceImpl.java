@@ -7,7 +7,7 @@ import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
 import com.fiveamazon.erp.repository.*;
 import com.fiveamazon.erp.service.ExcelService;
-import com.fiveamazon.erp.service.SkuInfoService;
+import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -35,7 +35,7 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private ExcelFbaPackListRepository excelFbaPackListRepository;
     @Autowired
-    private SkuInfoService skuInfoService;
+    private SkuService skuService;
 
     @Override
     public void insertExcelSupplierDeliveryOrder(Integer excelId, List<ExcelSupplierDeliveryOrderEO> excelSupplierDeliveryOrderEOList) {
@@ -164,7 +164,7 @@ public class ExcelServiceImpl implements ExcelService {
         for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
             String sku = excelFbaPackListPO.getMerchantSku();
             excelFbaPackListPO.setExcelId(excelId);
-            List<SkuInfoPO> skuInfoPOList = skuInfoService.findBySku(sku);
+            List<SkuInfoPO> skuInfoPOList = skuService.findBySku(sku);
             if(skuInfoPOList == null || skuInfoPOList.size() == 0){
                 excelFbaPackListRepository.save(excelFbaPackListPO);
                 continue;

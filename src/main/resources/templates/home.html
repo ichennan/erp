@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head>
-    <title th:text="${title}">5Amazon ERP</title>
+    <title th:text="${title}">${title}</title>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
@@ -30,7 +30,7 @@
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><b>5A</b></span>
             <!--&lt;!&ndash; logo for regular state and mobile devices &ndash;&gt;-->
-            <span class="logo-lg"><b>5Amazon</b>ERP</span>
+            <span class="logo-lg"><b>5Amazon</b> <b>ERP </b><small th:text="${version}"></small></span>
         </a>
 
         <!-- Header Navbar: style can be found in header.less -->

@@ -11,3 +11,5 @@ html{
 .skin-blue .main-header .logo{
     background: #3c8dbc;
 }
+
+.logo-lg small{font-size: 6px; margin-left:6px;margin-right:8px;}

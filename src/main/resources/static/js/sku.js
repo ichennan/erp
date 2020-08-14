@@ -75,7 +75,7 @@ function showList(){
                 })
                 tr.click(function () {
                     // $(this).toggleClass("selected");
-                    toDetail(obj.productId);
+                    toDetail(obj.skuId);
                 });
                 tbody.append(tr);
             });
@@ -148,6 +148,7 @@ function showDetail(){
         success: function (rs) {
             console.log("getDetail.success");
             console.log(rs);
+            var productId = rs.productId;
             //  inventoryChart
             var inventoryChartData = {};
             var dateArray = [];
@@ -168,6 +169,7 @@ function showDetail(){
             });
             inventoryChartData.dateArray = dateArray;
             inventoryChartData.inventoryArray = inventoryArray;
+            inventoryChartData.quantityArray = inventoryArray;
             inventoryChartData.allShipmentArray = allShipmentArray;
             inventoryChartData.allPurchaseArray = allPurchaseArray;
             inventoryChartData.allPacketArray = allPacketArray;
@@ -228,7 +230,9 @@ function showDetail(){
             var chartData = {};
             chartData.shipmentChartData = shipmentChartData;
             chartData.purchaseChartData = purchaseChartData;
-            createChart($.dateArray, chartData);
+            chartData.inventoryChartData = inventoryChartData;
+            var snname = parent.$.cacheProducts["id" + productId] ? parent.$.cacheProducts["id" + productId].snname : "";
+            createChart(snname, $.dateArray, chartData);
             //
 
         },
@@ -343,183 +347,104 @@ function createShipmentChart(chartData){
 }
 
 function createPurchaseChart(chartData){
+    var today = new Date();
+    var date = today;
     $.dateArray = [];
-    $.dateArray.push("20200701");
-    $.dateArray.push("20200702");
-    $.dateArray.push("20200703");
-    $.dateArray.push("20200704");
-    $.dateArray.push("20200705");
-    $.dateArray.push("20200706");
-    $.dateArray.push("20200707");
-    $.dateArray.push("20200708");
-    $.dateArray.push("20200709");
-    $.dateArray.push("20200710");
-    $.dateArray.push("20200711");
-    $.dateArray.push("20200712");
-    $.dateArray.push("20200713");
-    $.dateArray.push("20200714");
-    $.dateArray.push("20200715");
-    $.dateArray.push("20200716");
-    $.dateArray.push("20200717");
-    $.dateArray.push("20200718");
-    $.dateArray.push("20200719");
-    $.dateArray.push("20200720");
-    $.dateArray.push("20200721");
-    $.dateArray.push("20200722");
-    $.dateArray.push("20200723");
-    $.dateArray.push("20200724");
-    $.dateArray.push("20200725");
-    $.dateArray.push("20200726");
-    $.dateArray.push("20200727");
-    $.dateArray.push("20200728");
-    $.dateArray.push("20200729");
-    $.dateArray.push("20200730");
-    $.dateArray.push("20200731");
-    $.dateArray.push("20200801");
-    $.dateArray.push("20200802");
-    $.dateArray.push("20200803");
-    $.dateArray.push("20200804");
-    $.dateArray.push("20200805");
-    $.dateArray.push("20200806");
-    $.dateArray.push("20200807");
-    $.dateArray.push("20200808");
-    $.dateArray.push("20200809");
-    $.dateArray.push("20200810");
-    $.dateArray.push("20200811");
+    for(var i = 1; i <= 45; i++){
+        var dateString = getDateString(date);
+        $.dateArray.push(dateString);
+        date.setDate(date.getDate() - 1);
+    }
+    $.dateArray = $.dateArray.reverse();
 
 
-    $.purchaseArray = [];
-    $.purchaseArray.push(01);
-    $.purchaseArray.push(02);
-    $.purchaseArray.push(03);
-    $.purchaseArray.push(04);
-    $.purchaseArray.push(05);
-    $.purchaseArray.push(06);
-    $.purchaseArray.push(07);
-    $.purchaseArray.push(null);
-    $.purchaseArray.push(null);
-    $.purchaseArray.push(10);
-    $.purchaseArray.push(11);
-    $.purchaseArray.push(12);
-    $.purchaseArray.push(13);
-    $.purchaseArray.push(14);
-    $.purchaseArray.push(15);
-    $.purchaseArray.push(null);
-    $.purchaseArray.push(17);
-    $.purchaseArray.push(18);
-    $.purchaseArray.push(19);
-    $.purchaseArray.push(20);
-    $.purchaseArray.push(0);
-    $.purchaseArray.push(0);
-    $.purchaseArray.push(0);
-    $.purchaseArray.push(24);
-    $.purchaseArray.push(25);
-    $.purchaseArray.push(26);
-    $.purchaseArray.push(27);
-    $.purchaseArray.push(28);
-    $.purchaseArray.push(29);
-    $.purchaseArray.push(30);
-    $.purchaseArray.push(31);
-    $.purchaseArray.push(01);
-    $.purchaseArray.push(02);
-    $.purchaseArray.push(03);
-    $.purchaseArray.push(04);
-    $.purchaseArray.push(05);
-    $.purchaseArray.push(06);
-    $.purchaseArray.push(07);
-    $.purchaseArray.push(08);
-    $.purchaseArray.push(09);
-    $.purchaseArray.push(10);
-    $.purchaseArray.push(11);
-
-
-    $.shipmentArray = [];
-    $.shipmentArray.push(-01);
-    $.shipmentArray.push(-02);
-    $.shipmentArray.push(-03);
-    $.shipmentArray.push(-04);
-    $.shipmentArray.push(-05);
-    $.shipmentArray.push(-06);
-    $.shipmentArray.push(-07);
-    $.shipmentArray.push(-08);
-    $.shipmentArray.push(-09);
-    $.shipmentArray.push(-10);
-    $.shipmentArray.push(-11);
-    $.shipmentArray.push(-12);
-    $.shipmentArray.push(-13);
-    $.shipmentArray.push(-14);
-    $.shipmentArray.push(-15);
-    $.shipmentArray.push(-16);
-    $.shipmentArray.push(-17);
-    $.shipmentArray.push(-18);
-    $.shipmentArray.push(-19);
-    $.shipmentArray.push(-20);
-    $.shipmentArray.push(-21);
-    $.shipmentArray.push(-22);
-    $.shipmentArray.push(-23);
-    $.shipmentArray.push(-24);
-    $.shipmentArray.push(-25);
-    $.shipmentArray.push(-26);
-    $.shipmentArray.push(-27);
-    $.shipmentArray.push(-28);
-    $.shipmentArray.push(-29);
-    $.shipmentArray.push(-30);
-    $.shipmentArray.push(-31);
-    $.shipmentArray.push(-01);
-    $.shipmentArray.push(-02);
-    $.shipmentArray.push(-03);
-    $.shipmentArray.push(-04);
-    $.shipmentArray.push(-05);
-    $.shipmentArray.push(-06);
-    $.shipmentArray.push(-07);
-    $.shipmentArray.push(-08);
-    $.shipmentArray.push(-09);
-    $.shipmentArray.push(-10);
-    $.shipmentArray.push(-11);
-
-    $.inventoryArray = [];
-    $.inventoryArray.push(1);
-    $.inventoryArray.push(12);
-    $.inventoryArray.push(3);
-    $.inventoryArray.push(24);
-    $.inventoryArray.push(15);
-    $.inventoryArray.push(36);
-    $.inventoryArray.push(17);
-    $.inventoryArray.push(18);
-    $.inventoryArray.push(9);
-    $.inventoryArray.push(10);
-    $.inventoryArray.push(21);
-    $.inventoryArray.push(12);
-    $.inventoryArray.push(33);
-    $.inventoryArray.push(14);
-    $.inventoryArray.push(25);
-    $.inventoryArray.push(-16);
-    $.inventoryArray.push(-17);
-    $.inventoryArray.push(-18);
-    $.inventoryArray.push(-19);
-    $.inventoryArray.push(-20);
-    $.inventoryArray.push(-21);
-    $.inventoryArray.push(-22);
-    $.inventoryArray.push(-23);
-    $.inventoryArray.push(-24);
-    $.inventoryArray.push(-25);
-    $.inventoryArray.push(-26);
-    $.inventoryArray.push(-27);
-    $.inventoryArray.push(-28);
-    $.inventoryArray.push(-29);
-    $.inventoryArray.push(-30);
-    $.inventoryArray.push(-31);
-    $.inventoryArray.push(-01);
-    $.inventoryArray.push(-02);
-    $.inventoryArray.push(-03);
-    $.inventoryArray.push(-04);
-    $.inventoryArray.push(-05);
-    $.inventoryArray.push(-06);
-    $.inventoryArray.push(-07);
-    $.inventoryArray.push(-08);
-    $.inventoryArray.push(-09);
-    $.inventoryArray.push(-10);
-    $.inventoryArray.push(-11);
+    // $.shipmentArray = [];
+    // $.shipmentArray.push(-01);
+    // $.shipmentArray.push(-02);
+    // $.shipmentArray.push(-03);
+    // $.shipmentArray.push(-04);
+    // $.shipmentArray.push(-05);
+    // $.shipmentArray.push(-06);
+    // $.shipmentArray.push(-07);
+    // $.shipmentArray.push(-08);
+    // $.shipmentArray.push(-09);
+    // $.shipmentArray.push(-10);
+    // $.shipmentArray.push(-11);
+    // $.shipmentArray.push(-12);
+    // $.shipmentArray.push(-13);
+    // $.shipmentArray.push(-14);
+    // $.shipmentArray.push(-15);
+    // $.shipmentArray.push(-16);
+    // $.shipmentArray.push(-17);
+    // $.shipmentArray.push(-18);
+    // $.shipmentArray.push(-19);
+    // $.shipmentArray.push(-20);
+    // $.shipmentArray.push(-21);
+    // $.shipmentArray.push(-22);
+    // $.shipmentArray.push(-23);
+    // $.shipmentArray.push(-24);
+    // $.shipmentArray.push(-25);
+    // $.shipmentArray.push(-26);
+    // $.shipmentArray.push(-27);
+    // $.shipmentArray.push(-28);
+    // $.shipmentArray.push(-29);
+    // $.shipmentArray.push(-30);
+    // $.shipmentArray.push(-31);
+    // $.shipmentArray.push(-01);
+    // $.shipmentArray.push(-02);
+    // $.shipmentArray.push(-03);
+    // $.shipmentArray.push(-04);
+    // $.shipmentArray.push(-05);
+    // $.shipmentArray.push(-06);
+    // $.shipmentArray.push(-07);
+    // $.shipmentArray.push(-08);
+    // $.shipmentArray.push(-09);
+    // $.shipmentArray.push(-10);
+    // $.shipmentArray.push(-11);
+    //
+    // $.inventoryArray = [];
+    // $.inventoryArray.push(1);
+    // $.inventoryArray.push(12);
+    // $.inventoryArray.push(3);
+    // $.inventoryArray.push(24);
+    // $.inventoryArray.push(15);
+    // $.inventoryArray.push(36);
+    // $.inventoryArray.push(17);
+    // $.inventoryArray.push(18);
+    // $.inventoryArray.push(9);
+    // $.inventoryArray.push(10);
+    // $.inventoryArray.push(21);
+    // $.inventoryArray.push(12);
+    // $.inventoryArray.push(33);
+    // $.inventoryArray.push(14);
+    // $.inventoryArray.push(25);
+    // $.inventoryArray.push(-16);
+    // $.inventoryArray.push(-17);
+    // $.inventoryArray.push(-18);
+    // $.inventoryArray.push(-19);
+    // $.inventoryArray.push(-20);
+    // $.inventoryArray.push(-21);
+    // $.inventoryArray.push(-22);
+    // $.inventoryArray.push(-23);
+    // $.inventoryArray.push(-24);
+    // $.inventoryArray.push(-25);
+    // $.inventoryArray.push(-26);
+    // $.inventoryArray.push(-27);
+    // $.inventoryArray.push(-28);
+    // $.inventoryArray.push(-29);
+    // $.inventoryArray.push(-30);
+    // $.inventoryArray.push(-31);
+    // $.inventoryArray.push(-01);
+    // $.inventoryArray.push(-02);
+    // $.inventoryArray.push(-03);
+    // $.inventoryArray.push(-04);
+    // $.inventoryArray.push(-05);
+    // $.inventoryArray.push(-06);
+    // $.inventoryArray.push(-07);
+    // $.inventoryArray.push(-08);
+    // $.inventoryArray.push(-09);
+    // $.inventoryArray.push(-10);
+    // $.inventoryArray.push(-11);
 
 
     console.log("createPurchaseChart");
@@ -564,15 +489,12 @@ function createPurchaseChart(chartData){
     // });
 }
 
-function createChart(dateArray, chartData){
+function createChart(snname, dateArray, chartData){
     console.log("createChart");
     console.log(chartData);
     $('#myChart').highcharts({
-        chart: {
-            type: 'column'
-        },
         title: {
-            text: '明细',
+            text: '近45天库存明细: ' + snname,
             x: -20 //center
         },
         subtitle: {
@@ -584,11 +506,12 @@ function createChart(dateArray, chartData){
         },
         yAxis: {
             title: {
-                text: '数量'
+                text: ''
             },
         },
         plotOptions: {
             column: {
+                pointWidth: 1,
                 dataLabels:{
                     enabled: true
                 }
@@ -599,18 +522,17 @@ function createChart(dateArray, chartData){
         },
         series: [{
             type: 'column',
-            name: '收货数量',
+            name: '收货',
             data: setChartData($.dateArray, chartData.purchaseChartData)
         },{
             type: 'column',
-            name: '发货数量',
+            name: '发货',
             data: setChartData($.dateArray, chartData.shipmentChartData)
         },{
             type: 'spline',
-            name: '库存数量',
-            data: []
-        }
-        ]
+            name: '库存',
+            data: setChartData($.dateArray, chartData.inventoryChartData)
+        }]
     });
 
 }
@@ -696,4 +618,13 @@ function null2zero(abc){
         return abc * 1;
     }
     return 0;
+}
+
+
+// date function
+
+function getDateString(date) {
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    return date.getFullYear() + (month < 10 ? "0" : "") + month + (day < 10 ? "0" : "") + day;
 }

@@ -9,7 +9,7 @@ import com.fiveamazon.erp.entity.ProductPO;
 import com.fiveamazon.erp.entity.SkuInfoPO;
 import com.fiveamazon.erp.entity.StorePO;
 import com.fiveamazon.erp.service.ProductService;
-import com.fiveamazon.erp.service.SkuInfoService;
+import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +37,7 @@ public class ProductController extends SimpleCommonController {
 	@Autowired
 	ProductService productService;
 	@Autowired
-	SkuInfoService skuInfoService;
+    SkuService skuService;
 
 	@Value("${simple.folder.image.product}")
 	private String productImageFolder;
@@ -113,7 +113,7 @@ public class ProductController extends SimpleCommonController {
 		ProductPO productPO = productService.getById(id);
 		JSONObject dataJson = productPO.toJson();
 		JSONArray skuArray = new JSONArray();
-		List<SkuInfoPO> skuInfoPOList = skuInfoService.findByProductId(id);
+		List<SkuInfoPO> skuInfoPOList = skuService.findByProductId(id);
 		for(SkuInfoPO skuInfoPO : skuInfoPOList){
 			JSONObject skuJson = new JSONObject(skuInfoPO);
 			skuArray.put(skuJson);
