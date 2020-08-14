@@ -5,7 +5,7 @@ var ajaxCtx = 'excel/';
 var excelId = 0;
 var theadNames1st = ['订单号', '订单状态', '应收合计', '货品总数', '实际结算','处理时间','发货时间','物流方式','货运单号','货运单批次'];
 var theadNames2nd = ['订单号', '序号', '产品', '编号', '品名','规格','数量','单价','金额','备注'];
-var theadNames3rd = ['店铺', 'sku', '产品', 'qty'];
+var theadNames3rd = ['店铺', 'sku', '产品', 'skuId', 'qty'];
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -268,7 +268,7 @@ function drawTable3rd(table, array, boxCount){
             tr.addClass("errorRow");
         }
         var storeDesc = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name + " " : "";
-        var tds = [storeDesc, obj.merchantSku, snname, obj.boxedQty];
+        var tds = [storeDesc, obj.merchantSku, snname, obj.skuId, obj.boxedQty];
         for(var i = 1; i <= boxCount; i++){
             var iString = i < 10 ? "0" + i : "" + i;
             var boxQty = "box" + iString + "Qty";

@@ -19,6 +19,7 @@ public class ShipmentDetailViewDTO extends SimpleCommonView {
     Integer productId;
     Integer quantity;
     BigDecimal weight;
+    Integer skuId;
     //
     String deliveryDate;
     String carrier;

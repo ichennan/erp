@@ -26,6 +26,7 @@ public class ShipmentViewPO extends SimpleCommonEntity {
     String statusDelivery;
     Integer boxCount;
     String trackingNumber;
+    Integer storeId;
     //
     String productIdGroup;
 

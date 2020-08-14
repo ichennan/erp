@@ -87,7 +87,8 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.deliveryDate, obj.fbaNo, obj.carrier, obj.route, obj.boxCount, obj.weight, obj.unitPrice,  obj.chargeWeight, obj.amount, obj.paymentDate, obj.signedDate, obj.store, parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
+                var storeName = parent.$.retrieveStoreName(obj.storeId);
+                var tds = [obj.deliveryDate, obj.fbaNo, obj.carrier, obj.route, obj.boxCount, obj.weight, obj.unitPrice,  obj.chargeWeight, obj.amount, obj.paymentDate, obj.signedDate, storeName, parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");

@@ -156,6 +156,7 @@ function showDetail(){
             console.log("getDetail.success");
             console.log(rs);
             var productId = rs.productId;
+            var finalSkuId = rs.skuId;
             //  inventoryChart
             var inventoryChartData = {};
             var dateArray = [];
@@ -187,23 +188,32 @@ function showDetail(){
             var shipmentChartData = {};
             var dateArray = [];
             var quantityArray = [];
+            var skuArray = [];
             var preDeliveryDate = undefined;
             var preShipmentId = undefined;
+            var preSkuId = undefined;
             $.each(rs.shipmentArray, function (index, obj) {
                 var deliveryDate = obj.deliveryDate;
                 var shipmentId = obj.shipmentId;
-                if(deliveryDate == preDeliveryDate && shipmentId == preShipmentId){
+                var skuId = obj.skuId;
+                if(deliveryDate == preDeliveryDate
+                    && shipmentId == preShipmentId
+                    && skuId == preSkuId
+                ){
                     var preQuantity = null2zero(quantityArray.pop());
                     quantityArray.push(null2zero(obj.quantity) + preQuantity);
                 }else{
                     dateArray.push(obj.deliveryDate);
+                    skuArray.push(obj.skuId);
                     quantityArray.push(null2zero(obj.quantity));
                 }
                 preDeliveryDate = deliveryDate;
                 preShipmentId = shipmentId;
+                preSkuId = skuId;
             });
             shipmentChartData.dateArray = dateArray;
             shipmentChartData.quantityArray = quantityArray;
+            shipmentChartData.skuArray = skuArray;
             var minusQuantityArray = [];
             $.each(quantityArray, function (index, obj) {
                 minusQuantityArray.push(-1 * obj);
@@ -239,7 +249,7 @@ function showDetail(){
             chartData.purchaseChartData = purchaseChartData;
             chartData.inventoryChartData = inventoryChartData;
             var snname = parent.$.cacheProducts["id" + productId] ? parent.$.cacheProducts["id" + productId].snname : "";
-            createChart(snname, $.dateArray, chartData);
+            createChart(finalSkuId, snname, $.dateArray, chartData);
             //
 
         },
@@ -496,7 +506,7 @@ function createPurchaseChart(chartData){
     // });
 }
 
-function createChart(snname, dateArray, chartData){
+function createChart(skuId, snname, dateArray, chartData){
     console.log("createChart");
     console.log(chartData);
     $('#myChart').highcharts({
@@ -530,14 +540,22 @@ function createChart(snname, dateArray, chartData){
         series: [{
             type: 'column',
             name: '收货',
+            color: 'green',
             data: setChartData($.dateArray, chartData.purchaseChartData)
         },{
             type: 'column',
             name: '发货',
-            data: setChartData($.dateArray, chartData.shipmentChartData)
+            color: 'red',
+            data: setSkuShipmentChartData(skuId, true, $.dateArray, chartData.shipmentChartData)
+        },{
+            type: 'column',
+            name: '其它sku发货',
+            color: '#eeeeee',
+            data: setSkuShipmentChartData(skuId, false, $.dateArray, chartData.shipmentChartData)
         },{
             type: 'spline',
             name: '库存',
+            color: 'black',
             data: setChartData($.dateArray, chartData.inventoryChartData)
         }]
     });
@@ -545,9 +563,7 @@ function createChart(snname, dateArray, chartData){
 }
 
 function setChartData(dateArray, chartData){
-    console.log("dateArray");
-    console.log(dateArray);
-    console.log("chartData");
+    console.log("setChartData");
     console.log(chartData);
     var dataArray = [];
     $.each(dateArray, function (index, obj) {
@@ -556,6 +572,34 @@ function setChartData(dateArray, chartData){
         $.each(chartData.dateArray, function(index_2, obj_2){
             if(obj_2 == targetDate){
                 targetValue = chartData.quantityArray[index_2];
+            }
+        })
+        dataArray.push(targetValue);
+    })
+    return dataArray;
+}
+
+function setSkuShipmentChartData(skuId, isSku, dateArray, chartData){
+    console.log("setSkuShipmentChartData");
+    console.log(chartData);
+    var dataArray = [];
+    $.each(dateArray, function (index, obj) {
+        var targetDate = obj;
+        var targetValue = null;
+        $.each(chartData.dateArray, function(index_2, obj_2){
+            if(obj_2 == targetDate){
+                console.log("isSKu: " + isSku);
+                if(isSku) {
+                    if(skuId == chartData.skuArray[index_2]){
+                        targetValue = chartData.quantityArray[index_2];
+                    }
+                }else{
+                    console.log(skuId);
+                    console.log(chartData.skuArray[index_2]);
+                    if(skuId != chartData.skuArray[index_2]){
+                        targetValue = chartData.quantityArray[index_2];
+                    }
+                }
             }
         })
         dataArray.push(targetValue);

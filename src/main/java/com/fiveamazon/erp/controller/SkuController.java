@@ -96,6 +96,7 @@ public class SkuController extends SimpleCommonController {
 			packetArray.put(packetDetailViewDTO.toJson());
 		}
 		rs.put("packetArray", packetArray);
+		rs.put("skuId", id);
 		rs.put("productId", productId);
 		//
 		rs.put("error", false);
