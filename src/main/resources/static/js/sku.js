@@ -2,6 +2,7 @@
 var detailId = 0;
 var $contentForm = $("#contentForm");
 var ajaxCtx = 'sku/';
+$.isNoRefreshList = false;
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -29,6 +30,11 @@ function showList(){
     console.log("showList()");
     $("#tableBox").show();
     $("#contentBox").hide();
+    if($.isNoRefreshList){
+        console.log("NoRefreshList");
+        return;
+    }
+    console.log("RefreshList");
     //
     $("#listTable").remove();
     $("#listTable_wrapper").remove();
@@ -101,6 +107,7 @@ function showList(){
                         .draw();
                 } );
             } );
+            $.isNoRefreshList = true;
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
