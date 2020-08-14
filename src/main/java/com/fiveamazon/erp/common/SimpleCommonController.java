@@ -31,7 +31,7 @@ public class SimpleCommonController {
 		this.parameters.put("profile", activeProfile);
 		this.parameters.put("pageTitle", "5Amazon ERP");
 		this.parameters.put("pageName", "5Amazon");
-		this.parameters.put("title", "TestTitle");
+//		this.parameters.put("title", "TestTitle");
 	}
 
 	public final static String getUsername(){
