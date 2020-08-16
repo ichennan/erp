@@ -32,5 +32,5 @@ public interface PacketService {
 
     PacketDetailPO saveDetail(PacketDetailDTO packetDetailDTO);
 
-    List<PacketDetailViewDTO> findByProductId(Integer productId);
+//    List<PacketDetailViewDTO> findByProductId(Integer productId);
 }

@@ -1,6 +1,10 @@
+--
+-- delete on 20200817 00:53:00
+--
+
 create or replace view view_inventory as
-	select `p`.`id`                                                                                              AS `id`,
-       `p`.`name`                                                                                            AS `name`,
+	select `p`.`id` AS `id`,
+       `p`.`name` AS `name`,
        `p`.`sn`                                                                                              AS `sn`,
        `p`.`color`                                                                                           AS `color`,
        `p`.`size`                                                                                            AS `size`,

@@ -31,7 +31,5 @@ public interface ShipmentService {
 
     ShipmentDetailPO saveDetail(ShipmentDetailDTO shipmentDetailDTO);
 
-    List<ShipmentDetailViewDTO> findByProductId(Integer productId);
-
     void createByExcel(UploadFbaDTO uploadFbaDTO);
 }

@@ -64,7 +64,7 @@ function showList(){
                 var storeName = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name : "";
 
                 var tr = $("<tr></tr>");
-                var tds = [obj.skuDesc, snname, storeName, obj.inventoryQuantity, obj.onthewayShipmentQuantity, obj.allPurchaseQuantity, obj.allShipmentQuantity];
+                var tds = [obj.skuDesc, snname, storeName, obj.productInventoryQuantity, obj.sumSkuShipmentOnthewayQuantity, obj.sumProductPurchaseQuantity, obj.sumSkuShipmentQuantity];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");
@@ -81,7 +81,7 @@ function showList(){
                 })
                 tr.click(function () {
                     // $(this).toggleClass("selected");
-                    toDetail(obj.skuId);
+                    toDetail(obj.id);
                 });
                 tbody.append(tr);
             });
@@ -249,7 +249,7 @@ function showDetail(){
             chartData.purchaseChartData = purchaseChartData;
             chartData.inventoryChartData = inventoryChartData;
             var snname = parent.$.cacheProducts["id" + productId] ? parent.$.cacheProducts["id" + productId].snname : "";
-            createChart(finalSkuId, snname, $.dateArray, chartData);
+            createChart(finalSkuId, snname, $.dateArray, chartData, rs);
             //
 
         },
@@ -506,7 +506,7 @@ function createPurchaseChart(chartData){
     // });
 }
 
-function createChart(skuId, snname, dateArray, chartData){
+function createChart(skuId, snname, dateArray, chartData, rs){
     console.log("createChart");
     console.log(chartData);
     $('#myChart').highcharts({
@@ -541,22 +541,22 @@ function createChart(skuId, snname, dateArray, chartData){
             type: 'column',
             name: '收货',
             color: 'green',
-            data: setChartData($.dateArray, chartData.purchaseChartData)
+            data: setChartDataY($.dateArray, rs.productPurchaseJson)
         },{
             type: 'column',
             name: '发货',
             color: 'red',
-            data: setSkuShipmentChartData(skuId, true, $.dateArray, chartData.shipmentChartData)
+            data: setChartDataY($.dateArray, rs.skuShipmentJson)
         },{
             type: 'column',
             name: '其它sku发货',
             color: '#eeeeee',
-            data: setSkuShipmentChartData(skuId, false, $.dateArray, chartData.shipmentChartData)
+            data: setChartDataY($.dateArray, rs.skuElseShipmentJson)
         },{
             type: 'spline',
             name: '库存',
             color: 'black',
-            data: setChartData($.dateArray, chartData.inventoryChartData)
+            data: setChartDataY($.dateArray, rs.productInventoryJson)
         }]
     });
 
@@ -604,6 +604,18 @@ function setSkuShipmentChartData(skuId, isSku, dateArray, chartData){
         })
         dataArray.push(targetValue);
     })
+    return dataArray;
+}
+
+function setChartDataY(dateArray, dataJson){
+    console.log("setChartDataY 1231");
+    console.log(dataJson);
+    var dataArray = [];
+    $.each(dateArray, function (index, obj) {
+        dataArray.push(dataJson[obj] ? dataJson[obj] : "");
+    })
+    console.log("dataArray");
+    console.log(dataArray);
     return dataArray;
 }
 

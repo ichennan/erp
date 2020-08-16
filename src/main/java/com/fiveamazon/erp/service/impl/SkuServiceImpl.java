@@ -1,14 +1,15 @@
 package com.fiveamazon.erp.service.impl;
 
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.dto.SkuInfoDTO;
 import com.fiveamazon.erp.entity.SkuInfoPO;
-import com.fiveamazon.erp.entity.SkuViewPO;
-import com.fiveamazon.erp.entity.SnapshotSkuInventoryPO;
+import com.fiveamazon.erp.entity.SkuInfoVO;
+import com.fiveamazon.erp.entity.SnapshotSkuPO;
 import com.fiveamazon.erp.repository.SkuInfoRepository;
-import com.fiveamazon.erp.repository.SkuViewRepository;
-import com.fiveamazon.erp.repository.SnapshotSkuInventoryRepository;
+import com.fiveamazon.erp.repository.SkuInfoViewRepository;
+import com.fiveamazon.erp.repository.SnapshotSkuRepository;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +29,10 @@ public class SkuServiceImpl implements SkuService {
     private SkuInfoRepository skuInfoRepository;
 
     @Autowired
-    private SkuViewRepository skuViewRepository;
+    private SkuInfoViewRepository skuInfoViewRepository;
 
     @Autowired
-    private SnapshotSkuInventoryRepository snapshotSkuInventoryRepository;
+    private SnapshotSkuRepository snapshotSkuRepository;
 
     @Override
     public SkuInfoPO getById(Integer id) {
@@ -75,12 +76,89 @@ public class SkuServiceImpl implements SkuService {
     }
 
     @Override
-    public List<SkuViewPO> findAll() {
-        return skuViewRepository.findBySkuIsNotNull();
+    public List<SkuInfoVO> findAll() {
+        return skuInfoViewRepository.findBySkuIsNotNull();
+    }
+
+    private JSONArray findSkuShipmentArray(Integer skuId) {
+        JSONArray rs = new JSONArray();
+        JSONArray array = new JSONArray(skuInfoViewRepository.findSkuShipment(skuId));
+        for(Object object : array){
+            JSONArray objectArray = new JSONArray(object);
+            JSONObject json = new JSONObject();
+            json.put("skuId", Integer.valueOf(objectArray.get(0).toString()));
+            json.put("deliveryDate", Integer.valueOf(objectArray.get(1).toString()));
+            json.put("shipmentQuantity", -1 * Integer.valueOf(objectArray.get(2).toString()));
+            rs.put(json);
+        }
+        return rs;
+    }
+
+    private JSONArray findSkuElseShipmentArray(Integer productId, Integer skuId) {
+        JSONArray rs = new JSONArray();
+        JSONArray array = new JSONArray(skuInfoViewRepository.findSkuElseShipment(productId, skuId));
+        for(Object object : array){
+            JSONArray objectArray = new JSONArray(object);
+            JSONObject json = new JSONObject();
+            json.put("skuId", Integer.valueOf(objectArray.get(0).toString()));
+            json.put("deliveryDate", Integer.valueOf(objectArray.get(1).toString()));
+            json.put("shipmentQuantity", -1 * Integer.valueOf(objectArray.get(2).toString()));
+            rs.put(json);
+        }
+        return rs;
+    }
+
+    private JSONArray findProductPurchaseArray(Integer productId) {
+        JSONArray rs = new JSONArray();
+        JSONArray array = new JSONArray(skuInfoViewRepository.findProductPurchase(productId));
+        for(Object object : array){
+            JSONArray objectArray = new JSONArray(object);
+            JSONObject json = new JSONObject();
+            json.put("productId", Integer.valueOf(objectArray.get(0).toString()));
+            json.put("receivedDate", Integer.valueOf(objectArray.get(1).toString()));
+            json.put("purchaseQuantity", Integer.valueOf(objectArray.get(2).toString()));
+            rs.put(json);
+        }
+        return rs;
     }
 
     @Override
-    public List<SnapshotSkuInventoryPO> findSnapshotBySkuId(Integer skuId) {
-        return snapshotSkuInventoryRepository.findBySkuId(skuId);
+    public JSONObject getSkuShipmentObject(Integer skuId) {
+        JSONObject rs = new JSONObject();
+        JSONArray array = findSkuShipmentArray(skuId);
+        for(JSONObject json : array.jsonIter()){
+            rs.put(json.getStr("deliveryDate"), json.getInt("shipmentQuantity"));
+        }
+        return rs;
+    }
+
+    @Override
+    public JSONObject getSkuElseShipmentObject(Integer productId, Integer skuId) {
+        JSONObject rs = new JSONObject();
+        JSONArray array = findSkuElseShipmentArray(productId, skuId);
+        for(JSONObject json : array.jsonIter()){
+            rs.put(json.getStr("deliveryDate"), json.getInt("shipmentQuantity"));
+        }
+        return rs;
+    }
+
+    @Override
+    public JSONObject getProductPurchaseObject(Integer productId) {
+        JSONObject rs = new JSONObject();
+        JSONArray array = findProductPurchaseArray(productId);
+        for(JSONObject json : array.jsonIter()){
+            rs.put(json.getStr("receivedDate"), json.getInt("purchaseQuantity"));
+        }
+        return rs;
+    }
+
+    @Override
+    public JSONObject getProductInventoryObjectBySkuId(Integer skuId) {
+        JSONObject rs = new JSONObject();
+        List<SnapshotSkuPO> snapshotSkuPOList = snapshotSkuRepository.findBySkuId(skuId);
+        for(SnapshotSkuPO snapshotSkuPO : snapshotSkuPOList){
+            rs.put(snapshotSkuPO.getSnapshotDate(), snapshotSkuPO.getProductInventoryQuantity());
+        }
+        return rs;
     }
 }

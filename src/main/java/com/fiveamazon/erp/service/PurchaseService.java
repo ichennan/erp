@@ -3,9 +3,7 @@ package com.fiveamazon.erp.service;
 
 import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
-import com.fiveamazon.erp.dto.PurchaseDetailViewDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
-import com.fiveamazon.erp.entity.ExcelSupplierDeliveryOrderPO;
 import com.fiveamazon.erp.entity.PurchaseDetailPO;
 import com.fiveamazon.erp.entity.PurchasePO;
 import com.fiveamazon.erp.entity.PurchaseViewPO;
@@ -34,8 +32,6 @@ public interface PurchaseService {
     PurchasePO save(PurchaseDTO purchaseDTO);
 
     PurchaseDetailPO saveDetail(PurchaseDetailDTO purchaseDetailDTO);
-
-    List<PurchaseDetailViewDTO> findByProductId(Integer productId);
 
     void createByExcel(UploadSupplierDeliveryDTO uploadSupplierDeliveryDTO);
 }

@@ -100,8 +100,8 @@ public class PacketServiceImpl implements PacketService {
         return packetDetailRepository.findAllByPacketId(packetId);
     }
 
-    @Override
-    public List<PacketDetailViewDTO> findByProductId(Integer productId) {
-        return packetDetailRepository.findByProductId(productId);
-    }
+//    @Override
+//    public List<PacketDetailViewDTO> findByProductId(Integer productId) {
+//        return packetDetailRepository.findByProductId(productId);
+//    }
 }

@@ -112,11 +112,6 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
-    public List<ShipmentDetailViewDTO> findByProductId(Integer productId) {
-        return shipmentDetailRepository.findByProductId(productId);
-    }
-
-    @Override
     public void createByExcel(UploadFbaDTO uploadFbaDTO) {
         Date today = new Date();
         Integer boxCount = uploadFbaDTO.getBoxCount();

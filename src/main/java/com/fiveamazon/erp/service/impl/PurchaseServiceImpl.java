@@ -5,7 +5,6 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
-import com.fiveamazon.erp.dto.PurchaseDetailViewDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
@@ -112,11 +111,6 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public List<PurchaseDetailPO> findAllDetail(Integer purchaseId) {
         return purchaseDetailRepository.findAllByPurchaseId(purchaseId);
-    }
-
-    @Override
-    public List<PurchaseDetailViewDTO> findByProductId(Integer productId) {
-        return purchaseDetailRepository.findByProductId(productId);
     }
 
     @Override

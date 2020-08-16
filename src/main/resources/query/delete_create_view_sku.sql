@@ -1,3 +1,7 @@
+--
+-- delete on 20200817 00:53:00
+--
+
 create or replace view view_sku as(
 SELECT
 
