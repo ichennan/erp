@@ -27,6 +27,7 @@ public class ShipmentPO extends SimpleCommonEntity {
     Integer boxCount;
     String trackingNumber;
     Integer storeId;
+    String weightRemark;
 
     public JSONObject toJson(){
         return new JSONObject(this);

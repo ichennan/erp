@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -19,6 +20,8 @@ public class ExcelFbaPO extends SimpleCommonEntity {
     String shipTo;
     Integer boxCount;
     Integer storeId;
+    String weightRemark;
+    BigDecimal weight;
 
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);

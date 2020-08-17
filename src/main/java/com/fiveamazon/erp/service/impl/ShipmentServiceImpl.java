@@ -129,6 +129,8 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentPO.setRoute(uploadFbaDTO.getRoute());
         shipmentPO.setStoreId(uploadFbaDTO.getStoreId());
         shipmentPO.setUnitPrice(uploadFbaDTO.getUnitPrice());
+        shipmentPO.setWeight(uploadFbaDTO.getWeight());
+        shipmentPO.setWeightRemark(uploadFbaDTO.getWeightRemark());
         save(shipmentPO);
         Integer shipmentId = shipmentPO.getId();
         //
@@ -161,24 +163,49 @@ public class ShipmentServiceImpl implements ShipmentService {
         log.warn("allJson");
         log.warn(allJson.toString());
 
+
+        JSONObject planJson = new JSONObject();
         for(String boxString : allJson.keySet()){
             log.warn("boxString: " + boxString);
             String boxNumber = boxString.substring(3, 5);
-            log.warn("boxNumber: " + boxString);
             JSONArray boxArray = allJson.getJSONArray(boxString);
             log.warn(boxString + " size: " + boxArray.size());
             for(JSONObject boxJson : boxArray.jsonIter()){
                 log.warn("boxJson: " + boxJson.toString());
-                ShipmentDetailPO shipmentDetailPO = new ShipmentDetailPO();
-                shipmentDetailPO.setBox(boxNumber);
-                shipmentDetailPO.setQuantity(boxJson.getInt("quantity"));
-                shipmentDetailPO.setProductId(boxJson.getInt("productId"));
-                shipmentDetailPO.setShipmentId(shipmentId);
-                shipmentDetailPO.setSkuId(boxJson.getInt("skuId"));
-                shipmentDetailPO.setWeight(new BigDecimal(0));
-                saveDetail(shipmentDetailPO);
+                String skuId = boxJson.getStr("skuId");
+                Integer quantity = boxJson.getInt("quantity");
+                boxJson.put("shipmentId", shipmentId);
+                boxJson.put("box", boxNumber);
+                createShipmentDetailByJson(boxJson);
+                //
+                if(planJson.containsKey(skuId)){
+                    JSONObject planSkuJson = planJson.getJSONObject(skuId);
+                    planSkuJson.put("quantity", planSkuJson.getInt("quantity") + quantity);
+                }else{
+                    planJson.put(skuId, boxJson);
+                }
             }
+        }
+        //
+        for(String planJsonKey : planJson.keySet()){
+            JSONObject planSkuJson = planJson.getJSONObject(planJsonKey);
+            planSkuJson.put("box", "Plan");
+            createShipmentDetailByJson(planSkuJson);
         }
 
     }
+
+    private void createShipmentDetailByJson(JSONObject boxJson){
+        ShipmentDetailPO shipmentDetailPO = new ShipmentDetailPO();
+        shipmentDetailPO.setBox(boxJson.getStr("box"));
+        shipmentDetailPO.setQuantity(boxJson.getInt("quantity"));
+        shipmentDetailPO.setProductId(boxJson.getInt("productId"));
+        shipmentDetailPO.setShipmentId(boxJson.getInt("shipmentId"));
+        shipmentDetailPO.setSkuId(boxJson.getInt("skuId"));
+        shipmentDetailPO.setWeight(new BigDecimal(0));
+        saveDetail(shipmentDetailPO);
+    }
+
+
+
 }

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,6 +74,8 @@ public class ExcelServiceImpl implements ExcelService {
         ExcelFbaPO excelFbaPO = excelFbaRepository.getOne(excelId);
         List<ExcelFbaPackListPO> excelFbaPackListPOList = new ArrayList<ExcelFbaPackListPO>();
         Boolean isDetail = false;
+        String weightRemark = "";
+        BigDecimal sumWeight = new BigDecimal(0);
         for(ExcelFbaRowEO excelFbaRowEO : excelFbaRow){
             log.warn("row " + row + " : " + new JSONObject(excelFbaRowEO).toString());
             String column00 = excelFbaRowEO.getColumn00();
@@ -149,7 +152,17 @@ public class ExcelServiceImpl implements ExcelService {
                     isDetail = true;
                 }else if(column00.contains("Ship To:")){
                     log.warn("Ship To: " + column00.replace("Ship To: ", ""));
+                    log.warn("box01 Weight: " + excelFbaRowEO.getColumn11());
                     excelFbaPO.setShipTo(column00.replace("Ship To: ", ""));
+                    //
+                    JSONObject boxCountJson = new JSONObject(excelFbaRowEO);
+                    for(int i=11; i <= 40; i++){
+                        String cellString = boxCountJson.getStr("column" + i);
+                        if(StringUtils.isNotBlank(cellString)){
+                            weightRemark = weightRemark + cellString + " + ";
+                            sumWeight = sumWeight.add(new BigDecimal(cellString));
+                        }
+                    }
                 }else{
                     log.warn(column00);
                 }
@@ -159,6 +172,8 @@ public class ExcelServiceImpl implements ExcelService {
         }
 
         excelFbaPO.setBoxCount(boxCount);
+        excelFbaPO.setWeightRemark(weightRemark);
+        excelFbaPO.setWeight(sumWeight);
         excelFbaRepository.save(excelFbaPO);
         Integer storeId = null;
         for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
