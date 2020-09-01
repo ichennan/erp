@@ -22,14 +22,34 @@ $(document).ready(function(){
         $("#tableDiv").find("tr").removeClass("selected");
         var storeId = $(this).val();
         var storeName = parent.$.cacheStores["id" + storeId] ? parent.$.cacheStores["id" + storeId].name : "";
-        $("#tableDiv").find(".theadSearch").find("th:nth-child(3)").find("input").val(storeName).trigger("change");
+        $("#tableDiv").find(".theadSearch").find("th:nth-child(4)").find("input").val(storeName).trigger("change");
     })
+
+    $('input:radio[name=statusSelected]').change(function () {
+        console.log("statusSelected change");
+        var statusSelected = $('input:radio[name=statusSelected]:checked').val();
+        if(statusSelected == "plan"){
+            $("#tableDiv tbody").find("tr:not(.plan)").hide();
+        }else{
+            $("#tableDiv tbody").find("tr:not(.plan)").show();
+        }
+    });
+
+    $("#testButton").click(function(){
+        $("#tableBox").hide();
+        $("#contentBox").hide();
+        $("#planBox").show();
+        $("#planTableDiv").empty();
+        showPlanDetail();
+    })
+
 });
 
 function showList(){
     console.log("showList()");
     $("#tableBox").show();
     $("#contentBox").hide();
+    $("#planBox").hide();
     if($.isNoRefreshList){
         console.log("NoRefreshList");
         return;
@@ -41,7 +61,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['SKU', '产品', '店铺', '库存', 'FBA途中', '总采购', '总FBA'];
+    var theadNames = ['','SKU', '产品', '店铺', '库存', 'FBA途中', '总采购', '总FBA'];
 
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
@@ -62,9 +82,24 @@ function showList(){
             $.each(rs.array, function (index, obj) {
                 var snname = parent.$.cacheProducts["id" + obj.productId] ? parent.$.cacheProducts["id" + obj.productId].snname : "";
                 var storeName = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name : "";
-
+                //
                 var tr = $("<tr></tr>");
+                tr.attr("objJson", $.jsonToString(obj));
+                var planTd = $("<td class='planTd'></td>");
+                var planInput = $("<input />");
+                planInput.keyup(function () {
+                    var $this = $(this);
+                    if($this.val()){
+                        tr.addClass("plan");
+                    }else{
+                        tr.removeClass("plan");
+                    }
+                })
+                planTd.append(planInput);
+                tr.append(planTd);
+                //
                 var tds = [obj.skuDesc, snname, storeName, obj.productInventoryQuantity, obj.sumSkuShipmentOnthewayQuantity, obj.sumProductPurchaseQuantity, obj.sumSkuShipmentQuantity];
+
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");
@@ -79,7 +114,7 @@ function showList(){
                     }
                     tr.append(td);
                 })
-                tr.click(function () {
+                tr.dblclick(function () {
                     // $(this).toggleClass("selected");
                     toDetail(obj.id);
                 });
@@ -135,6 +170,7 @@ function validateForm(contentForm) {
 function showDetail(){
     console.log("showDetail: " + detailId);
     $("#tableBox").hide();
+    $("#planBox").hide();
     $("#contentBox").show();
     $("#contentBox div.chartDiv").empty();
     //
@@ -164,6 +200,107 @@ function showDetail(){
         },
         complete: function () {
             console.log("getDetail.complete");
+        }
+    });
+}
+
+function showPlanDetail(){
+    console.log("showPlanDetail()");
+    var planDetailArray = [];
+    console.log($("#tableDiv tr").length);
+    console.log($("#tableDiv tr.plan").length);
+    $("#tableDiv tr.plan").each(function (index, obj) {
+        var $this = $(this);
+        console.log($this.attr("objJson"));
+        var objJson = $.stringToJson($this.attr("objJson"));
+        console.log(objJson);
+        objJson["planQuantity"] = $this.find("td.planTd input").val();
+        planDetailArray.push(objJson);
+    })
+    console.log("planDetailArray");
+    console.log(planDetailArray);
+    //
+    var listTable = $("<table class='table table-bordered data-table'></table>");
+    var thead = $("<thead><tr></tr></thead>");
+    var theadNames = ['数量','SKU', 'FNSKU', '产品', '店铺'];
+    $.each(theadNames, function (index, obj) {
+        thead.find("tr").append("<th>" + obj + "</th>");
+    })
+    var tbody = $("<tbody></tbody>");
+    listTable.append(thead).append(tbody);
+    $("#planTableDiv").append(listTable);
+    $.each(planDetailArray, function(index, obj){
+        var tr = $("<tr></tr>");
+        tr.attr("objJson", $.jsonToString(obj));
+        var snname = parent.$.cacheProducts["id" + obj.productId] ? parent.$.cacheProducts["id" + obj.productId].snname : "";
+        var storeName = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name : "";
+        //
+        var tds = [obj.planQuantity, obj.skuDesc, obj.fnsku, snname, storeName];
+        $.each(tds, function (index_2, obj_2) {
+            obj_2 = obj_2 ? obj_2 : "";
+            var td = $("<td>" + obj_2 + "</td>");
+            tr.append(td);
+        })
+        tbody.append(tr);
+    })
+}
+
+function saveDetail(){
+    console.log("saveDetail()");
+    var isError = false;
+    var data = {};
+    $contentForm.find("[pid]").each(function () {
+        data[$(this).attr("pid")] = $(this).val();
+    });
+    var array = [];
+    $("#planTableDiv").find("tbody tr").each(function(){
+        var $this = $(this);
+        var obj = $.stringToJson($this.attr("objJson"));
+        obj.skuId = obj.id;
+        array.push(obj);
+        console.log("data.storeId: " + data.storeId + " obj.storeId: " + obj.storeId);
+        if(data.storeId){
+            if(data.storeId != obj.storeId){
+                isError = true;
+            }
+        }else{
+            data.storeId = obj.storeId;
+        }
+
+    })
+    if(isError){
+        $.showErrorModal("不能同时选择两个店铺的产品");
+        showList();
+        return;
+    }
+    data.array = array;
+    console.log(data);
+    if(isError){
+        $.showErrorModal("错误");
+        showList();
+        return;
+    }
+    var ajaxUrl = 'createPlan';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json",
+        success: function (rs) {
+            console.log("createPlan.success");
+            console.log(rs);
+            $.showToastr("创建计划成功，在计划管理里查看详情");
+            $.isNoRefreshList = false;
+            showList();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("createPlan.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("createPlan.complete");
         }
     });
 }

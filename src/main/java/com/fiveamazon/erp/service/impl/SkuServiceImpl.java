@@ -40,6 +40,11 @@ public class SkuServiceImpl implements SkuService {
     }
 
     @Override
+    public SkuInfoVO getViewById(Integer id) {
+        return skuInfoViewRepository.getOne(id);
+    }
+
+    @Override
     public void save(SkuInfoPO skuInfoPO) {
         //for unique key sku
         if(StringUtils.isEmpty(skuInfoPO.getSku())){
@@ -87,7 +92,7 @@ public class SkuServiceImpl implements SkuService {
             JSONArray objectArray = new JSONArray(object);
             JSONObject json = new JSONObject();
             json.put("skuId", Integer.valueOf(objectArray.get(0).toString()));
-            json.put("deliveryDate", Integer.valueOf(objectArray.get(1).toString()));
+            json.put("deliveryDate", objectArray.get(1).toString());
             json.put("shipmentQuantity", -1 * Integer.valueOf(objectArray.get(2).toString()));
             rs.put(json);
         }
@@ -101,7 +106,7 @@ public class SkuServiceImpl implements SkuService {
             JSONArray objectArray = new JSONArray(object);
             JSONObject json = new JSONObject();
             json.put("skuId", Integer.valueOf(objectArray.get(0).toString()));
-            json.put("deliveryDate", Integer.valueOf(objectArray.get(1).toString()));
+            json.put("deliveryDate", objectArray.get(1).toString());
             json.put("shipmentQuantity", -1 * Integer.valueOf(objectArray.get(2).toString()));
             rs.put(json);
         }
@@ -109,13 +114,15 @@ public class SkuServiceImpl implements SkuService {
     }
 
     private JSONArray findProductPurchaseArray(Integer productId) {
+        log.warn("SkuServiceImpl.findProductPurchaseArray");
         JSONArray rs = new JSONArray();
         JSONArray array = new JSONArray(skuInfoViewRepository.findProductPurchase(productId));
+        log.warn("array: " + array.toString());
         for(Object object : array){
             JSONArray objectArray = new JSONArray(object);
             JSONObject json = new JSONObject();
             json.put("productId", Integer.valueOf(objectArray.get(0).toString()));
-            json.put("receivedDate", Integer.valueOf(objectArray.get(1).toString()));
+            json.put("receivedDate", objectArray.get(1).toString());
             json.put("purchaseQuantity", Integer.valueOf(objectArray.get(2).toString()));
             rs.put(json);
         }

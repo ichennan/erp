@@ -1,5 +1,8 @@
 tbody tr.selected{background: #27ae60}
+tbody tr.plan{background: #27ae60}
 
 td.inventoryQuantity{color: blue; font-weight: bold}
 td.inventoryLack{color: red !important;}
 #myChart{margin-top:30px;}
+
+tbody td input{width: 40px;}

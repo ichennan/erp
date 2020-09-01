@@ -1,11 +1,21 @@
 <!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Welcome</title>
+    <link type="text/css" rel="stylesheet" th:href="@{'/css/' + ${pageName} + '.css?v=' + ${version}}"/>
 </head>
 <body>
 欢迎光临
+
+<div id="testDiv"></div>
+
 </body>
+<footer>
+    <script type="text/javascript" th:src="@{'/js/jquery.js'}"></script>
+    <script type="text/javascript" th:src="@{'/js/' + ${pageName} + '.js?v=' + ${version}}"></script>
+</footer>
 </html>

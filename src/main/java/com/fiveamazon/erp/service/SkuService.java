@@ -13,6 +13,7 @@ import java.util.List;
  */
 public interface SkuService {
     SkuInfoPO getById(Integer id);
+    SkuInfoVO getViewById(Integer id);
     void save(SkuInfoPO skuInfoPO);
     void save(ProductDTO productDTO);
     List<SkuInfoPO> findByProductId(Integer productId);

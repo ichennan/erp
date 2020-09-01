@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2018/8/7 15:51
  */
 @Repository
-public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, String> {
+public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, Integer> {
     List<SkuInfoVO> findBySkuIsNotNull();
 
     @Query(nativeQuery = true,
@@ -24,6 +24,7 @@ public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, String> 
                     "   on sd.shipment_id = s.id " +
                     "   where box <> 'Plan' and sku_id = ?1" +
                     ") as ssd " +
+                    "where length(delivery_date) > 0 " +
                     "group by sku_id, delivery_date ")
     List<Object> findSkuShipment(Integer skuId);
 
@@ -35,6 +36,7 @@ public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, String> 
                     "   on sd.shipment_id = s.id " +
                     "   where box <> 'Plan' and product_id = ?1 and sku_id <> ?2" +
                     ") as ssd " +
+                    "where length(delivery_date) > 0 " +
                     "group by sku_id, delivery_date ")
     List<Object> findSkuElseShipment(Integer productId, Integer skuId);
 
@@ -46,6 +48,7 @@ public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, String> 
                     "   on pd.purchase_id = p.id " +
                     "   where product_id = ?1" +
                     ") as ppd " +
+                    "where length(received_date) > 0 " +
                     "group by product_id, received_date ")
     List<Object> findProductPurchase(Integer productId);
 }
