@@ -57,6 +57,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductPO save(ProductPO productPO) {
+        if(null == productPO.getPurchasePrice()){
+            productPO.setPurchasePrice(new BigDecimal(0));
+        }
         return productRepository.save(productPO);
     }
 
@@ -70,9 +73,7 @@ public class ProductServiceImpl implements ProductService {
             productPO = new ProductPO();
             productPO.setCreateDate(new Date());
             productPO.setCreateUser(productDTO.getUsername());
-//            BeanUtils.copyProperties(productDTO, productPO, "id");
-            BeanUtil.copyProperties(productDTO, productPO,  CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
-
+            BeanUtil.copyProperties(productDTO, productPO,  "id");
             productPO = save(productPO);
             productDTO.setId(productPO.getId());
             skuService.save(productDTO);
