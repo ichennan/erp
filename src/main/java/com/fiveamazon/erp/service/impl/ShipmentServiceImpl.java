@@ -5,6 +5,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.common.SimpleConstant;
+import com.fiveamazon.erp.common.StatusConstant;
 import com.fiveamazon.erp.dto.*;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.ShipmentDetailRepository;
@@ -132,6 +133,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentPO.setWeight(uploadFbaDTO.getWeight());
         shipmentPO.setWeightRemark(uploadFbaDTO.getWeightRemark());
         shipmentPO.setRemark(uploadFbaDTO.getRemark());
+        shipmentPO.setStatusDelivery(StatusConstant.SHIPMENT_STATUS_DELIVERY);
         save(shipmentPO);
         Integer shipmentId = shipmentPO.getId();
         //
