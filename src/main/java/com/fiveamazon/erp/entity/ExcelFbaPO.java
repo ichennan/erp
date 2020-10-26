@@ -22,6 +22,7 @@ public class ExcelFbaPO extends SimpleCommonEntity {
     Integer storeId;
     String weightRemark;
     BigDecimal weight;
+    String remark;
 
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);

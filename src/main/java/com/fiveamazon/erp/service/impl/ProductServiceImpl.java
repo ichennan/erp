@@ -1,5 +1,7 @@
 package com.fiveamazon.erp.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
@@ -68,7 +70,9 @@ public class ProductServiceImpl implements ProductService {
             productPO = new ProductPO();
             productPO.setCreateDate(new Date());
             productPO.setCreateUser(productDTO.getUsername());
-            BeanUtils.copyProperties(productDTO, productPO, "id");
+//            BeanUtils.copyProperties(productDTO, productPO, "id");
+            BeanUtil.copyProperties(productDTO, productPO,  CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+
             productPO = save(productPO);
             productDTO.setId(productPO.getId());
             skuService.save(productDTO);

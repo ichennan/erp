@@ -131,6 +131,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentPO.setUnitPrice(uploadFbaDTO.getUnitPrice());
         shipmentPO.setWeight(uploadFbaDTO.getWeight());
         shipmentPO.setWeightRemark(uploadFbaDTO.getWeightRemark());
+        shipmentPO.setRemark(uploadFbaDTO.getRemark());
         save(shipmentPO);
         Integer shipmentId = shipmentPO.getId();
         //

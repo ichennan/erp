@@ -25,5 +25,6 @@ public class UploadFbaDTO extends SimpleCommonDTO {
     BigDecimal unitPrice;
     String weightRemark;
     BigDecimal weight;
+    String remark;
     List<ExcelFbaPackListPO> array;
 }

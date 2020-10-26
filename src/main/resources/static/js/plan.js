@@ -221,7 +221,7 @@ function showDetailList(array){
         var snname = parent.$.cacheProducts["id" + obj.productId] ? parent.$.cacheProducts["id" + obj.productId].snname : "";
         var storeName = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name : "";
         //
-        var tds = [snname, obj.fnsku, obj.productInventoryQuantity, obj.planQuantity, obj.fnsku];
+        var tds = [snname, obj.skuDesc, obj.productInventoryQuantity, obj.planQuantity, obj.fnsku];
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
@@ -240,6 +240,6 @@ function showDetailList(array){
 function createIframe(fnsku){
     var iframe = $("<iframe width='100%' height='100%'></iframe>");
     iframe.addClass("pdfIframe")
-    iframe.attr("src", "http://localhost:10086/erp/fnsku/" + "111222" + ".pdf");
+    iframe.attr("src", "http://localhost:10086/erp/fnsku/" + fnsku + ".pdf");
     return iframe;
 }

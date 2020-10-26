@@ -36,7 +36,7 @@ public class FnskuController extends SimpleCommonController {
 	public byte[] getFnskuPdf(@PathVariable("fnsku") String fnsku) {
 		byte[] pdfBytes = null;
 		try{
-			pdfBytes = FileUtil.readBytes("/Users/nan/s/" + fnsku + ".pdf");
+			pdfBytes = FileUtil.readBytes("/Users/nan/s/barcode/" + fnsku + ".pdf");
 		}catch (Exception e){
 			pdfBytes = FileUtil.readBytes("/Users/nan/s/empty.pdf");
 		}
