@@ -19,7 +19,6 @@ public interface PurchaseDetailRepository extends JpaRepository<PurchaseDetailPO
     void deleteByPurchaseId(Integer purchaseId);
 
     List<PurchaseDetailPO> findAllByPurchaseId(Integer purchaseId);
-    Page<PurchaseDetailPO> findAll(Specification<PurchaseDetailPO> spc, Pageable pageable);
 
 
 //    @Query("select new com.fiveamazon.erp.dto.PurchaseDetailViewDTO(pd, p) from PurchaseDetailPO pd left join PurchasePO p on  pd.purchaseId = p.id where pd.productId = :productId")

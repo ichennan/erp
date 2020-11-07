@@ -117,8 +117,8 @@ public class PurchaseController extends SimpleCommonController {
 	public String findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
-		List<PurchaseDetailPO> list = purchaseService.findAllProducts(purchaseProductSearchDTO);
-		for(PurchaseDetailPO item: list){
+		List<PurchaseProductViewPO> list = purchaseService.findAllProducts(purchaseProductSearchDTO);
+		for(PurchaseProductViewPO item: list){
 			array.put(item.toJson());
 		}
 		rs.put("array", array);

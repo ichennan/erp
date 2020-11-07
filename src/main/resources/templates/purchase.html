@@ -9,14 +9,22 @@
             <div class="row" id="searchBox">
                 <div class="col-md-12">
                     <div class="box box-info">
+                        <div class="box-header with-border">
+                            <div class="form-group">
+                                <div class="col-xs-6">
+                                    <span class="tableType spanOption defaultSelected" tableType="purchaseList">按采购批次</span>
+                                    <span class="tableType spanOption" tableType="purchaseProductList">按产品</span>
+                                </div>
+                            </div>
+                        </div>
                         <!-- form start -->
-                        <form id="searchForm" action="#" class="form-horizontal">
+                        <form id="searchForm" action="#" class="form-horizontal" tableType="purchaseProductList">
                             <div class="box-body">
                                 <div class="form-group">
                                     <div class="col-xs-6">
-                                        <span class="searchDateType" searchDateType="uploadDate">上传日期</span>
-                                        <span class="searchDateType defaultSelected" searchDateType="deliveryDate">发货日期</span>
-                                        <span class="searchDateType" searchDateType="receivedDate">收货日期</span>
+                                        <span class="searchDateType spanOption" searchDateType="excelDate">上传日期</span>
+                                        <span class="searchDateType spanOption defaultSelected" searchDateType="deliveryDate">发货日期</span>
+                                        <span class="searchDateType spanOption" searchDateType="receivedDate">收货日期</span>
                                     </div>
                                     <div class="col-xs-6">
                                         <select class="form-control select2" sid="productId">
@@ -26,10 +34,10 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="col-xs-6">
-                                        <span class="searchDateRange" searchDateRange="1">近一个月</span>
-                                        <span class="searchDateRange" searchDateRange="3">近三个月</span>
-                                        <span class="searchDateRange defaultSelected" searchDateRange="6">近半年</span>
-                                        <span class="searchDateRange" searchDateRange="12">近一年</span>
+                                        <span class="searchDateRange spanOption" searchDateRange="1">近一个月</span>
+                                        <span class="searchDateRange spanOption" searchDateRange="3">近三个月</span>
+                                        <span class="searchDateRange spanOption defaultSelected" searchDateRange="6">近半年</span>
+                                        <span class="searchDateRange spanOption" searchDateRange="12">近一年</span>
                                     </div>
                                     <div class="col-xs-3">
                                         <input class="form-control datePattern datetimepicker" sid="dateFrom" placeholder="From" />
@@ -55,15 +63,15 @@
 
             <div class="row" id="tableBox">
                 <div class="col-md-12">
-                    <div class="box box-info">
+                    <div class="box box-info" tableType="purchaseList">
                         <div class="box-header with-border">
                             <a href="#detailId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增采购</a>
                         </div>
                         <div class="box-body" id="tableDiv">
                         </div>
                     </div>
-                    <div class="box box-info">
-                        <div class="box-header with-border">
+                    <div class="box box-info" tableType="purchaseProductList">
+                        <div class="box-header with-border text-right">
                             <span>数量:</span>
                             <span id="sumQuantity">数量</span>
                             <span> 价格:</span>

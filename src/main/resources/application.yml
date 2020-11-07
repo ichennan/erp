@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: 5Amazon ERP
-    version: L1.0.5
+    version: L1.0.0
   profiles:
     active: local
   thymeleaf:

@@ -46,13 +46,23 @@ $(document).ready(function(){
         format:'Y-m-d'
     });
 
-    $("span.searchDateType").click(function () {
+    $("span.spanOption.tableType").click(function () {
+        var $this = $(this);
+        $("span.tableType").removeClass("selected");
+        $this.addClass("selected");
+        var tableType = $this.attr("tableType");
+        $("[tableType]").hide();
+        $("[tableType=" + tableType + "]").show();
+        $("[tableType].spanOption").show();
+    })
+
+    $("span.spanOption.searchDateType").click(function () {
         var $this = $(this);
         $("span.searchDateType").removeClass("selected");
         $this.addClass("selected");
     })
 
-    $("span.searchDateRange").click(function () {
+    $("span.spanOption.searchDateRange").click(function () {
         var $this = $(this);
         $("span.searchDateRange").removeClass("selected");
         $this.addClass("selected");
@@ -475,6 +485,9 @@ function null2zero(abc){
 
 function showListProducts(){
     console.log("showListProducts()");
+    if(!$(".searchDateType.spanOption.selected").length){
+        return;
+    }
     $("#tableBox").show();
     $("#contentBox").hide();
     $("#detailListProductsBox").hide();
@@ -496,6 +509,8 @@ function showListProducts(){
     data.dateFrom = $("[sid=dateFrom]").val();
     data.dateTo = $("[sid=dateTo]").val();
     data.productId = $("[sid=productId]").val();
+    data.dateType = $(".searchDateType.spanOption.selected").attr("searchDateType");
+    console.log(data);
     var ajaxUrl = 'findAllProducts'
     $.ajax({
         type: "POST",

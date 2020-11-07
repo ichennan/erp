@@ -7,6 +7,7 @@ import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.PurchaseDetailPO;
 import com.fiveamazon.erp.entity.PurchasePO;
+import com.fiveamazon.erp.entity.PurchaseProductViewPO;
 import com.fiveamazon.erp.entity.PurchaseViewPO;
 
 import java.util.List;
@@ -36,5 +37,5 @@ public interface PurchaseService {
 
     void createByExcel(UploadSupplierDeliveryDTO uploadSupplierDeliveryDTO);
 
-    List<PurchaseDetailPO> findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO);
+    List<PurchaseProductViewPO> findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO);
 }

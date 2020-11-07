@@ -1,5 +1,2 @@
-.searchDateType{width:80px; display:inline-block; background: #ccc; padding:5px; text-align:center; margin-right:10px; cursor:pointer; color: #999 }
-.searchDateType.selected{background: #000; color: #eee}
-
-.searchDateRange{width:80px; display:inline-block; background: #ccc; padding:5px; text-align:center; margin-right:10px; cursor:pointer; color: #999 }
-.searchDateRange.selected{background: #000; color: #eee}
+.spanOption{width:80px; display:inline-block; background: #ccc; padding:5px; text-align:center; margin-right:10px; cursor:pointer; color: #999 }
+.spanOption.selected{background: #000; color: #eee}

@@ -9,6 +9,7 @@ import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
+import com.fiveamazon.erp.repository.PurchaseProductViewRepository;
 import com.fiveamazon.erp.repository.PurchaseRepository;
 import com.fiveamazon.erp.repository.PurchaseViewRepository;
 import com.fiveamazon.erp.service.ProductService;
@@ -42,6 +43,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     private PurchaseRepository purchaseRepository;
     @Autowired
     private PurchaseViewRepository purchaseViewRepository;
+    @Autowired
+    private PurchaseProductViewRepository purchaseProductViewRepository;
     @Autowired
     private PurchaseDetailRepository purchaseDetailRepository;
     @Autowired
@@ -186,14 +189,14 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public List<PurchaseDetailPO> findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO) {
-        String dateFrom = purchaseProductSearchDTO.getDateFrom();
-        String dateTo = purchaseProductSearchDTO.getDateTo();
+    public List<PurchaseProductViewPO> findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO) {
+        String dateFrom = purchaseProductSearchDTO.getDateFrom().replaceAll("-", "");
+        String dateTo = purchaseProductSearchDTO.getDateTo().replaceAll("-", "");
         String dateType = purchaseProductSearchDTO.getDateType();
         String productId = purchaseProductSearchDTO.getProductId();
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(0, 100000000, sort);
-        Specification<PurchaseDetailPO> specification = new Specification<PurchaseDetailPO>() {
+        Specification<PurchaseProductViewPO> specification = new Specification<PurchaseProductViewPO>() {
             @Override
             public Predicate toPredicate(Root root, CriteriaQuery criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>();
@@ -201,32 +204,45 @@ public class PurchaseServiceImpl implements PurchaseService {
                     predicates.add(criteriaBuilder.equal(root.get("productId"), productId));
                 }
 
-//                if (StringUtils.isNotEmpty(accessLogSearchDTO.getAccessUser())) {
-//                    predicates.add(criteriaBuilder.equal(root.get("accessUser"), accessLogSearchDTO.getAccessUser()));
-//                }
-//
-//
-//                SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHH:mm:ss");
-//                if (StringUtils.isNotEmpty(accessLogSearchDTO.getAccessDateFrom())) {
-//                    try {
-//                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("accessDate"), sdf.parse(UpiDateUtils.toStr(accessLogSearchDTO.getAccessDateFrom()))));
-//                    } catch (ParseException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//                if (StringUtils.isNotEmpty(accessLogSearchDTO.getAccessDateTo())) {
-//                    try {
-//                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("accessDate"), sdf.parse(UpiDateUtils.toStr(accessLogSearchDTO.getAccessDateTo()))));
-//                    } catch (ParseException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//                }
+                switch (dateType){
+                    case "excelDate":
+                        if (StringUtils.isNotEmpty(dateFrom)) {
+                            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("excelDate"), dateFrom));
+                        }
+                        if (StringUtils.isNotEmpty(dateTo)) {
+                            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("excelDate"), dateTo));
+                        }
+                        break;
+                    case "deliveryDate":
+                        if (StringUtils.isNotEmpty(dateFrom)) {
+                            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryDate"), dateFrom));
+                        }
+                        if (StringUtils.isNotEmpty(dateTo)) {
+                            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("deliveryDate"), dateTo));
+                        }
+                        break;
+                    case "receivedDate":
+                        if (StringUtils.isNotEmpty(dateFrom)) {
+                            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("receivedDate"), dateFrom));
+                        }
+                        if (StringUtils.isNotEmpty(dateTo)) {
+                            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("receivedDate"), dateTo));
+                        }
+                        break;
+                    case "bookDate":
+                        if (StringUtils.isNotEmpty(dateFrom)) {
+                            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("bookDate"), dateFrom));
+                        }
+                        if (StringUtils.isNotEmpty(dateTo)) {
+                            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("bookDate"), dateTo));
+                        }
+                        break;
+                    default:
+                        break;
+                }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         };
-        return purchaseDetailRepository.findAll(specification, pageRequest).getContent();
+        return purchaseProductViewRepository.findAll(specification, pageRequest).getContent();
     }
 }
