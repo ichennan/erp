@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
+import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
 import com.fiveamazon.erp.dto.ShipmentDetailDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ExcelService;
@@ -106,6 +107,21 @@ public class PurchaseController extends SimpleCommonController {
 		JSONObject rs = new JSONObject();
 		PurchaseDetailPO purchaseDetailPO = purchaseService.saveDetail(purchaseDetailDTO);
 		rs.put("data", purchaseDetailPO.toJson());
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	//
+
+	@RequestMapping(value = "/findAllProducts", method= RequestMethod.POST)
+	public String findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO){
+		JSONObject rs = new JSONObject();
+		JSONArray array = new JSONArray();
+		List<PurchaseDetailPO> list = purchaseService.findAllProducts(purchaseProductSearchDTO);
+		for(PurchaseDetailPO item: list){
+			array.put(item.toJson());
+		}
+		rs.put("array", array);
 		rs.put("error", false);
 		return rs.toString();
 	}

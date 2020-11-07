@@ -49,4 +49,13 @@
     var datePattern = "^\\d{8}$";
     $(".datePattern").attr("title", "例如: 20191231").attr("pattern", datePattern);
 
+    $.leftPad0 = function(length, number){
+        var fullNumber = number + "";
+        var numberLength = fullNumber.length;
+        for(var i = 0; i < length - numberLength; i++){
+            fullNumber = "0" + fullNumber;
+        }
+        return fullNumber;
+    }
+
 })(jQuery);

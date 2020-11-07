@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
+import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
@@ -13,12 +14,23 @@ import com.fiveamazon.erp.repository.PurchaseViewRepository;
 import com.fiveamazon.erp.service.ProductService;
 import com.fiveamazon.erp.service.PurchaseService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -171,5 +183,50 @@ public class PurchaseServiceImpl implements PurchaseService {
             //
             productService.updatePurchasePrice(productId, danjia);
         }
+    }
+
+    @Override
+    public List<PurchaseDetailPO> findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO) {
+        String dateFrom = purchaseProductSearchDTO.getDateFrom();
+        String dateTo = purchaseProductSearchDTO.getDateTo();
+        String dateType = purchaseProductSearchDTO.getDateType();
+        String productId = purchaseProductSearchDTO.getProductId();
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(0, 100000000, sort);
+        Specification<PurchaseDetailPO> specification = new Specification<PurchaseDetailPO>() {
+            @Override
+            public Predicate toPredicate(Root root, CriteriaQuery criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+                if (StringUtils.isNotEmpty(productId)) {
+                    predicates.add(criteriaBuilder.equal(root.get("productId"), productId));
+                }
+
+//                if (StringUtils.isNotEmpty(accessLogSearchDTO.getAccessUser())) {
+//                    predicates.add(criteriaBuilder.equal(root.get("accessUser"), accessLogSearchDTO.getAccessUser()));
+//                }
+//
+//
+//                SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHH:mm:ss");
+//                if (StringUtils.isNotEmpty(accessLogSearchDTO.getAccessDateFrom())) {
+//                    try {
+//                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("accessDate"), sdf.parse(UpiDateUtils.toStr(accessLogSearchDTO.getAccessDateFrom()))));
+//                    } catch (ParseException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                if (StringUtils.isNotEmpty(accessLogSearchDTO.getAccessDateTo())) {
+//                    try {
+//                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("accessDate"), sdf.parse(UpiDateUtils.toStr(accessLogSearchDTO.getAccessDateTo()))));
+//                    } catch (ParseException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//                }
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
+        return purchaseDetailRepository.findAll(specification, pageRequest).getContent();
     }
 }

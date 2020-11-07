@@ -1,3 +1,4 @@
+jQuery.datetimepicker.setLocale('ch');
 ;
 var detailId = 0;
 var detailListDetailId = 0;
@@ -17,12 +18,61 @@ $(document).ready(function(){
         } else {
             detailId = 0;
             showList();
+            showListProducts();
         }
     }).trigger("hashchange");
 
     parent.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
 
+    console.log("parent.$.cacheProducts");
+    var $searchProductIdSelect = $("[sid=productId]");
+    var searchProductIdSelectData = [];
+    $.each(parent.$.cacheProducts, function(productId, productObj){
+        var optionObj = {};
+        optionObj.id = productObj.id;
+        optionObj.text = productObj.snname;
+        searchProductIdSelectData.push(optionObj);
+    });
+    $searchProductIdSelect.select2({
+        data: searchProductIdSelectData,
+        placeholder:'请选择',
+        allowClear:true,
+        width: "100%"
+    })
+
+    $(".datetimepicker").datetimepicker({
+        todayButton: true,
+        timepicker:false,
+        format:'Y-m-d'
+    });
+
+    $("span.searchDateType").click(function () {
+        var $this = $(this);
+        $("span.searchDateType").removeClass("selected");
+        $this.addClass("selected");
+    })
+
+    $("span.searchDateRange").click(function () {
+        var $this = $(this);
+        $("span.searchDateRange").removeClass("selected");
+        $this.addClass("selected");
+        var searchDateRange = $this.attr("searchDateRange");
+        var dateTo = moment($("[sid=dateTo]").val());
+        var dateFrom = moment(dateTo).add(-1 * searchDateRange, 'months').calendar();
+        dateFrom = moment(dateFrom).add(1, 'days').calendar();
+        console.log(dateTo);
+        console.log(dateFrom);
+        $("[sid=dateFrom]").val(moment(dateFrom).format("YYYY-MM-DD")).trigger("change");
+    })
+
+    resetSearch();
 });
+
+function resetSearch(){
+    $("[sid=dateTo]").val(moment().format("YYYY-MM-DD")).trigger("change");
+    $("span.defaultSelected").trigger("click");
+    $("[sid=productId]").val("").trigger("change");
+}
 
 function showList(){
     console.log("showList()");
@@ -98,6 +148,7 @@ function showList(){
 }
 
 function toDetail(id){
+    console.log("toDetail: " + id);
     location.hash == "#detailId=" + id ? $(window).trigger('hashchange') : location.hash = "#detailId=" + id;
 }
 
@@ -416,4 +467,110 @@ function null2zero(abc){
         return abc * 1;
     }
     return 0;
+}
+
+//
+
+
+
+function showListProducts(){
+    console.log("showListProducts()");
+    $("#tableBox").show();
+    $("#contentBox").hide();
+    $("#detailListProductsBox").hide();
+    //
+    $("#listTableProducts").remove();
+    $("#listTableProducts_wrapper").remove();
+    var listTable = $("<table class='table table-bordered data-table' id='listTableProducts'></table>");
+    var thead = $("<thead><tr></tr></thead>");
+    var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
+    var theadNames = ['上传日期', '发货日期', '收货日期', '供应商','采购产品','产品数量','采购价格'];
+    $.each(theadNames, function (index, obj) {
+        thead.find("tr").append("<th>" + obj + "</th>");
+        theadSearch.find("tr").append("<th><input style='width:1px'></th>");
+    })
+    var tbody = $("<tbody></tbody>");
+    listTable.append(thead).append(theadSearch).append(tbody);
+    $("#tableDivProducts").append(listTable);
+    var data = {};
+    data.dateFrom = $("[sid=dateFrom]").val();
+    data.dateTo = $("[sid=dateTo]").val();
+    data.productId = $("[sid=productId]").val();
+    var ajaxUrl = 'findAllProducts'
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log(rs);
+            $.each(rs.array, function (index, obj) {
+                console.log("purchaseId: " + obj.purchaseId);
+                var tr = $("<tr></tr>");
+                var tds = [obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.supplier, parent.$.cacheProducts["id" + obj.productId].snname, obj.receivedQuantity, obj.unitPrice];
+                $.each(tds, function (index_2, obj_2) {
+                    obj_2 = obj_2 ? obj_2 : "";
+                    var td = $("<td>" + obj_2 + "</td>");
+                    td.attr("columnName", theadNames[index_2]);
+                    tr.append(td);
+                })
+                tr.click(function () {
+                    toDetail(obj.purchaseId);
+                });
+                tbody.append(tr);
+            });
+
+            var datatable = $('#listTableProducts').DataTable({
+                "bJQueryUI": true,
+                "sPaginationType": "full_numbers",
+                "ordering": true,
+                "bSort": true,
+                "language": $.dataTablesLanguage,
+                "pageLength": 1000000,
+                "order": [[ 0, "desc" ]],
+            });
+
+            theadSearch.find('input').css("width", "100%");
+            $("#listTableProducts_filter, #listTableProducts_length").css("display", "none");
+
+            datatable.columns().eq( 0 ).each( function ( colIdx ) {
+                $( 'input', datatable.column( colIdx ).header2() ).on( 'keyup change', function () {
+                    datatable
+                        .column( colIdx )
+                        .search( this.value )
+                        .draw();
+
+                    // console.log("---------------");
+                    // console.log($("#listTableProducts").find("tr").length);
+                    // console.log($("#listTableProducts").find("tr:visible").length);
+
+
+                    calculatePurchaseProductsQuanity();
+
+                } );
+            } );
+
+            calculatePurchaseProductsQuanity();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $.showErrorModal(XMLHttpRequest.responseText);
+            console.log("error");
+        },
+        complete: function () {
+        }
+    });
+}
+
+function calculatePurchaseProductsQuanity(){
+    var sumQuantity = 0;
+    var sumPrice = 0;
+    $("#listTableProducts").find("tr:visible").each(function () {
+        var $this = $(this);
+        var quantity = $this.find("td[columnName = 产品数量]").text() * 1;
+        var price = $this.find("td[columnName = 采购价格]").text() * 1;
+        sumQuantity = sumQuantity + quantity;
+        sumPrice = sumPrice + quantity * price;
+    })
+    $("#sumQuantity").text(sumQuantity);
+    $("#sumPrice").text(sumPrice);
 }
