@@ -1,0 +1,28 @@
+server:
+  port: 10086
+spring:
+  servlet:
+    multipart:
+      location: /Users/nan/temp/erp_upload_temp
+  datasource:
+#    url: jdbc:mysql://39.108.89.163:3306/5amazon-test?characterEncoding=utf8&useSSL=true
+#    url: jdbc:mysql://39.100.134.141:3306/5amazon2020?characterEncoding=utf8&useSSL=true
+#    username: root
+#    password: Root3)))
+
+
+#    prod
+#    url: jdbc:mysql://rm-8vbr781a847hi2mnnco.mysql.zhangbei.rds.aliyuncs.com:3306/5amazon2020?characterEncoding=utf8&useSSL=true
+#    username: terry
+#    password: Root3)))
+
+
+#    local
+    url: jdbc:mysql://localhost:3306/5amazonLocal?characterEncoding=utf8&useSSL=true
+    username: root
+    password: Root3)))
+simple:
+  folder:
+    image:
+      product: /Users/nan/Test/5amazon/img/productImg/
+#      product: E://Test/5amazon/img/productImg/
