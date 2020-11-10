@@ -6,13 +6,84 @@
 <div class="wrapper">
     <div class="content-wrapper">
         <section class="content">
-            <div class="row" id="tableBox">
+
+            <div class="row" id="searchBox">
                 <div class="col-md-12">
                     <div class="box box-info">
+                        <div class="box-header with-border">
+                            <div class="form-group">
+                                <div class="col-xs-6">
+                                    <span class="tableType spanOption defaultSelected" tableType="shipmentList">按批次</span>
+                                    <span class="tableType spanOption" tableType="shipmentProductList">按产品</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- form start -->
+                        <form id="searchForm" action="#" class="form-horizontal" tableType="shipmentProductList">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <div class="col-xs-6">
+                                        <span class="searchDateType spanOption" searchDateType="excelDate">上传日期</span>
+                                        <span class="searchDateType spanOption defaultSelected" searchDateType="deliveryDate">发货日期</span>
+                                        <span class="searchDateType spanOption" searchDateType="signedDate">签收日期</span>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <select class="form-control select2" sid="productId">
+                                            <option value="">------产品选择------</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-6">
+                                        <span class="searchDateRange spanOption" searchDateRange="1">近一个月</span>
+                                        <span class="searchDateRange spanOption" searchDateRange="3">近三个月</span>
+                                        <span class="searchDateRange spanOption defaultSelected" searchDateRange="6">近半年</span>
+                                        <span class="searchDateRange spanOption" searchDateRange="12">近一年</span>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control datePattern datetimepicker" sid="dateFrom" placeholder="From" />
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <input class="form-control datePattern datetimepicker" sid="dateTo" placeholder="To" />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-success create" onclick="showListProducts()">搜索</button>
+                                    <button type="button" class="btn btn-default cancel" onclick="resetSearch()">重置</button>
+                                    <button type="submit" class="hide"></button>
+                                </div>
+                            </div>
+                            <!-- /.box-footer -->
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row" id="tableBox">
+                <div class="col-md-12">
+                    <div class="box box-info" tableType="shipmentList">
                         <div class="box-header with-border">
                             <a href="#detailId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增FBA</a>
                         </div>
                         <div class="box-body" id="tableDiv">
+                        </div>
+                    </div>
+                    <div class="box box-info" tableType="shipmentProductList">
+                        <div class="box-header with-border text-right">
+                            <span>数量:</span>
+                            <span id="sumQuantity">数量</span>
+                            <span> 价格:</span>
+                            <span id="sumPrice">价格</span>
+                        </div>
+                        <div class="box-body" id="tableDivProducts">
                         </div>
                     </div>
                 </div>
@@ -38,17 +109,12 @@
 
                             <div class="box-body">
                                 <input type="hidden" pid="id"/>
+                                <input type="hidden" pid="excelId"/>
                                 <div class="form-group">
                                     <label class="col-xs-3 control-label">店铺 <span class="required hide">*</span></label>
                                     <div class="col-xs-9">
                                         <input class="form-control" readonly pid="storeId" type="hidden"/>
                                         <input class="form-control" readonly pid="storeName"/>
-                                    </div>
-                                </div>
-                                <div class="form-group hidden">
-                                    <label class="col-xs-3 control-label">总重量 <span class="required hide">*</span></label>
-                                    <div class="col-xs-9">
-                                        <input class="form-control" disabled="disabled" pid="weight"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -61,6 +127,12 @@
                                     <label class="col-xs-3 control-label">箱数 <span class="required hide">*</span></label>
                                     <div class="col-xs-9">
                                         <input class="form-control" disabled="disabled" pid="boxCount"/>
+                                    </div>
+                                </div>
+                                <div class="form-group hidden">
+                                    <label class="col-xs-3 control-label">总重量 <span class="required hide">*</span></label>
+                                    <div class="col-xs-9">
+                                        <input class="form-control" disabled="disabled" pid="weight"/>
                                     </div>
                                 </div>
                                 <div class="form-group">

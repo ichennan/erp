@@ -10,26 +10,31 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "tbl_shipment")
-public class ShipmentPO extends SimpleCommonEntity {
-    String excelDate;
-    Integer excelId;
+@Table(name = "view_shipment_product")
+public class ShipmentProductViewPO extends SimpleCommonEntity {
+    Integer shipmentId;
+    String box;
+    Integer productId;
+    Integer quantity;
+    BigDecimal weight;
+    Integer skuId;
+    //
     String deliveryDate;
     String carrier;
     String route;
     String fbaNo;
-    BigDecimal unitPrice;
-    BigDecimal weight;
-    BigDecimal chargeWeight;
-    BigDecimal amount;
     String paymentDate;
     String signedDate;
     String store;
     String statusDelivery;
-    Integer boxCount;
     String trackingNumber;
     Integer storeId;
-    String weightRemark;
+    String excelDate;
+    Integer excelId;
+    //
+    String sku;
+    String fnsku;
+    String asin;
 
     public JSONObject toJson(){
         return new JSONObject(this);

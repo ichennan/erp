@@ -22,5 +22,6 @@ public class ShipmentDTO extends SimpleCommonDTO {
     String statusDelivery;
     Integer boxCount;
     String trackingNumber;
+    Integer excelId;
     List<ShipmentDetailDTO> shipmentDetailList;
 }

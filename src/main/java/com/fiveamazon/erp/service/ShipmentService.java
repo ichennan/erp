@@ -2,9 +2,7 @@ package com.fiveamazon.erp.service;
 
 
 import com.fiveamazon.erp.dto.*;
-import com.fiveamazon.erp.entity.ShipmentDetailPO;
-import com.fiveamazon.erp.entity.ShipmentPO;
-import com.fiveamazon.erp.entity.ShipmentViewPO;
+import com.fiveamazon.erp.entity.*;
 
 import java.util.List;
 
@@ -32,4 +30,6 @@ public interface ShipmentService {
     ShipmentDetailPO saveDetail(ShipmentDetailDTO shipmentDetailDTO);
 
     void createByExcel(UploadFbaDTO uploadFbaDTO);
+
+    List<ShipmentProductViewPO> findAllProducts(ShipmentProductSearchDTO searchDTO);
 }

@@ -159,10 +159,11 @@ public class ExcelServiceImpl implements ExcelService {
                     for(int i=11; i <= 40; i++){
                         String cellString = boxCountJson.getStr("column" + i);
                         if(StringUtils.isNotBlank(cellString)){
-                            weightRemark = weightRemark + cellString + " + ";
+                            weightRemark = weightRemark + "+" + cellString;
                             sumWeight = sumWeight.add(new BigDecimal(cellString));
                         }
                     }
+                    weightRemark = weightRemark.replaceFirst("\\+", "") + " = " + sumWeight;
                 }else{
                     log.warn(column00);
                 }
@@ -177,14 +178,17 @@ public class ExcelServiceImpl implements ExcelService {
         excelFbaRepository.save(excelFbaPO);
         Integer storeId = null;
         for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
+            log.info("merchantSKU: " + excelFbaPackListPO.getMerchantSku());
             String sku = excelFbaPackListPO.getMerchantSku();
             excelFbaPackListPO.setExcelId(excelId);
             List<SkuInfoPO> skuInfoPOList = skuService.findBySku(sku);
             if(skuInfoPOList == null || skuInfoPOList.size() == 0){
+                log.info("merchantSKU not found");
                 excelFbaPackListRepository.save(excelFbaPackListPO);
                 continue;
             }
             for(SkuInfoPO skuInfoPO : skuInfoPOList){
+                log.info("merchantSKU found skuId: " + skuInfoPO.getId());
                 ExcelFbaPackListPO skuExcelFbaPackListPO = new ExcelFbaPackListPO();
                 BeanUtils.copyProperties(excelFbaPackListPO, skuExcelFbaPackListPO);
                 skuExcelFbaPackListPO.setProductId(skuInfoPO.getProductId());

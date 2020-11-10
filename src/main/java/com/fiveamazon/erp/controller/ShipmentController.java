@@ -3,11 +3,11 @@ package com.fiveamazon.erp.controller;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonController;
+import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
 import com.fiveamazon.erp.dto.ShipmentDTO;
 import com.fiveamazon.erp.dto.ShipmentDetailDTO;
-import com.fiveamazon.erp.entity.ShipmentDetailPO;
-import com.fiveamazon.erp.entity.ShipmentPO;
-import com.fiveamazon.erp.entity.ShipmentViewPO;
+import com.fiveamazon.erp.dto.ShipmentProductSearchDTO;
+import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ShipmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +99,21 @@ public class ShipmentController extends SimpleCommonController {
 		JSONObject rs = new JSONObject();
 		ShipmentDetailPO shipmentDetailPO = shipmentService.saveDetail(shipmentDetailDTO);
 		rs.put("data", shipmentDetailPO == null ? null : shipmentDetailPO.toJson());
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	//
+
+	@RequestMapping(value = "/findAllProducts", method= RequestMethod.POST)
+	public String findAllProducts(ShipmentProductSearchDTO searchDTO){
+		JSONObject rs = new JSONObject();
+		JSONArray array = new JSONArray();
+		List<ShipmentProductViewPO> list = shipmentService.findAllProducts(searchDTO);
+		for(ShipmentProductViewPO item: list){
+			array.put(item.toJson());
+		}
+		rs.put("array", array);
 		rs.put("error", false);
 		return rs.toString();
 	}
