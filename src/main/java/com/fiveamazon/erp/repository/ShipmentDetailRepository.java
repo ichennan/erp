@@ -16,6 +16,8 @@ public interface ShipmentDetailRepository extends JpaRepository<ShipmentDetailPO
     List<ShipmentDetailPO> findAllByShipmentIdOrderByBox(Integer shipmentId);
     void deleteByShipmentIdEqualsAndBoxNotLike(Integer shipmentId, String plan);
 
+    Long countBySkuIdEquals(Integer skuId);
+
 //    @Query("select new com.fiveamazon.erp.dto.ShipmentDetailViewDTO(sd, s) from ShipmentDetailPO sd left join ShipmentPO s on  sd.shipmentId = s.id where sd.box <> 'Plan' and sd.productId = :productId")
 //    List<ShipmentDetailViewDTO> findByProductId(Integer productId);
 

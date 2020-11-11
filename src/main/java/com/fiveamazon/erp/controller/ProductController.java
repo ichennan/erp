@@ -5,7 +5,10 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.dto.ProductDTO;
+import com.fiveamazon.erp.dto.PurchaseDetailDTO;
+import com.fiveamazon.erp.dto.SkuInfoDTO;
 import com.fiveamazon.erp.entity.ProductPO;
+import com.fiveamazon.erp.entity.PurchaseDetailPO;
 import com.fiveamazon.erp.entity.SkuInfoPO;
 import com.fiveamazon.erp.entity.StorePO;
 import com.fiveamazon.erp.service.ProductService;
@@ -112,14 +115,38 @@ public class ProductController extends SimpleCommonController {
 		JSONObject rs = new JSONObject();
 		ProductPO productPO = productService.getById(id);
 		JSONObject dataJson = productPO.toJson();
-		JSONArray skuArray = new JSONArray();
-		List<SkuInfoPO> skuInfoPOList = skuService.findByProductId(id);
-		for(SkuInfoPO skuInfoPO : skuInfoPOList){
-			JSONObject skuJson = new JSONObject(skuInfoPO);
-			skuArray.put(skuJson);
-		}
 		rs.put("data", dataJson);
-		rs.put("skuArray", skuArray);
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/findSkus", method= RequestMethod.POST)
+	public String findSkus(@RequestParam("productId")Integer productId){
+		JSONObject rs = new JSONObject();
+		JSONArray array = new JSONArray();
+		List<SkuInfoPO> list = skuService.findByProductId(productId);
+		for(SkuInfoPO item: list){
+			array.put(item.toJson());
+		}
+		rs.put("array", array);
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/getSku", method= RequestMethod.POST)
+	public String getSku(@RequestParam("skuId")Integer skuId){
+		JSONObject rs = new JSONObject();
+		SkuInfoPO item = skuService.getById(skuId);
+		rs.put("data", item.toJson());
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/saveSku", method= RequestMethod.POST)
+	public String saveSku(SkuInfoDTO skuInfoDTO){
+		skuInfoDTO.setUsername(getUsername());
+		JSONObject rs = new JSONObject();
+		skuService.save(skuInfoDTO);
 		rs.put("error", false);
 		return rs.toString();
 	}

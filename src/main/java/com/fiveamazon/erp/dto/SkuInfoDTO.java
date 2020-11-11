@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 public class SkuInfoDTO extends SimpleCommonDTO {
+    Integer productId;
     String sku;
     String fnsku;
     Integer storeId;

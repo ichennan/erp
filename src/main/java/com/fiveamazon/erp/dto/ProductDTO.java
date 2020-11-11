@@ -16,5 +16,4 @@ public class ProductDTO extends SimpleCommonDTO {
     Integer enabledPacketSeq;
     BigDecimal purchasePrice;
     String store;
-    List<SkuInfoDTO> skuArray;
 }

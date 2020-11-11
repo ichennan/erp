@@ -1,15 +1,17 @@
 package com.fiveamazon.erp.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.fiveamazon.erp.common.SimpleCommonException;
+import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.dto.SkuInfoDTO;
-import com.fiveamazon.erp.entity.SkuInfoPO;
-import com.fiveamazon.erp.entity.SkuInfoVO;
-import com.fiveamazon.erp.entity.SnapshotSkuPO;
+import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.SkuInfoRepository;
 import com.fiveamazon.erp.repository.SkuInfoViewRepository;
 import com.fiveamazon.erp.repository.SnapshotSkuRepository;
+import com.fiveamazon.erp.service.ShipmentService;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,9 @@ public class SkuServiceImpl implements SkuService {
     @Autowired
     private SnapshotSkuRepository snapshotSkuRepository;
 
+    @Autowired
+    ShipmentService shipmentService;
+
     @Override
     public SkuInfoPO getById(Integer id) {
         return skuInfoRepository.getOne(id);
@@ -45,29 +50,46 @@ public class SkuServiceImpl implements SkuService {
     }
 
     @Override
-    public void save(SkuInfoPO skuInfoPO) {
+    public SkuInfoPO save(SkuInfoPO skuInfoPO) {
         //for unique key sku
         if(StringUtils.isEmpty(skuInfoPO.getSku())){
             skuInfoPO.setSku(null);
         }
         skuInfoPO.setCombineId(1);
-        skuInfoRepository.save(skuInfoPO);
+        return skuInfoRepository.save(skuInfoPO);
     }
 
     @Override
-    public void save(ProductDTO productDTO) {
-        log.warn("SkuServiceImpl.save");
-        log.warn(new JSONObject(productDTO).toString());
-        Integer productId = productDTO.getId();
-        skuInfoRepository.deleteAllByProductId(productId);
-        List<SkuInfoDTO> skuInfoDTOList = productDTO.getSkuArray();
-        for(SkuInfoDTO skuInfoDTO : skuInfoDTOList){
-            SkuInfoPO skuInfoPO = new SkuInfoPO();
-            BeanUtils.copyProperties(skuInfoDTO, skuInfoPO, "id");
-            skuInfoPO.setCreateDate(new Date());
-            skuInfoPO.setProductId(productId);
-            save(skuInfoPO);
+    public SkuInfoPO save(SkuInfoDTO skuInfoDTO) {
+        log.warn("SkuServiceImpl.save" + new JSONObject(skuInfoDTO).toString());
+        Integer skuId = skuInfoDTO.getId();
+        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(skuInfoDTO.getAction())){
+            if(shipmentService.countBySkuId(skuId) > 0){
+                throw new SimpleCommonException("该SKU 已存在于FBA表中，无法删除，请联系管理员");
+            }
+            skuInfoRepository.deleteById(skuId);
+            return null;
         }
+        SkuInfoPO skuInfoPO;
+        if(skuId == null || skuId == 0){
+            skuInfoPO = new SkuInfoPO();
+            BeanUtil.copyProperties(skuInfoDTO, skuInfoPO,  "id");
+            skuInfoPO.setCreateDate(new Date());
+            skuInfoPO.setCreateUser(skuInfoDTO.getUsername());
+            skuInfoPO = save(skuInfoPO);
+        }else{
+            skuInfoPO = getById(skuId);
+            if(!skuInfoPO.getSku().equals(skuInfoDTO.getSku())){
+                if(shipmentService.countBySkuId(skuId) > 0){
+                    throw new SimpleCommonException("该SKU 已存在于FBA表中，无法更改，请联系管理员");
+                }
+            }
+            BeanUtils.copyProperties(skuInfoDTO, skuInfoPO, "id");
+            skuInfoPO.setUpdateDate(new Date());
+            skuInfoPO.setUpdateUser(skuInfoDTO.getUsername());
+            skuInfoPO = save(skuInfoPO);
+        }
+        return skuInfoPO;
     }
 
     @Override
@@ -168,4 +190,6 @@ public class SkuServiceImpl implements SkuService {
         }
         return rs;
     }
+
+
 }

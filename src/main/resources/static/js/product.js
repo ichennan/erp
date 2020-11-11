@@ -1,6 +1,8 @@
 ;
 var detailId = 0;
+var skuId = 0;
 var $contentForm = $("#contentForm");
+var $skuContentForm = $("#skuContentForm");
 var ajaxCtx = 'product/'
 $(document).ready(function(){
     $(window).on("hashchange",function () {
@@ -133,6 +135,7 @@ function showDetail(){
     console.log("showDetail: " + detailId);
     $("#tableBox").hide();
     $("#contentBox").show();
+    $("#skuTable").remove();
     //
     $contentForm.find("[pid]").each(function () {
         $(this).val("").trigger("change");
@@ -166,16 +169,6 @@ function showDetail(){
                 var jpa = rs.data[$(this).attr("pid")];
                 $(this).val(jpa).trigger("change");
             });
-            if(rs.skuArray){
-                $.each(rs.skuArray, function(index, obj){
-                    var skuDivNo = index + 1;
-                    var skuDiv = $contentForm.find("[skuDiv=" + skuDivNo + "]");
-                    skuDiv.find("[sid]").each(function () {
-                        var jpa = obj[$(this).attr("sid")];
-                        $(this).val(jpa).trigger("change");
-                    });
-                })
-            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("getDetail.error");
@@ -186,6 +179,8 @@ function showDetail(){
             console.log("getDetail.complete");
         }
     });
+
+    showSkuList();
 }
 
 function saveDetail(action){
@@ -195,21 +190,9 @@ function saveDetail(action){
     }
     var data = {};
     data.action = action;
-    var skuArray = [];
     $contentForm.find("[pid]").each(function () {
         data[$(this).attr("pid")] = $(this).val();
     });
-    $contentForm.find("[skuDiv]").each(function () {
-        var $this = $(this);
-        var skuJson = {};
-        $this.find("[sid]").each(function () {
-            skuJson[$(this).attr("sid")] = $(this).val();
-        });
-        if(skuJson.storeId){
-            skuArray.push(skuJson);
-        }
-    });
-    data.skuArray = skuArray;
     console.log(data);
     var ajaxUrl = 'saveDetail';
     $.ajax({
@@ -272,7 +255,7 @@ function setStore(){
                 var option = $("<option></option>");
                 option.val(obj.id);
                 option.text(obj.name);
-                $("[sid=storeId]").append(option);
+                $("[pid=storeId]").append(option);
             })
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -285,4 +268,174 @@ function setStore(){
         }
     });
 
+}
+
+//
+
+// detailList
+
+function showSkuList(){
+    console.log("showDetailList()");
+    //
+    var skuTable = $("<table class='table table-bordered data-table' id='skuTable'></table>");
+    var thead = $("<thead><tr></tr></thead>");
+    var theadNames = ['店铺', 'SKU', 'FNSKU', 'ASIN'];
+    $.each(theadNames, function (index, obj) {
+        thead.find("tr").append("<th>" + obj + "</th>");
+    })
+    var tbody = $("<tbody></tbody>");
+    skuTable.append(thead).append(tbody);
+    $("#skuTableDiv").append(skuTable);
+    var data = {};
+    data.productId = detailId;
+    var ajaxUrl = 'findSkus'
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log(rs);
+            $.each(rs.array, function (index, obj) {
+                var tr = $("<tr></tr>");
+                var tds = [parent.$.retrieveStoreName(obj.storeId), obj.sku, obj.fnsku, obj.asin];
+                $.each(tds, function (index_2, obj_2) {
+                    obj_2 = obj_2 ? obj_2 : "";
+                    tr.append("<td>" + obj_2 + "</td>");
+                })
+                tr.click(function () {
+                    showSkuContentModal(obj.id);
+                });
+                tbody.append(tr);
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $.showErrorModal(XMLHttpRequest.responseText);
+            console.log("error");
+        },
+        complete: function () {
+        }
+    });
+}
+
+function showSkuContentModal(id){
+    $('#skuContentModal').modal('show');
+    skuId = id;
+    console.log("showSkuContentModal: " + skuId);
+    //
+    console.log($skuContentForm.find("[pid]").length);
+    $skuContentForm.find("[pid]").each(function () {
+        $(this).val("").trigger("change");
+    });
+    if(skuId - 0 == 0){
+        $skuContentForm.find("button.update").hide();
+        $skuContentForm.find("button.create").show();
+        return;
+    }
+    $skuContentForm.find("button.update").show();
+    $skuContentForm.find("button.create").hide();
+
+    var data = {};
+    data.skuId = skuId;
+    var ajaxUrl = 'getSku';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log("getSku.success");
+            console.log(rs);
+            console.log($skuContentForm.find("[pid]").length);
+            $skuContentForm.find("[pid]").each(function () {
+                console.log($(this).attr("pid"));
+                var jpa = rs.data[$(this).attr("pid")];
+                $(this).val(jpa).trigger("change");
+            });
+        },
+        error: function (XMLHttpRequest) {
+            console.log("getSku.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("getSku.complete");
+        }
+    });
+
+}
+
+function deleteSku(){
+    deleteConfirm(saveSku);
+}
+
+
+function saveSku(action){
+    console.log("saveSku: " + action);
+    if(action != 'delete' && !validateForm()){
+        return false;
+    }
+    var data = {};
+    data.action = action;
+    $skuContentForm.find("[pid]").each(function () {
+        data[$(this).attr("pid")] = $(this).val();
+    });
+    data.productId = detailId;
+    console.log(data);
+    var ajaxUrl = 'saveSku';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log("saveSku.success");
+            console.log(rs);
+            $('#skuContentModal').modal('hide');
+            toDetail(detailId);
+            $.showToastr();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("saveSku.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("saveSku.complete");
+        }
+    });
+}
+
+function deleteConfirm(fc) {
+    var randomNumber = parseInt(10*Math.random());
+    $.confirm({
+        title: '删除确认框',
+        content: '' +
+            '<div class="form-group">' +
+            '<label>即将删除，确认请输入数字: ' + randomNumber + '</label>' +
+            '<input type="text" placeholder="请输入数字以确认删除" class="randomNumber form-control" required />' +
+            '</div>',
+        buttons: {
+            ok: {
+                text: '确认',
+                btnClass: 'btn-blue',
+                action: function () {
+                    var randomNumberInput = this.$content.find('.randomNumber').val();
+                    if(!randomNumberInput || (randomNumber - randomNumberInput != 0)){
+                        $.alert('请输入正确数字以确认删除');
+                        return false;
+                    }
+                    fc("delete");
+                }
+            },
+            cancel: {
+                text: "取消",
+                btnClass: 'btn',
+                keys: ['esc'],
+                action:function () {
+                    return;
+                }
+            }
+        }
+    });
 }

@@ -32,4 +32,6 @@ public interface ShipmentService {
     void createByExcel(UploadFbaDTO uploadFbaDTO);
 
     List<ShipmentProductViewPO> findAllProducts(ShipmentProductSearchDTO searchDTO);
+
+    Long countBySkuId(Integer skuId);
 }

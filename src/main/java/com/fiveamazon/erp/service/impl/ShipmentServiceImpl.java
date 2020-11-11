@@ -293,5 +293,8 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
 
-
+    @Override
+    public Long countBySkuId(Integer skuId) {
+        return shipmentDetailRepository.countBySkuIdEquals(skuId);
+    }
 }

@@ -71,22 +71,16 @@ public class ProductServiceImpl implements ProductService {
         ProductPO productPO;
         if(productId == null || productId == 0){
             productPO = new ProductPO();
+            BeanUtil.copyProperties(productDTO, productPO,  "id");
             productPO.setCreateDate(new Date());
             productPO.setCreateUser(productDTO.getUsername());
-            BeanUtil.copyProperties(productDTO, productPO,  "id");
             productPO = save(productPO);
-            productDTO.setId(productPO.getId());
-            skuService.save(productDTO);
         }else{
             productPO = getById(productId);
-            if("updateSku".equalsIgnoreCase(productDTO.getAction())){
-                skuService.save(productDTO);
-            }else{
-                productPO.setUpdateDate(new Date());
-                productPO.setUpdateUser(productDTO.getUsername());
-                BeanUtils.copyProperties(productDTO, productPO, "id");
-                productPO = save(productPO);
-            }
+            BeanUtils.copyProperties(productDTO, productPO, "id");
+            productPO.setUpdateDate(new Date());
+            productPO.setUpdateUser(productDTO.getUsername());
+            productPO = save(productPO);
         }
         return productPO;
 

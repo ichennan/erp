@@ -3,6 +3,7 @@ package com.fiveamazon.erp.service;
 
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
+import com.fiveamazon.erp.dto.SkuInfoDTO;
 import com.fiveamazon.erp.entity.*;
 
 import java.util.List;
@@ -14,8 +15,8 @@ import java.util.List;
 public interface SkuService {
     SkuInfoPO getById(Integer id);
     SkuInfoVO getViewById(Integer id);
-    void save(SkuInfoPO skuInfoPO);
-    void save(ProductDTO productDTO);
+    SkuInfoPO save(SkuInfoPO skuInfoPO);
+    SkuInfoPO save(SkuInfoDTO skuInfoDTO);
     List<SkuInfoPO> findByProductId(Integer productId);
     List<SkuInfoPO> findBySku(String sku);
     List<SkuInfoVO> findAll();
