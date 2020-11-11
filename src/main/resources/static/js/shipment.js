@@ -5,12 +5,12 @@ var $contentForm = $("#contentForm");
 var $detailListContentForm = $("#detailListContentForm");
 var originalBoxDetailListString;
 var ajaxCtx = 'shipment/';
-var autoSaveAlertTimer;
+// var autoSaveAlertTimer;
 $(document).ready(function(){
     $(window).on("hashchange",function () {
-        if(autoSaveAlertTimer){
-            clearInterval(autoSaveAlertTimer);
-        }
+        // if(autoSaveAlertTimer){
+        //     clearInterval(autoSaveAlertTimer);
+        // }
         var hash = location.hash ? location.hash : '';
         var hash6 = hash.substring(0, 7).toString();
         console.log('hashChange to ' + hash);
@@ -87,35 +87,35 @@ function resetSearch(){
     $("[sid=productId]").val("").trigger("change");
 }
 
-function autoSaveAlert() {
-    console.log("autoSaveAlert()");
-    if(originalBoxDetailListString == JSON.stringify(getBoxDetailList())){
-    }else{
-        $.confirm({
-            title: '确认框',
-            content: '每5分钟提醒: 装箱详情或FBA详情有更改尚未保存，系统将自动保存',
-            autoClose: 'cancel|61000',
-            buttons: {
-                ok: {
-                    text: "确定",
-                    btnClass: 'btn-primary',
-                    keys: ['enter'],
-                    action: function(){
-                        saveDetail("update");
-                    }
-                },
-                cancel: {
-                    text: "取消",
-                    btnClass: 'btn',
-                    keys: ['esc'],
-                    action:function () {
-                        return;
-                    }
-                }
-            }
-        });
-    }
-}
+// function autoSaveAlert() {
+//     console.log("autoSaveAlert()");
+//     if(originalBoxDetailListString == JSON.stringify(getBoxDetailList())){
+//     }else{
+//         $.confirm({
+//             title: '确认框',
+//             content: '每5分钟提醒: 装箱详情或FBA详情有更改尚未保存，系统将自动保存',
+//             autoClose: 'cancel|61000',
+//             buttons: {
+//                 ok: {
+//                     text: "确定",
+//                     btnClass: 'btn-primary',
+//                     keys: ['enter'],
+//                     action: function(){
+//                         saveDetail("update");
+//                     }
+//                 },
+//                 cancel: {
+//                     text: "取消",
+//                     btnClass: 'btn',
+//                     keys: ['esc'],
+//                     action:function () {
+//                         return;
+//                     }
+//                 }
+//             }
+//         });
+//     }
+// }
 
 function showList(){
     console.log("showList()");
@@ -128,7 +128,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['上传日期','发货日期','签收日期','FBA No.','货代', '线路','箱数 称重 单价','店铺','采购产品'];
+    var theadNames = ['上传日期','发货日期','签收日期','FBA No.','货代', '线路','箱/重/价','店铺','采购产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -160,6 +160,11 @@ function showList(){
                     tr.addClass("statusDelivery");
                 }else{
                     tr.addClass("statusDeliveryNo");
+                }
+                if(obj.signedDate){
+                    tr.addClass("statusSigned");
+                }else{
+                    tr.addClass("statusSignedNo");
                 }
                 tbody.append(tr);
             });
@@ -200,10 +205,10 @@ function toDetail(id){
 }
 
 function showDetail(){
-    if(autoSaveAlertTimer){
-        clearInterval(autoSaveAlertTimer);
-    }
-    autoSaveAlertTimer = setInterval(autoSaveAlert, 300000);
+    // if(autoSaveAlertTimer){
+    //     clearInterval(autoSaveAlertTimer);
+    // }
+    // autoSaveAlertTimer = setInterval(autoSaveAlert, 300000);
     console.log("showDetail: " + detailId);
     $("#tableBox").hide();
     $("#contentBox").show();
@@ -824,7 +829,7 @@ function showListProducts(){
     var listTable = $("<table class='table table-bordered data-table' id='listTableProducts'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['上传日期', '发货日期', '签收日期', '店铺', 'sku', 'fnsku', '产品', '产品数量'];
+    var theadNames = ['上传日期', '发货日期', '签收日期', '店铺', 'FBA No.', 'sku', 'fnsku', '产品', '产品数量'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -849,12 +854,17 @@ function showListProducts(){
             $.each(rs.array, function (index, obj) {
                 console.log("shipmentId: " + obj.shipmentId);
                 var tr = $("<tr></tr>");
-                var tds = [obj.excelDate, obj.deliveryDate, obj.signedDate, parent.$.retrieveStoreName(obj.storeId), obj.sku, obj.fnsku, parent.$.cacheProducts["id" + obj.productId].snname, obj.quantity];
+                var tds = [obj.excelDate, obj.deliveryDate, obj.signedDate, parent.$.retrieveStoreName(obj.storeId), obj.fbaNo, obj.sku, obj.fnsku, parent.$.cacheProducts["id" + obj.productId].snname, obj.quantity];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");
                     td.attr("columnName", theadNames[index_2]);
                     tr.append(td);
+                    if(obj.signedDate){
+                        tr.addClass("statusSigned");
+                    }else{
+                        tr.addClass("statusSignedNo");
+                    }
                 })
                 tr.click(function () {
                     toDetail(obj.shipmentId);
@@ -869,7 +879,7 @@ function showListProducts(){
                 "bSort": true,
                 "language": $.dataTablesLanguage,
                 "pageLength": 100000000,
-                "order": [[ 0, "desc" ]],
+                "order": [[ 1, "desc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");
