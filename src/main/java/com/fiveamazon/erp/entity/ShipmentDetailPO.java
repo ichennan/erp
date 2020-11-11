@@ -18,6 +18,7 @@ public class ShipmentDetailPO extends SimpleCommonEntity {
     Integer quantity;
     BigDecimal weight;
     Integer skuId;
+    String sku;
 
     public JSONObject toJson(){
         return new JSONObject(this);

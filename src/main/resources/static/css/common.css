@@ -16,3 +16,7 @@ tbody tr{cursor: pointer;}
 tbody tr:hover{font-weight: bold;background: #eee}
 a{cursor: pointer}
 i {cursor: pointer}
+
+.font12{
+    font-size: 12px;
+}

@@ -78,6 +78,30 @@ $(document).ready(function(){
         $("[sid=dateFrom]").val(moment(dateFrom).format("YYYY-MM-DD")).trigger("change");
     })
 
+    $("span.spanOption.searchSignedStatus").click(function () {
+        var $this = $(this);
+        $("span.searchSignedStatus").removeClass("selected");
+        $this.addClass("selected");
+        var searchSignedStatus = $this.attr("searchSignedStatus");
+        console.log("searchSignedStatus: " + searchSignedStatus);
+
+        $("#listTable tbody").find("tr").each(function () {
+            var $this = $(this);
+            $this.show();
+            var signedDate = $this.find("td[columnName = 签收日期]").text();
+            console.log("signedDate: " + signedDate);
+            if(signedDate && (searchSignedStatus == "OnTheWay")){
+                console.log("hide1");
+                $this.hide();
+            }
+            if(!signedDate && (searchSignedStatus == "Signed")){
+                console.log("hide2");
+                $this.hide();
+            }
+        })
+
+    })
+
     resetSearch();
 });
 
@@ -122,6 +146,7 @@ function showList(){
     $("#tableBox").show();
     $("#contentBox").hide();
     $("#detailListBox").hide();
+    $("span.searchSignedStatus.defaultSelected").trigger("click");
     //
     $("#listTable").remove();
     $("#listTable_wrapper").remove();
@@ -151,7 +176,9 @@ function showList(){
                 var tds = [obj.excelDate, obj.deliveryDate, obj.signedDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
-                    tr.append("<td>" + obj_2 + "</td>");
+                    var td = $("<td>" + obj_2 + "</td>");
+                    td.attr("columnName", theadNames[index_2]);
+                    tr.append(td);
                 })
                 tr.click(function () {
                     toDetail(obj.id);
@@ -175,8 +202,8 @@ function showList(){
                 "ordering": true,
                 "bSort": true,
                 "language": $.dataTablesLanguage,
-                "pageLength": 100,
-                "order": [[ 0, "desc" ]],
+                "pageLength": 1000000,
+                "order": [[ 1, "desc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");
@@ -909,16 +936,18 @@ function showListProducts(){
 
 function calculateProductsQuanity(){
     var sumQuantity = 0;
-    var sumPrice = 0;
+    var sumQuantityOnTheWay = 0;
     $("#listTableProducts").find("tr:visible").each(function () {
         var $this = $(this);
         var quantity = $this.find("td[columnName = 产品数量]").text() * 1;
-        // var price = $this.find("td[columnName = 采购价格]").text() * 1;
+        var signedDate = $this.find("td[columnName = 签收日期]").text();
         sumQuantity = sumQuantity + quantity;
-        // sumPrice = sumPrice + quantity * price;
+        if(!signedDate){
+            sumQuantityOnTheWay = sumQuantityOnTheWay + quantity;
+        }
     })
     $("#sumQuantity").text(sumQuantity);
-    $("#sumPrice").text(sumPrice);
+    $("#sumQuantityOnTheWay").text(sumQuantityOnTheWay);
 }
 
 function toNumber(x){

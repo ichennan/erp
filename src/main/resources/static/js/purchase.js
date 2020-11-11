@@ -132,8 +132,8 @@ function showList(){
                 "ordering": true,
                 "bSort": true,
                 "language": $.dataTablesLanguage,
-                "pageLength": 100,
-                "order": [[ 0, "desc" ]],
+                "pageLength": 100000,
+                "order": [[ 1, "desc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");
@@ -541,8 +541,8 @@ function showListProducts(){
                 "ordering": true,
                 "bSort": true,
                 "language": $.dataTablesLanguage,
-                "pageLength": 1000000,
-                "order": [[ 0, "desc" ]],
+                "pageLength": 10000000,
+                "order": [[ 1, "desc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");

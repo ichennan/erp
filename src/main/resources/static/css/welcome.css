@@ -1,1 +1,16 @@
-iframe.pdfIframe{width: 200px; height: 100px;}
+body{background: url(../img/5amazon.png) center -30% no-repeat;}
+
+#titleEn{
+    font-size: 26px;
+    margin: 26px;
+    margin-top: 100px;
+    text-align: center;
+    color: #888;
+}
+#titleCh{
+    font-size: 26px;
+    margin: 26px;
+    margin-top: 50px;
+    text-align: center;
+    color: #888;
+}

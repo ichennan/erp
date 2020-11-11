@@ -1,21 +1,23 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome</title>
-    <link type="text/css" rel="stylesheet" th:href="@{'/css/' + ${pageName} + '.css?v=' + ${version}}"/>
-</head>
-<body>
-欢迎光临
+<div id="titleEn">
+    <span>5Amazon ERP System</span>
+</div>
+<div id="titleCh">
+    <span>Build By Blabla, 2019</span>
+</div>
 
-<div id="testDiv"></div>
-
-</body>
-<footer>
-    <script type="text/javascript" th:src="@{'/js/jquery.js'}"></script>
-    <script type="text/javascript" th:src="@{'/js/' + ${pageName} + '.js?v=' + ${version}}"></script>
-</footer>
-</html>
+<style type="text/css">
+    #titleEn{
+        font-size: 26px;
+        margin: 26px;
+        margin-top: 100px;
+        text-align: center;
+        color: #888;
+    }
+    #titleCh{
+        font-size: 14px;
+        margin: 14px;
+        margin-top: 50px;
+        text-align: center;
+        color: #888;
+    }
+</style>

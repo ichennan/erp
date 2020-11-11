@@ -8,4 +8,5 @@ left join tbl_shipment ts
 on tsd.shipment_id = ts.id
 left join tbl_sku_info tsi
 on tsd.sku_id = tsi.id
+where tsd.box != 'Plan'
 );

@@ -19,6 +19,18 @@
                             </div>
                         </div>
                         <!-- form start -->
+                        <form action="#" class="form-horizontal" tableType="shipmentList">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <div class="col-xs-6">
+                                        <span class="searchSignedStatus spanOption defaultSelected" searchSignedStatus="All">所有 </span>
+                                        <span class="searchSignedStatus spanOption" searchSignedStatus="Signed">已签收 </span>
+                                        <span class="searchSignedStatus spanOption " searchSignedStatus="OnTheWay">未签收</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- form start -->
                         <form id="searchForm" action="#" class="form-horizontal" tableType="shipmentProductList">
                             <div class="box-body">
                                 <div class="form-group">
@@ -73,17 +85,17 @@
                         <div class="box-header with-border">
                             <a href="#detailId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增FBA</a>
                         </div>
-                        <div class="box-body" id="tableDiv">
+                        <div class="box-body font12" id="tableDiv">
                         </div>
                     </div>
                     <div class="box box-info" tableType="shipmentProductList">
                         <div class="box-header with-border text-right">
-                            <span>数量:</span>
-                            <span id="sumQuantity">数量</span>
-                            <span> 价格:</span>
-                            <span id="sumPrice">价格</span>
+                            <span>总数量:</span>
+                            <span id="sumQuantity">总数量</span>
+                            <span> 未签收:</span>
+                            <span id="sumQuantityOnTheWay">未签收</span>
                         </div>
-                        <div class="box-body" id="tableDivProducts">
+                        <div class="box-body font12" id="tableDivProducts">
                         </div>
                     </div>
                 </div>

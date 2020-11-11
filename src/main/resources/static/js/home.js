@@ -49,7 +49,7 @@ $(function () {
             id: "9020",
             text: "产品管理",
             roles: "ROLE_Product",
-            icon: "fa fa-star-half-o",
+            icon: "fa fa-product-hunt",
             url: "product",
             targetType: "iframe-tab"
         },
@@ -81,23 +81,23 @@ $(function () {
             id: "9060",
             text: "小包管理",
             roles: "ROLE_Shipment",
-            icon: "fa fa-hand-paper-o",
+            icon: "fa fa-truck",
             url: "packet",
             targetType: "iframe-tab"
         },
-        {
-            id: "9070",
-            text: "计划管理",
-            roles: "ROLE_Shipment",
-            icon: "fa fa-hand-paper-o",
-            url: "plan",
-            targetType: "iframe-tab"
-        },
+        // {
+        //     id: "9070",
+        //     text: "计划管理",
+        //     roles: "ROLE_Shipment",
+        //     icon: "fa fa-hand-paper-o",
+        //     url: "plan",
+        //     targetType: "iframe-tab"
+        // },
         {
             id: "9080",
             text: "数据上传",
             roles: "ROLE_Excel",
-            icon: "fa fa-hand-paper-o",
+            icon: "fa fa-cloud-upload",
             url: "excel",
             targetType: "iframe-tab"
         // },

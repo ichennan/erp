@@ -168,7 +168,6 @@ public class ShipmentServiceImpl implements ShipmentService {
             JSONObject excelFbaPackListJson = new JSONObject(excelFbaPackListPO);
             Integer productId = excelFbaPackListJson.getInt("productId");
             Integer skuId = excelFbaPackListJson.getInt("skuId");
-
             String sku = excelFbaPackListPO.getMerchantSku();
             for(Integer i = 1; i <= boxCount; i++){
                 String iString = StringUtils.leftPad(i.toString(), 2, "0");
@@ -178,6 +177,7 @@ public class ShipmentServiceImpl implements ShipmentService {
                     JSONObject productJson = new JSONObject();
                     productJson.put("productId", productId);
                     productJson.put("skuId", skuId);
+                    productJson.put("sku", sku);
                     productJson.put("quantity", excelFbaPackListJson.getStr(boxString + "Qty"));
                     boxArray.add(productJson);
                 }
@@ -227,6 +227,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentDetailPO.setShipmentId(boxJson.getInt("shipmentId"));
         shipmentDetailPO.setSkuId(boxJson.getInt("skuId"));
         shipmentDetailPO.setWeight(new BigDecimal(0));
+        shipmentDetailPO.setSku(boxJson.getStr("sku"));
         saveDetail(shipmentDetailPO);
     }
 

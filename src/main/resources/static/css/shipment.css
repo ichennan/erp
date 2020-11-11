@@ -77,8 +77,11 @@
     color: red;
 }
 
-.statusSign{
+.statusSigned{
     color: #aaa
+}
+
+.statusSignedNo{
 }
 
 /*****/
