@@ -50,6 +50,7 @@ function showList(){
     $("#tableBox").show();
     $("#contentBox").hide();
     $("#planBox").hide();
+    $("#chartDetailBox").hide();
     if($.isNoRefreshList){
         console.log("NoRefreshList");
         return;
@@ -173,6 +174,8 @@ function showDetail(){
     $("#planBox").hide();
     $("#contentBox").show();
     $("#contentBox div.chartDiv").empty();
+    $("#chartDetailBox").show();
+    $(".chartDetailValue").empty();
     //
 
     var data = {};
@@ -354,43 +357,74 @@ function createChart(skuId, snname, rs){
             type: 'column',
             name: '收货',
             color: 'green',
-            data: setChartDataY(rs.productPurchaseJson)
+            data: setChartDataY($("#purchaseChartDetail"), $("#purchaseChartSumPeriod"), $("#purchaseChartSumTotal"), rs.productPurchaseJson)
         },{
             type: 'column',
             name: '发货',
             color: 'red',
-            data: setChartDataY(rs.skuShipmentJson)
+            data: setChartDataY($("#shipmentChartDetail"), $("#shipmentChartSumPeriod"), $("#shipmentChartSumTotal"), rs.skuShipmentJson)
         },{
             type: 'column',
             name: '其它sku发货',
             color: '#eeeeee',
-            data: setChartDataY(rs.skuElseShipmentJson)
+            data: setChartDataY($("#otherShipmentChartDetail"), $("#otherShipmentChartSumPeriod"), $("#otherShipmentChartSumTotal"), rs.skuElseShipmentJson)
         },{
             type: 'spline',
             name: '库存',
             color: 'black',
-            data: setChartDataY(rs.productInventoryJson)
+            data: setChartDataY(null, null, null, rs.productInventoryJson)
         }]
     });
 
 }
 
-function setChartDataY(dataJson){
+function setChartDataY($chartDetailDiv, $chartSumPeroid, $chartSumTotal, dataJson){
+    var quantitySum = 0;
+    addToChartDetailBox($chartDetailDiv, $chartSumTotal, dataJson);
     console.log("setChartDataY");
     console.log(dataJson);
     var dataArray = [];
     $.each($.dateArray, function (index, obj) {
         dataArray.push(dataJson[obj] ? dataJson[obj] : "");
+        quantitySum = quantitySum + (dataJson[obj] ? dataJson[obj] : 0);
     })
     console.log("dataArray");
     console.log(dataArray);
+    if($chartSumPeroid){
+        $chartSumPeroid.text("45天数量: " + quantitySum);
+    }
     return dataArray;
 }
 
-// date function
+function addToChartDetailBox($chartDetailDiv, $chartSumTotal, dataJson){
+    if(!$chartDetailDiv){
+        return;
+    }
+    var quantitySum = 0;
+    for(dataJsonKey in dataJson){
+        var chartDetailRow = $("<div class='chartDetail'></div>");
+        var dataJsonValue = dataJson[dataJsonKey];
+        var dateSpan = $("<span class='dateSpan'></span>");
+        dateSpan.text(fDay(dataJsonKey, 10));
+        var quantitySpan = $("<span class='quantitySpan'></span>");
+        quantitySpan.text(dataJsonValue);
+        chartDetailRow.append(dateSpan).append(quantitySpan);
+        $chartDetailDiv.prepend(chartDetailRow);
+        quantitySum = quantitySum + dataJsonValue;
+    }
+    $chartSumTotal.text("历史数量: " + quantitySum);
+}
 
+// date function
 function getDateString(date) {
     var month = date.getMonth() + 1;
     var day = date.getDate();
     return date.getFullYear() + (month < 10 ? "0" : "") + month + (day < 10 ? "0" : "") + day;
+}
+
+function fDay(date, dateLength){
+    if(date && date.length == 8 && dateLength == 10){
+        return date.substr(0, 4) + "-" + date.substr(4, 2) + "-" + date.substr(6, 2);
+    }
+    return date;
 }

@@ -6,3 +6,10 @@ td.inventoryLack{color: red !important;}
 #myChart{margin-top:30px;}
 
 tbody td input{width: 40px;}
+
+.chartDetail{margin:5px;}
+.quantitySpan{margin-left:20px;}
+
+.purchaseChart{color: green}
+.shipmentChart{color: red}
+.otherShipmentChart{color: gray}

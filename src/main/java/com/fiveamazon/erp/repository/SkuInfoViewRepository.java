@@ -25,7 +25,7 @@ public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, Integer>
                     "   where box <> 'Plan' and sku_id = ?1" +
                     ") as ssd " +
                     "where length(delivery_date) > 0 " +
-                    "group by sku_id, delivery_date ")
+                    "group by sku_id, delivery_date")
     List<Object> findSkuShipment(Integer skuId);
 
     @Query(nativeQuery = true,
@@ -37,18 +37,18 @@ public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, Integer>
                     "   where box <> 'Plan' and product_id = ?1 and sku_id <> ?2" +
                     ") as ssd " +
                     "where length(delivery_date) > 0 " +
-                    "group by sku_id, delivery_date ")
+                    "group by sku_id, delivery_date")
     List<Object> findSkuElseShipment(Integer productId, Integer skuId);
 
     @Query(nativeQuery = true,
-            value = "select product_id, received_date, sum(received_quantity) as purchase_quantity from " +
-                    "(select product_id, received_date, received_quantity " +
+            value = "select product_id, delivery_date, sum(received_quantity) as purchase_quantity from " +
+                    "(select product_id, delivery_date, received_quantity " +
                     "   from tbl_purchase_detail pd " +
                     "   left join tbl_purchase p " +
                     "   on pd.purchase_id = p.id " +
                     "   where product_id = ?1" +
                     ") as ppd " +
-                    "where length(received_date) > 0 " +
-                    "group by product_id, received_date ")
+                    "where length(delivery_date) > 0 " +
+                    "group by product_id, delivery_date")
     List<Object> findProductPurchase(Integer productId);
 }

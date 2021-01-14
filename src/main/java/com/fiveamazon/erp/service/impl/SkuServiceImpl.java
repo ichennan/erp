@@ -144,7 +144,7 @@ public class SkuServiceImpl implements SkuService {
             JSONArray objectArray = new JSONArray(object);
             JSONObject json = new JSONObject();
             json.put("productId", Integer.valueOf(objectArray.get(0).toString()));
-            json.put("receivedDate", objectArray.get(1).toString());
+            json.put("deliveryDate", objectArray.get(1).toString());
             json.put("purchaseQuantity", Integer.valueOf(objectArray.get(2).toString()));
             rs.put(json);
         }
@@ -173,11 +173,13 @@ public class SkuServiceImpl implements SkuService {
 
     @Override
     public JSONObject getProductPurchaseObject(Integer productId) {
+        log.info("getProductPurchaseObject: " + productId);
         JSONObject rs = new JSONObject();
         JSONArray array = findProductPurchaseArray(productId);
         for(JSONObject json : array.jsonIter()){
-            rs.put(json.getStr("receivedDate"), json.getInt("purchaseQuantity"));
+            rs.put(json.getStr("deliveryDate"), json.getInt("purchaseQuantity"));
         }
+        log.info(rs.toString());
         return rs;
     }
 

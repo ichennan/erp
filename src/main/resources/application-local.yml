@@ -18,7 +18,7 @@ spring:
 
 
 #    local
-    url: jdbc:mysql://localhost:3306/5amazonLocal2020?characterEncoding=utf8&useSSL=true
+    url: jdbc:mysql://localhost:3306/5amazonLocal2021?characterEncoding=utf8&useSSL=true
     username: root
     password: Root3)))
 simple:
