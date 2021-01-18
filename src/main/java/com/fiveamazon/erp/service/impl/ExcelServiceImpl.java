@@ -3,6 +3,7 @@ package com.fiveamazon.erp.service.impl;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.epo.ExcelFbaRowEO;
+import com.fiveamazon.erp.epo.ExcelFbatsvRowEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
 import com.fiveamazon.erp.repository.*;
@@ -202,6 +203,70 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
+    public void insertFbatsvPackList(Integer excelId, List<ExcelFbatsvRowEO> excelFbatsvRow) {
+        log.warn("ExcelServiceImpl.insertFbaPackList");
+        int row = 0;
+        int boxCount = 1;
+        ExcelFbaPO excelFbaPO = excelFbaRepository.getOne(excelId);
+        List<ExcelFbaPackListPO> excelFbaPackListPOList = new ArrayList<ExcelFbaPackListPO>();
+        Boolean isDetail = false;
+        String weightRemark = "";
+        BigDecimal sumWeight = new BigDecimal(0);
+        for(ExcelFbatsvRowEO excelFbatsvRowEO : excelFbatsvRow){
+            log.warn("row " + row + " : " + new JSONObject(excelFbatsvRowEO).toString());
+            String column00 = excelFbatsvRowEO.getColumn00();
+            String column01 = excelFbatsvRowEO.getColumn01();
+            if(row - 0 == 0){
+                excelFbaPO.setShipmentId(column01);
+            }else if(row - 1 == 0){
+                excelFbaPO.setFbaName(column01);
+            }else if(row - 2 == 0){
+                excelFbaPO.setPlanId(column01);
+            }else if(row - 3 == 0){
+                excelFbaPO.setShipTo(column01);
+            }else if(row >= 8){
+                ExcelFbaPackListPO excelFbaPackListPO = new ExcelFbaPackListPO();
+                excelFbaPackListPO.setMerchantSku(excelFbatsvRowEO.getColumn00());
+                excelFbaPackListPO.setAsin(excelFbatsvRowEO.getColumn02());
+                excelFbaPackListPO.setFnsku(excelFbatsvRowEO.getColumn03());
+                excelFbaPackListPO.setExternalId(excelFbatsvRowEO.getColumn04());
+                excelFbaPackListPO.setBoxedQty(excelFbatsvRowEO.getColumn09());
+                excelFbaPackListPO.setBox01Qty(excelFbatsvRowEO.getColumn09());
+                excelFbaPackListPOList.add(excelFbaPackListPO);
+            }
+            row++;
+        }
+
+        excelFbaPO.setBoxCount(1);
+        excelFbaPO.setWeightRemark(weightRemark);
+        excelFbaPO.setWeight(sumWeight);
+        excelFbaRepository.save(excelFbaPO);
+        Integer storeId = null;
+        for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
+            log.info("merchantSKU: " + excelFbaPackListPO.getMerchantSku());
+            String sku = excelFbaPackListPO.getMerchantSku();
+            excelFbaPackListPO.setExcelId(excelId);
+            List<SkuInfoPO> skuInfoPOList = skuService.findBySku(sku);
+            if(skuInfoPOList == null || skuInfoPOList.size() == 0){
+                log.info("merchantSKU not found");
+                excelFbaPackListRepository.save(excelFbaPackListPO);
+                continue;
+            }
+            for(SkuInfoPO skuInfoPO : skuInfoPOList){
+                log.info("merchantSKU found skuId: " + skuInfoPO.getId());
+                ExcelFbaPackListPO skuExcelFbaPackListPO = new ExcelFbaPackListPO();
+                BeanUtils.copyProperties(excelFbaPackListPO, skuExcelFbaPackListPO);
+                skuExcelFbaPackListPO.setProductId(skuInfoPO.getProductId());
+                skuExcelFbaPackListPO.setStoreId(skuInfoPO.getStoreId());
+                skuExcelFbaPackListPO.setSkuId(skuInfoPO.getId());
+                storeId = skuInfoPO.getStoreId();
+                excelFbaPackListRepository.save(skuExcelFbaPackListPO);
+            }
+        }
+        excelFbaPO.setStoreId(storeId);
+    }
+
+    @Override
     public Integer saveExcelSupplierDelivery(ExcelSupplierDeliveryPO excelSupplierDeliveryPO) {
         log.warn("ExcelServiceImpl.saveExcelSupplierDelivery");
         excelSupplierDeliveryPO.setCreateDate(new Date());
@@ -231,6 +296,7 @@ public class ExcelServiceImpl implements ExcelService {
     public ExcelFbaPO getFbaByExcelId(Integer excelId) {
         return excelFbaRepository.getOne(excelId);
     }
+
 
     @Override
     public List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId) {

@@ -21,14 +21,18 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 
-    $('input:radio[name=fileCategoryRadio]').change(function () {
-        console.log("fileCategoryRadio change");
-        var fileCategory = $('input:radio[name=fileCategoryRadio]:checked').val();
+    $('#fileCategorySelect').change(function () {
+        $this = $(this);
+        console.log("fileCategorySelect change");
+        var fileCategory = $this.val();
         $("[fileCategory]").hide();
-        $("[fileCategory=" + fileCategory + "]").show();
-        console.log("fileCategoryRadio val: " + fileCategory);
-        console.log($("[fileCategory=" + fileCategory + "]").length);
-    });
+        if(fileCategory){
+            if("fbatsv" == fileCategory){
+                fileCategory = "fba";
+            }
+            $("[fileCategory=" + fileCategory + "]").show();
+        }
+    }).trigger("change");
 
     $('#file_upload_form').fileupload({
         url: ajaxCtx + "upload",
@@ -43,23 +47,29 @@ $(document).ready(function(){
                 excelId = data.result.excelId;
                 fileCategory = data.result.fileCategory;
             }
-            if(fileCategory == "fba"){
-                showFbaList();
-            }else if(fileCategory == "supplierDelivery"){
-                showList();
+            switch (fileCategory) {
+                case "fba":
+                    showFbaList();
+                    break;
+                case "fbatsv":
+                    showFbaList();
+                    break;
+                case "supplierDelivery":
+                    showList();
+                    break;
             }
         },
         add: function (e, data) {
             var goUpload = true;
             var uploadFile = data.files[0];
-            var fileCategory = $('input:radio[name=fileCategoryRadio]:checked').val();
+            var fileCategory = $('#fileCategorySelect').val();
             if(!fileCategory){
                 $.showErrorModal("请选择上传文件类型");
                 goUpload = false;
                 data.fileCategory = uploadFileData;
             }
 
-            if (!(/\.(xls|xlsx)$/i).test(uploadFile.name)) {
+            if (!(/\.(xls|xlsx|tsv)$/i).test(uploadFile.name)) {
                 $.showErrorModal("Only excel files (xls, xlsx) files allowed");
                 goUpload = false;
             }
@@ -75,10 +85,6 @@ $(document).ready(function(){
                 console.log("excel uploaded: " + uploadFile.name);
             }
         }
-    });
-
-    $("#productImage").click(function(){
-        $('#file_upload_form').trigger("click");
     });
 
 });
@@ -113,6 +119,10 @@ function showFbaList(){
         complete: function () {
         }
     });
+}
+
+function resetAll(){
+    $("#fileCategorySelect").val("").trigger("change");
 }
 
 function showList(){
@@ -304,6 +314,26 @@ function saveDetail(action){
     console.log("saveDetail: " + action);
 }
 
+function upload(){
+    var fileCategory = $("#fileCategorySelect").val();
+    console.log("upload: " + fileCategory);
+    switch (fileCategory) {
+        case "fba":
+            uploadToShipment();
+            break;
+        case "fbatsv":
+            uploadToShipment();
+            break;
+        case "supplierDelivery":
+            uploadToPurchase();
+            break;
+        default:
+            alert("请选择正确文件类型");
+            return;
+            break;
+    }
+}
+
 function uploadToPurchase(){
     console.log("uploadToPurchase");
     var isError = false;
@@ -343,6 +373,7 @@ function uploadToPurchase(){
             console.log("uploadToPurchase.success");
             console.log(rs);
             $.showToastr();
+            resetAll();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("uploadToPurchase.error");
@@ -389,6 +420,7 @@ function uploadToShipment(){
             console.log("uploadToShipment.success");
             console.log(rs);
             $.showToastr();
+            resetAll();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("uploadToShipment.error");

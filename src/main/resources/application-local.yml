@@ -24,5 +24,7 @@ spring:
 simple:
   folder:
     image:
-      product: /Users/nan/Test/5amazon/img/productImg/
+      product: /Users/nan/Test/5amazon/erp/image/product/
+    file:
+      upload: /Users/nan/Test/5amazon/erp/file/upload/
 #      product: E://Test/5amazon/img/productImg/

@@ -136,7 +136,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         List<ExcelFbaPackListPO> array = uploadFbaDTO.getArray();
         String fbaNo = uploadFbaDTO.getShipmentId();
         if(shipmentRepository.countByFbaNo(fbaNo) > 0){
-            throw new SimpleCommonException("Duplicate FBA Found !");
+            throw new SimpleCommonException("Duplicate FBA Found ! 请勿重复上传该FBA: " + fbaNo);
         }
         String excelDate = DateUtil.format(new Date(), "yyyyMMdd");
         Integer excelId = uploadFbaDTO.getId();
