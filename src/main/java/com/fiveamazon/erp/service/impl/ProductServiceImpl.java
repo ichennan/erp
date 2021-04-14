@@ -5,8 +5,10 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
+import com.fiveamazon.erp.entity.ProductVO;
 import com.fiveamazon.erp.entity.StorePO;
 import com.fiveamazon.erp.repository.ProductRepository;
+import com.fiveamazon.erp.repository.ProductViewRepository;
 import com.fiveamazon.erp.repository.StoreRepository;
 import com.fiveamazon.erp.service.ProductService;
 import com.fiveamazon.erp.service.SkuService;
@@ -25,6 +27,8 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ProductViewRepository productViewRepository;
     @Autowired
     private StoreRepository storeRepository;
     @Autowired
@@ -48,6 +52,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductPO> findAll(String sort) {
         return productRepository.findAll(Sort.by(sort));
+    }
+
+    @Override
+    public List<ProductVO> findAllByView() {
+        return productViewRepository.findAll();
     }
 
     @Override

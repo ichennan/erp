@@ -3,6 +3,7 @@ package com.fiveamazon.erp.service;
 
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
+import com.fiveamazon.erp.entity.ProductVO;
 import com.fiveamazon.erp.entity.StorePO;
 
 import java.math.BigDecimal;
@@ -20,6 +21,8 @@ public interface ProductService {
     ProductPO getByName(String name);
 
     List<ProductPO> findAll(String sort);
+
+    List<ProductVO> findAllByView();
 
     List<ProductPO> findEnablePacket();
 

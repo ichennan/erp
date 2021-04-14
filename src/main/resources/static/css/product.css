@@ -7,3 +7,6 @@
 #productImage img{
     width: 298px;
 }
+tr.noSku{
+    background: red;
+}

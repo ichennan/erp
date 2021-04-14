@@ -149,7 +149,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             PurchasePO purchasePO = new PurchasePO();
             purchasePO.setExcelId(excelId);
             purchasePO.setExcelDingdan(dingdanhao);
-            purchasePO.setAmount(new BigDecimal(shijijiesuan));
+            purchasePO.setAmount(new BigDecimal(0));
             purchasePO.setCreateDate(new Date());
             purchasePO.setDeliveryDate(deliveryDate);
             purchasePO.setSupplier("芳姐");
@@ -173,6 +173,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             }catch (Exception e){
             }
             PurchasePO purchasePO = purchaseRepository.getByExcelIdAndExcelDingdan(excelId, dingdanhao);
+            BigDecimal amount = purchasePO.getAmount();
             Integer purchaseId = purchasePO.getId();
             PurchaseDetailPO purchaseDetailPO = new PurchaseDetailPO();
             purchaseDetailPO.setReceivedQuantity(shuliang);
@@ -185,7 +186,11 @@ public class PurchaseServiceImpl implements PurchaseService {
             saveDetail(purchaseDetailPO);
             //
             productService.updatePurchasePrice(productId, danjia);
+            //
+            purchasePO.setAmount(amount.add(danjia.multiply(new BigDecimal(shuliang))));
+            save(purchasePO);
         }
+
     }
 
     @Override

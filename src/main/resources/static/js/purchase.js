@@ -95,7 +95,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['上传日期', '发货日期', '收货日期', '费用','供应商','采购产品'];
+    var theadNames = ['id', '上传日期', '发货日期', '收货日期', '费用','供应商','采购产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -114,7 +114,7 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.amount, obj.supplier, parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
+                var tds = [obj.id, obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.amount, obj.supplier, parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");
@@ -133,7 +133,7 @@ function showList(){
                 "bSort": true,
                 "language": $.dataTablesLanguage,
                 "pageLength": 100000,
-                "order": [[ 1, "desc" ]],
+                "order": [[ 0, "desc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");

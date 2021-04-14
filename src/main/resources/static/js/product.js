@@ -66,7 +66,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['编号', '名称', '采购价','备注'];
+    var theadNames = ['id', '编号', '名称', '采购价','备注','库存'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -85,11 +85,14 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.sn, obj.snname, obj.purchasePrice, obj.remark];
+                var tds = [obj.id, obj.sn, obj.snname, obj.purchasePrice, obj.remark, obj.inventoryQuantity];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");
                 })
+                if(obj.skuCount <= 0){
+                    tr.addClass("noSku");
+                }
                 tr.click(function () {
                     toDetail(obj.id);
                 });
@@ -102,8 +105,8 @@ function showList(){
                 "ordering": true,
                 "bSort": true,
                 "language": $.dataTablesLanguage,
-                "pageLength": 200,
-                "order": [[ 0, "asc" ]],
+                "pageLength": 99999,
+                "order": [[ 2, "asc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");

@@ -7,10 +7,7 @@ import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
 import com.fiveamazon.erp.dto.SkuInfoDTO;
-import com.fiveamazon.erp.entity.ProductPO;
-import com.fiveamazon.erp.entity.PurchaseDetailPO;
-import com.fiveamazon.erp.entity.SkuInfoPO;
-import com.fiveamazon.erp.entity.StorePO;
+import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ProductService;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
@@ -70,9 +67,9 @@ public class ProductController extends SimpleCommonController {
 	public String findAll(){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
-		List<ProductPO> productPOS = productService.findAll("name");
-		for(ProductPO productPO: productPOS){
-			array.put(productPO.toJson());
+		List<ProductVO> list = productService.findAllByView();
+		for(ProductVO item: list){
+			array.put(item.toJson());
 		}
 		rs.put("array", array);
 		rs.put("error", false);
