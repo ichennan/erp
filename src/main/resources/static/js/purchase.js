@@ -67,7 +67,7 @@ $(document).ready(function(){
         $("span.searchDateRange").removeClass("selected");
         $this.addClass("selected");
         var searchDateRange = $this.attr("searchDateRange");
-        var dateTo = moment($("[sid=dateTo]").val());
+        var dateTo = moment($("[sid=dateTo]").val(), "YYYY-MM-DD");
         var dateFrom = moment(dateTo).add(-1 * searchDateRange, 'months').calendar();
         dateFrom = moment(dateFrom).add(1, 'days').calendar();
         console.log(dateTo);
@@ -75,8 +75,45 @@ $(document).ready(function(){
         $("[sid=dateFrom]").val(moment(dateFrom).format("YYYY-MM-DD")).trigger("change");
     })
 
+    setAutoCompleteSuppliers();
+
     resetSearch();
+
+    // var autoCompleteSuppliers = [
+    //     "芳姐1",
+    //     "棉想1",
+    //     "广州纯尚1"
+    // ];
+    // $(".autoCompleteSuppliers").autocomplete({
+    //     source: autoCompleteSuppliers
+    // });
 });
+
+function setAutoCompleteSuppliers(){
+    var data = {};
+    var ajaxUrl = 'findAutoCompleteSupplier';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log("findAutoCompleteSupplier.success");
+            console.log(rs);
+            $(".autoCompleteSuppliers").autocomplete({
+                source: rs.array
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("findAutoCompleteSupplier.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("findAutoCompleteSupplier.complete");
+        }
+    });
+}
 
 function resetSearch(){
     $("[sid=dateTo]").val(moment().format("YYYY-MM-DD")).trigger("change");
@@ -104,6 +141,11 @@ function showList(){
     listTable.append(thead).append(theadSearch).append(tbody);
     $("#tableDiv").append(listTable);
     var data = {};
+    data.dateFrom = $("[sid=dateFrom]").val();
+    data.dateTo = $("[sid=dateTo]").val();
+    data.supplier = $("[sid=supplier]").val();
+    data.dateType = $(".searchDateType.spanOption.selected").attr("searchDateType");
+    console.log(data);
     var ajaxUrl = 'findAll'
     $.ajax({
         type: "POST",
@@ -117,7 +159,9 @@ function showList(){
                 var tds = [obj.id, obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.amount, obj.supplier, parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
-                    tr.append("<td>" + obj_2 + "</td>");
+                    var td = $("<td>" + obj_2 + "</td>");
+                    td.attr("columnName", theadNames[index_2]);
+                    tr.append(td);
                 })
                 // tr.attr("title", parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup));
                 tr.click(function () {
@@ -145,8 +189,10 @@ function showList(){
                         .column( colIdx )
                         .search( this.value )
                         .draw();
+                    calculatePurchaseQuanity();
                 } );
             } );
+            calculatePurchaseQuanity();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
@@ -226,6 +272,7 @@ function saveDetail(action){
     $contentForm.find("[pid]").each(function () {
         data[$(this).attr("pid")] = $(this).val();
     });
+    data.supplier = data.supplier.replace("1", "");
     console.log(data);
     var ajaxUrl = 'saveDetail';
     $.ajax({
@@ -554,16 +601,9 @@ function showListProducts(){
                         .column( colIdx )
                         .search( this.value )
                         .draw();
-
-                    // console.log("---------------");
-                    // console.log($("#listTableProducts").find("tr").length);
-                    // console.log($("#listTableProducts").find("tr:visible").length);
-
-
                     calculatePurchaseProductsQuanity();
-
-                } );
-            } );
+                });
+            });
 
             calculatePurchaseProductsQuanity();
         },
@@ -579,7 +619,7 @@ function showListProducts(){
 function calculatePurchaseProductsQuanity(){
     var sumQuantity = 0;
     var sumPrice = 0;
-    $("#listTableProducts").find("tr:visible").each(function () {
+    $("#listTableProducts").find("tbody tr:visible").each(function () {
         var $this = $(this);
         var quantity = $this.find("td[columnName = 产品数量]").text() * 1;
         var price = $this.find("td[columnName = 采购价格]").text() * 1;
@@ -588,4 +628,20 @@ function calculatePurchaseProductsQuanity(){
     })
     $("#sumQuantity").text(sumQuantity);
     $("#sumPrice").text(sumPrice);
+}
+
+function calculatePurchaseQuanity(){
+    console.log("calculatePurchaseQuanity()");
+    var sumPurchaseCount = 0;
+    var sumPurchasePrice = 0;
+    $("#listTable").find("tbody tr:visible").each(function () {
+        var $this = $(this);
+        var price = $this.find("td[columnName = 费用]").text() * 1;
+        sumPurchaseCount = sumPurchaseCount + 1;
+        sumPurchasePrice = sumPurchasePrice + 1 * price;
+        console.log("id: " + $this.find("td[columnName = id]").text());
+        console.log("price: " + $this.find("td[columnName = 费用]").text());
+    })
+    $("#sumPurchaseCount").text(sumPurchaseCount);
+    $("#sumPurchasePrice").text(sumPurchasePrice);
 }

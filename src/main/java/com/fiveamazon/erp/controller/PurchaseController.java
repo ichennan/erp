@@ -3,15 +3,13 @@ package com.fiveamazon.erp.controller;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonController;
-import com.fiveamazon.erp.dto.PurchaseDTO;
-import com.fiveamazon.erp.dto.PurchaseDetailDTO;
-import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
-import com.fiveamazon.erp.dto.ShipmentDetailDTO;
+import com.fiveamazon.erp.dto.*;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.PurchaseService;
 import com.fiveamazon.erp.service.ShipmentService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,12 +41,27 @@ public class PurchaseController extends SimpleCommonController {
 	}
 
 	@RequestMapping(value = "/findAll", method= RequestMethod.POST)
-	public String findAll(){
+	public String findAll(PurchaseSearchDTO purchaseSearchDTO){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
-		List<PurchaseViewPO> purchaseViewPOS = purchaseService.findAll();
+		List<PurchaseViewPO> purchaseViewPOS = purchaseService.findAll(purchaseSearchDTO);
 		for(PurchaseViewPO purchaseViewPO: purchaseViewPOS){
 			array.put(purchaseViewPO.toJson());
+		}
+		rs.put("array", array);
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/findAutoCompleteSupplier", method= RequestMethod.POST)
+	public String findAutoCompleteSupplier(){
+		JSONObject rs = new JSONObject();
+		JSONArray array = new JSONArray();
+		List<String> supplierList = purchaseService.findSupplierList();
+		for(String supplier: supplierList){
+			if(StringUtils.isNotEmpty(supplier)){
+				array.put(supplier + "1");
+			}
 		}
 		rs.put("array", array);
 		rs.put("error", false);

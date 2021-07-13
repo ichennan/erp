@@ -3,10 +3,7 @@ package com.fiveamazon.erp.service.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleConstant;
-import com.fiveamazon.erp.dto.PurchaseDTO;
-import com.fiveamazon.erp.dto.PurchaseDetailDTO;
-import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
-import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
+import com.fiveamazon.erp.dto.*;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
 import com.fiveamazon.erp.repository.PurchaseProductViewRepository;
@@ -66,13 +63,57 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public List<PurchaseViewPO> findAll() {
-        return purchaseViewRepository.findAll();
+    public List<PurchaseViewPO> findAll(PurchaseSearchDTO purchaseSearchDTO) {
+        String dateFrom = purchaseSearchDTO.getDateFrom().replaceAll("-", "");
+        String dateTo = purchaseSearchDTO.getDateTo().replaceAll("-", "");
+        String dateType = purchaseSearchDTO.getDateType();
+        String supplier = purchaseSearchDTO.getSupplier();
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(0, 100000000, sort);
+        Specification<PurchaseViewPO> specification = new Specification<PurchaseViewPO>() {
+            @Override
+            public Predicate toPredicate(Root root, CriteriaQuery criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+
+                if (StringUtils.isNotEmpty(supplier)) {
+                    predicates.add(criteriaBuilder.like(root.get("supplier"), "%" + supplier + "%"));
+                }
+                if(StringUtils.isNotEmpty(dateType)){
+                    switch (dateType){
+                        case "deliveryDate":
+                            if (StringUtils.isNotEmpty(dateFrom)) {
+                                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryDate"), dateFrom));
+                            }
+                            if (StringUtils.isNotEmpty(dateTo)) {
+                                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("deliveryDate"), dateTo));
+                            }
+                            break;
+                        case "receivedDate":
+                            if (StringUtils.isNotEmpty(dateFrom)) {
+                                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("receivedDate"), dateFrom));
+                            }
+                            if (StringUtils.isNotEmpty(dateTo)) {
+                                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("receivedDate"), dateTo));
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
+        return purchaseViewRepository.findAll(specification, pageRequest).getContent();
     }
 
     @Override
     public PurchasePO save(PurchasePO purchasePO) {
         return purchaseRepository.save(purchasePO);
+    }
+
+    @Override
+    public List<String> findSupplierList() {
+        return purchaseRepository.findSupplierList();
     }
 
     @Override
