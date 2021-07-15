@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<div th:replace="common/common_head :: head(${pageTitle})"></div>
+<body>
+<div class="wrapper">
+    <div class="content-wrapper">
+        <section class="content">
+
+            <div class="row" id="searchBox">
+<!--                <div class="col-md-12">-->
+<!--                    <div class="box box-info">-->
+<!--                        <div class="box-header with-border">-->
+<!--                            <div class="form-group">-->
+<!--                                <div class="col-xs-6">-->
+<!--                                    <span class="tableType spanOption defaultSelected" tableType="shipmentList">按批次</span>-->
+<!--                                    <span class="tableType spanOption" tableType="shipmentProductList">按产品</span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        &lt;!&ndash; form start &ndash;&gt;-->
+<!--                        <form action="#" class="form-horizontal" tableType="shipmentList">-->
+<!--                            <div class="box-body">-->
+<!--                                <div class="form-group">-->
+<!--                                    <div class="col-xs-6">-->
+<!--                                        <span class="searchSignedStatus spanOption defaultSelected" searchSignedStatus="All">所有 </span>-->
+<!--                                        <span class="searchSignedStatus spanOption" searchSignedStatus="Signed">已签收 </span>-->
+<!--                                        <span class="searchSignedStatus spanOption " searchSignedStatus="OnTheWay">未签收</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </form>-->
+<!--                        &lt;!&ndash; form start &ndash;&gt;-->
+<!--                        <form id="searchForm" action="#" class="form-horizontal" tableType="shipmentProductList">-->
+<!--                            <div class="box-body">-->
+<!--                                <div class="form-group">-->
+<!--                                    <div class="col-xs-6">-->
+<!--                                        <span class="searchDateType spanOption" searchDateType="excelDate">上传日期</span>-->
+<!--                                        <span class="searchDateType spanOption defaultSelected" searchDateType="deliveryDate">发货日期</span>-->
+<!--                                        <span class="searchDateType spanOption" searchDateType="signedDate">签收日期</span>-->
+<!--                                    </div>-->
+<!--                                    <div class="col-xs-6">-->
+<!--                                        <select class="form-control select2" sid="productId">-->
+<!--                                            <option value="">&#45;&#45;&#45;&#45;&#45;&#45;产品选择&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
+<!--                                        </select>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+<!--                                <div class="form-group">-->
+<!--                                </div>-->
+<!--                                <div class="form-group">-->
+<!--                                    <div class="col-xs-6">-->
+<!--                                        <span class="searchDateRange spanOption" searchDateRange="1">近一个月</span>-->
+<!--                                        <span class="searchDateRange spanOption" searchDateRange="3">近三个月</span>-->
+<!--                                        <span class="searchDateRange spanOption defaultSelected" searchDateRange="6">近半年</span>-->
+<!--                                        <span class="searchDateRange spanOption" searchDateRange="12">近一年</span>-->
+<!--                                    </div>-->
+<!--                                    <div class="col-xs-3">-->
+<!--                                        <input class="form-control datePattern datetimepicker" sid="dateFrom" placeholder="From" />-->
+<!--                                    </div>-->
+<!--                                    <div class="col-xs-3">-->
+<!--                                        <input class="form-control datePattern datetimepicker" sid="dateTo" placeholder="To" />-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; /.box-body &ndash;&gt;-->
+<!--                            <div class="box-footer">-->
+<!--                                <div class="pull-right">-->
+<!--                                    <button type="button" class="btn btn-success create" onclick="showListProducts()">搜索</button>-->
+<!--                                    <button type="button" class="btn btn-default cancel" onclick="resetSearch()">重置</button>-->
+<!--                                    <button type="submit" class="hide"></button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; /.box-footer &ndash;&gt;-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+
+            <div class="row" id="tableBox">
+                <div class="col-md-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <a href="#itemId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增</a>
+                        </div>
+                        <div class="box-body font12" id="tableDiv">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="itemBox">
+                <div class="col-xs-6">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <a href="#" class=""><i class="fa fa-backward"></i> 返回</a>
+                        </div>
+                        <form id="itemForm" action="#" class="form-horizontal">
+                            <div class="box-body">
+                                <input type="hidden" pid="id"/>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-success create" onclick="saveItem('create')">创建</button>
+                                    <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-success update" onclick="saveItem('update')">更新</button>
+                                    <button type="submit" class="hide"></button>
+                                </div>
+                            </div>
+                            <!-- /.box-footer -->
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-xs-6 createHidden">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">明细</h3>
+                            <span class="pull-right" onclick="showDetail(null)"><i class="fa fa-plus-square"></i> 新增</span>
+                        </div>
+                        <div class="box-body" id="detailTableDiv">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="detailModal">
+                    <div class="modal-dialog">
+                        <div class="modal-body">
+                            <div class="box box-info">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">详情</h3>
+                                    <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">X</span></button>
+                                </div>
+                                <!-- form start -->
+                                <form id="detailForm" action="#" class="form-horizontal">
+                                    <div class="box-body">
+                                        <input type="hidden" pid="id"/>
+                                        <input type="hidden" pid="overseaId"/>
+                                    </div>
+                                    <!-- /.box-body -->
+                                    <div class="box-footer">
+                                        <div class="pull-right">
+                                            <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="saveDetail('update')">保存</button>
+                                            <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="saveDetail('delete')">删除</button>
+                                            <button type="button" class="btn cancel" data-dismiss="modal">取消</button>
+                                            <button type="submit" class="hide"></button>
+                                        </div>
+                                    </div>
+                                    <!-- /.box-footer -->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+</div>
+<div th:replace="common/common_js :: js"></div>
+<script type="text/javascript" th:src="@{'/js/common_fn.js?v=' + ${version}}"></script>
+</body>
+</html>
+

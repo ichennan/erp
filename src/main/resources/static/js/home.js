@@ -70,6 +70,14 @@ $(function () {
             targetType: "iframe-tab"
         },
         {
+            id: "9045",
+            text: "海外仓管理",
+            roles: "ROLE_Shipment",
+            icon: "fa fa-anchor",
+            url: "oversea",
+            targetType: "iframe-tab"
+        },
+        {
             id: "9050",
             text: "采购管理",
             roles: "ROLE_Shipment",
