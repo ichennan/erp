@@ -25,31 +25,41 @@ $(document).ready(function(){
         $("#tableDiv").find(".theadSearch").find("th:nth-child(4)").find("input").val(storeName).trigger("change");
     })
 
-    $('input:radio[name=statusSelected]').change(function () {
-        console.log("statusSelected change");
-        var statusSelected = $('input:radio[name=statusSelected]:checked').val();
-        if(statusSelected == "plan"){
-            $("#tableDiv tbody").find("tr:not(.plan)").hide();
-        }else{
-            $("#tableDiv tbody").find("tr:not(.plan)").show();
-        }
-    });
+    // $('input:radio[name=statusSelected]').change(function () {
+    //     console.log("statusSelected change");
+    //     var statusSelected = $('input:radio[name=statusSelected]:checked').val();
+    //     if(statusSelected == "batch"){
+    //         $("#tableDiv tbody").find("tr:not(.batch)").hide();
+    //     }else{
+    //         $("#tableDiv tbody").find("tr:not(.batch)").show();
+    //     }
+    // });
 
-    $("#testButton").click(function(){
-        $("#tableBox").hide();
-        $("#contentBox").hide();
-        $("#planBox").show();
-        $("#planTableDiv").empty();
-        showPlanDetail();
+    $("span.spanOption.batchSelected").click(function () {
+        var $this = $(this);
+        $("span.batchSelected").removeClass("selected");
+        $this.addClass("selected");
+        var batchSelected = $this.attr("batchSelected");
+        if(batchSelected == "batch"){
+            $("#tableDiv tbody").find("tr:not(.batch)").hide();
+        }else{
+            $("#tableDiv tbody").find("tr:not(.batch)").show();
+        }
     })
+    $("span.spanOption.defaultSelected").trigger("click");
 
 });
+
+function cleanBatch(){
+    $('td.batchTd input').val('').trigger("keyup");
+}
 
 function showList(){
     console.log("showList()");
     $("#tableBox").show();
     $("#contentBox").hide();
     $("#planBox").hide();
+    $("#overseaBox").hide();
     $("#chartDetailBox").hide();
     if($.isNoRefreshList){
         console.log("NoRefreshList");
@@ -62,7 +72,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['','SKU', '产品', '店铺', '库存', 'FBA途中', '总采购', '总FBA'];
+    var theadNames = ['','SKU', '产品', '店铺', '库存', 'FBA途中', '海外仓'];
 
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
@@ -81,25 +91,26 @@ function showList(){
         success: function (rs) {
             console.log(rs);
             $.each(rs.array, function (index, obj) {
+                obj.skuId = obj.id;
                 var snname = parent.$.cacheProducts["id" + obj.productId] ? parent.$.cacheProducts["id" + obj.productId].snname : "";
                 var storeName = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name : "";
                 //
                 var tr = $("<tr></tr>");
                 tr.attr("objJson", $.jsonToString(obj));
-                var planTd = $("<td class='planTd'></td>");
-                var planInput = $("<input />");
-                planInput.keyup(function () {
+                var batchTd = $("<td class='batchTd'></td>");
+                var batchInput = $("<input />");
+                batchInput.keyup(function () {
                     var $this = $(this);
                     if($this.val()){
-                        tr.addClass("plan");
+                        tr.addClass("batch");
                     }else{
-                        tr.removeClass("plan");
+                        tr.removeClass("batch");
                     }
                 })
-                planTd.append(planInput);
-                tr.append(planTd);
+                batchTd.append(batchInput);
+                tr.append(batchTd);
                 //
-                var tds = [obj.skuDesc, snname, storeName, obj.productInventoryQuantity, obj.sumSkuShipmentOnthewayQuantity, obj.sumProductPurchaseQuantity, obj.sumSkuShipmentQuantity];
+                var tds = [obj.skuDesc, snname, storeName, obj.productInventoryQuantity, obj.sumSkuShipmentOnthewayQuantity, obj.sumSkuOverseaQuantity];
 
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
@@ -205,47 +216,6 @@ function showDetail(){
             console.log("getDetail.complete");
         }
     });
-}
-
-function showPlanDetail(){
-    console.log("showPlanDetail()");
-    var planDetailArray = [];
-    console.log($("#tableDiv tr").length);
-    console.log($("#tableDiv tr.plan").length);
-    $("#tableDiv tr.plan").each(function (index, obj) {
-        var $this = $(this);
-        console.log($this.attr("objJson"));
-        var objJson = $.stringToJson($this.attr("objJson"));
-        console.log(objJson);
-        objJson["planQuantity"] = $this.find("td.planTd input").val();
-        planDetailArray.push(objJson);
-    })
-    console.log("planDetailArray");
-    console.log(planDetailArray);
-    //
-    var listTable = $("<table class='table table-bordered data-table'></table>");
-    var thead = $("<thead><tr></tr></thead>");
-    var theadNames = ['数量','SKU', 'FNSKU', '产品', '店铺'];
-    $.each(theadNames, function (index, obj) {
-        thead.find("tr").append("<th>" + obj + "</th>");
-    })
-    var tbody = $("<tbody></tbody>");
-    listTable.append(thead).append(tbody);
-    $("#planTableDiv").append(listTable);
-    $.each(planDetailArray, function(index, obj){
-        var tr = $("<tr></tr>");
-        tr.attr("objJson", $.jsonToString(obj));
-        var snname = parent.$.cacheProducts["id" + obj.productId] ? parent.$.cacheProducts["id" + obj.productId].snname : "";
-        var storeName = parent.$.cacheStores["id" + obj.storeId] ? parent.$.cacheStores["id" + obj.storeId].name : "";
-        //
-        var tds = [obj.planQuantity, obj.skuDesc, obj.fnsku, snname, storeName];
-        $.each(tds, function (index_2, obj_2) {
-            obj_2 = obj_2 ? obj_2 : "";
-            var td = $("<td>" + obj_2 + "</td>");
-            tr.append(td);
-        })
-        tbody.append(tr);
-    })
 }
 
 function saveDetail(){

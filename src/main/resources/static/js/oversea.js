@@ -4,6 +4,7 @@ var detailId = 0;
 var $itemForm = $("#itemForm");
 var $detailForm = $("#detailForm");
 var ajaxCtx = 'oversea/';
+var parentJs = parent;
 $(document).ready(function(){
     createItemForm();
     createDetailForm();
@@ -21,7 +22,8 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 
-    parent.$.refreshProductsSelect($detailForm.find("[pid=productId]"));
+    // parent.$.refreshProductsSelect($detailForm.find("[pid=productId]"));
+    parentJs.$.refreshSkusSelect($detailForm.find("[pid=skuId]"));
 
     $(".datetimepicker").datetimepicker({
         todayButton: true,
@@ -80,6 +82,17 @@ function showDetail(obj){
             var jpa = obj[$(this).attr("pid")];
             $(this).val(jpa).trigger("change");
         });
+        var productId = obj["productId"];
+        var storeId = obj["storeId"];
+        console.log("---");
+        console.log(productId);
+        console.log(storeId);
+        if(storeId){
+            $detailForm.find("[pid=temp_store]").val(parentJs.$.cacheStores["id" + storeId].name);
+        }
+        if(productId){
+            $detailForm.find("[pid=temp_product]").val(parentJs.$.cacheProducts["id" + productId].snname);
+        }
     }
 }
 
@@ -215,7 +228,7 @@ function createListTableHead(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['发货日期','签收日期','发货编号','货代', '线路','箱/重/价','发货产品'];
+    var theadNames = ['发货日期', '海外仓', '发货编号', '箱子数', '发货产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -230,7 +243,7 @@ function createListTableBody(table, rs){
     console.log("createListTableBody");
     $.each(rs.array, function (index, obj) {
         var tr = $("<tr></tr>");
-        var tds = [obj.deliveryDate, obj.signedDate, obj.deliveryNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
+        var tds = [obj.deliveryDate, obj.warehouseName, obj.deliveryNo, obj.boxCount, parentJs.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
@@ -253,7 +266,7 @@ function createDetailTableHead(){
     $("#detailTableDiv").empty();
     var detailTable = $("<table class='table table-bordered data-table' id='detailTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
-    var theadNames = ['箱子', '重量', '产品', '数量', ''];
+    var theadNames = ['第几箱', '数量', 'SKU', '产品识别码'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
     })
@@ -267,12 +280,15 @@ function createDetailTableBody(table, rs){
     console.log("createDetailTableBody");
     $.each(rs.array, function (index, obj) {
         var tr = $("<tr></tr>");
-        var tds = [obj.box, obj.weight, obj.productId, obj.quantity, ""];
+        var tds = [obj.box, obj.quantity, parentJs.$.cacheSkus["id" + obj.skuId].sku, obj.productDescription];
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
             tr.append(td);
         })
+        if(obj.fbaNo){
+            tr.addClass("filledFba");
+        }
         tr.click(function () {
             showDetail(obj);
         });
@@ -282,7 +298,7 @@ function createDetailTableBody(table, rs){
 
 function saveDetail(action){
     console.log("saveDetail: " + action);
-    if(action != 'delete' && !validateForm()){
+    if(action != 'delete' && !validateForm($detailForm)){
         return false;
     }
     var data = {};
@@ -349,28 +365,33 @@ function createItemForm() {
     console.log("createItemForm()");
     var itemArray = [];
     var i = -1;
+    itemArray[++i] = {"label": "海外仓名字", "pid": "warehouseName", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "箱数", "pid": "boxCount", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "发货日期", "pid": "deliveryDate", "required": true, "inputType": "text"};
-    itemArray[++i] = {"label": "运单号", "pid": "deliveryNo", "required": true, "inputType": "text"};
+    itemArray[++i] = {"label": "发货编号", "pid": "deliveryNo", "inputType": "text"};
     itemArray[++i] = {"label": "货代", "pid": "carrier", "inputType": "text"};
-    itemArray[++i] = {"label": "线路", "pid": "route", "required": true, "inputType": "text"};
+    itemArray[++i] = {"label": "线路", "pid": "route", "inputType": "text"};
     itemArray[++i] = {"label": "单价", "pid": "unitPrice", "inputType": "text"};
-    itemArray[++i] = {"label": "收费重量", "pid": "chargeWeight", "required": true, "inputType": "text"};
+    itemArray[++i] = {"label": "收费重量", "pid": "chargeWeight", "inputType": "text"};
     itemArray[++i] = {"label": "实付运费", "pid": "amount", "inputType": "text"};
-    itemArray[++i] = {"label": "付款日期", "pid": "paymentDate", "required": true, "inputType": "text"};
+    itemArray[++i] = {"label": "付款日期", "pid": "paymentDate", "inputType": "text"};
     itemArray[++i] = {"label": "签收日期", "pid": "signedDate", "inputType": "text"};
     itemArray[++i] = {"label": "备注", "pid": "remark", "inputType": "text"};
-    itemArray[++i] = {"label": "发货状态", "pid": "statusDelivery", "required": true, "inputType": "select", "array": []};
+    itemArray[++i] = {"label": "发货状态", "pid": "status", "required": true, "inputType": "select", "array": []};
     itemArray[i].array.push({"label": "--", "value": ""});
-    itemArray[i].array.push({"label": "已发货", "value": "1"});
-    itemArray[i].array.push({"label": "未发货", "value": "0"});
+    itemArray[i].array.push({"label": "未发货", "value": "未发货"});
+    itemArray[i].array.push({"label": "已发货", "value": "已发货"});
+    itemArray[i].array.push({"label": "已签收", "value": "已签收"});
+    itemArray[i].array.push({"label": "均转FBA", "value": "均转FBA"});
     $.drawContentForm($itemForm, itemArray);
 }
 function createDetailForm() {
     console.log("createDetailForm()");
     var itemArray = [];
     var i = -1;
-    itemArray[++i] = {"label": "产品", "pid": "productId", "required": true, "inputType": "select"};
+    itemArray[++i] = {"label": "店铺", "pid": "temp_store", "required": true, "readonly":true, "inputType": "text"};
+    itemArray[++i] = {"label": "产品", "pid": "temp_product", "required": true, "readonly":true, "inputType": "text"};
+    itemArray[++i] = {"label": "SKU", "pid": "skuId", "required": true, "inputType": "select"};
     itemArray[++i] = {"label": "第几箱", "pid": "box", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "数量", "pid": "quantity", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "重量", "pid": "weight", "inputType": "text"};

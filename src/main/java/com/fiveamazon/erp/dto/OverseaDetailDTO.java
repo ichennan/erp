@@ -8,10 +8,11 @@ import java.math.BigDecimal;
 @Data
 public class OverseaDetailDTO extends SimpleCommonDTO {
     Integer overseaId;
-    String box;
+    Integer box;
     Integer productId;
     Integer quantity;
     BigDecimal weight;
+    Integer storeId;
     Integer skuId;
     String sku;
     String productDescription;

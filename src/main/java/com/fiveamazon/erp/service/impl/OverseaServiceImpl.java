@@ -1,14 +1,18 @@
 package com.fiveamazon.erp.service.impl;
 
 import com.fiveamazon.erp.common.SimpleConstant;
+import com.fiveamazon.erp.dto.OverseaBatchInsertDTO;
 import com.fiveamazon.erp.dto.OverseaDTO;
 import com.fiveamazon.erp.dto.OverseaDetailDTO;
 import com.fiveamazon.erp.entity.OverseaDetailPO;
 import com.fiveamazon.erp.entity.OverseaPO;
+import com.fiveamazon.erp.entity.OverseaViewPO;
+import com.fiveamazon.erp.entity.SkuInfoPO;
 import com.fiveamazon.erp.repository.OverseaDetailRepository;
 import com.fiveamazon.erp.repository.OverseaRepository;
+import com.fiveamazon.erp.repository.OverseaViewRepository;
 import com.fiveamazon.erp.service.OverseaService;
-import com.fiveamazon.erp.service.ProductService;
+import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +29,11 @@ public class OverseaServiceImpl implements OverseaService {
     @Autowired
     private OverseaRepository theRepository;
     @Autowired
+    private OverseaViewRepository theViewRepository;
+    @Autowired
     private OverseaDetailRepository theDetailRepository;
     @Autowired
-    private ProductService productService;
+    private SkuService skuService;
 
     @Override
     public Long countAll() {
@@ -45,13 +51,13 @@ public class OverseaServiceImpl implements OverseaService {
     }
 
     @Override
-    public List<OverseaPO> findAll() {
-        return theRepository.findAll();
+    public List<OverseaViewPO> findAll() {
+        return theViewRepository.findAll();
     }
 
     @Override
     public List<OverseaDetailPO> findAllDetail(Integer overseaId) {
-        return theDetailRepository.findByOverseaId(overseaId);
+        return theDetailRepository.findByOverseaIdOrderByBox(overseaId);
     }
 
     public OverseaPO save(OverseaPO item) {
@@ -86,7 +92,7 @@ public class OverseaServiceImpl implements OverseaService {
     }
 
     @Override
-    public OverseaDetailPO saveDetail(OverseaDetailDTO dto) {
+    public OverseaDetailPO saveDetail(OverseaDetailDTO dto, Boolean refreshSku) {
         Date today = new Date();
         Integer id = dto.getId();
         if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
@@ -104,6 +110,24 @@ public class OverseaServiceImpl implements OverseaService {
             item.setUpdateUser(dto.getUsername());
         }
         BeanUtils.copyProperties(dto, item, "id");
+        if(refreshSku){
+            Integer skuId = dto.getSkuId();
+            SkuInfoPO skuInfoPO = skuService.getById(skuId);
+            if(skuInfoPO != null){
+                item.setProductId(skuInfoPO.getProductId());
+                item.setStoreId(skuInfoPO.getStoreId());
+            }
+        }
         return saveDetail(item);
+    }
+
+    @Override
+    public void batchInsert(OverseaBatchInsertDTO dto) {
+        OverseaPO item = save(dto.getItem());
+        Integer overseaId = item.getId();
+        for(OverseaDetailDTO detailDTO : dto.getArray()){
+            detailDTO.setOverseaId(overseaId);
+            saveDetail(detailDTO, false);
+        }
     }
 }

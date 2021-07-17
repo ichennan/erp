@@ -13,10 +13,11 @@ import java.math.BigDecimal;
 @Table(name = "tbl_oversea_detail")
 public class OverseaDetailPO extends SimpleCommonEntity {
     Integer overseaId;
-    String box;
+    Integer box;
     Integer productId;
     Integer quantity;
     BigDecimal weight;
+    Integer storeId;
     Integer skuId;
     String sku;
     String productDescription;

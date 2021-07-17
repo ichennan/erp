@@ -1,5 +1,5 @@
 tbody tr.selected{background: #27ae60}
-tbody tr.plan{background: #27ae60}
+tbody tr.batch{background: #27ae60}
 
 td.inventoryQuantity{color: blue; font-weight: bold}
 td.inventoryLack{color: red !important;}
@@ -13,3 +13,6 @@ tbody td input{width: 40px;}
 .purchaseChart{color: green}
 .shipmentChart{color: red}
 .otherShipmentChart{color: gray}
+
+.spanOption{width:80px; display:inline-block; background: #ccc; padding:5px; text-align:center; margin-right:10px; cursor:pointer; color: #999 }
+.spanOption.selected{background: #000; color: #eee}

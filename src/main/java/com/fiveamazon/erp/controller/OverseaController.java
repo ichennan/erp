@@ -2,11 +2,13 @@ package com.fiveamazon.erp.controller;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.dto.OverseaDTO;
 import com.fiveamazon.erp.dto.OverseaDetailDTO;
 import com.fiveamazon.erp.entity.OverseaDetailPO;
 import com.fiveamazon.erp.entity.OverseaPO;
+import com.fiveamazon.erp.entity.OverseaViewPO;
 import com.fiveamazon.erp.service.OverseaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,8 @@ public class OverseaController extends SimpleCommonController {
 	public String findAll(){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
-		List<OverseaPO> list = theService.findAll();
-		for(OverseaPO item: list){
+		List<OverseaViewPO> list = theService.findAll();
+		for(OverseaViewPO item: list){
 			array.put(item.toJson());
 		}
 		rs.put("array", array);
@@ -98,8 +100,31 @@ public class OverseaController extends SimpleCommonController {
 	public String saveDetailListDetail(OverseaDetailDTO dto){
 		dto.setUsername(getUsername());
 		JSONObject rs = new JSONObject();
-		OverseaDetailPO item = theService.saveDetail(dto);
+		OverseaDetailPO item = theService.saveDetail(dto, true);
 		rs.put("data", item == null ? null : item.toJson());
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/batchInsert", method= RequestMethod.POST)
+	public String batchInsert(@RequestBody String abc){
+		log.info("batchInsert");
+		log.info(abc);
+		JSONObject rs = new JSONObject();
+		JSONObject json = new JSONObject(abc);
+		JSONObject itemJson = json.getJSONObject("item");
+		OverseaDTO dto = JSONUtil.toBean(itemJson, OverseaDTO.class);
+		dto.setUsername(getUsername());
+		OverseaPO item = theService.save(dto);
+		Integer overseaId = item.getId();
+		JSONArray jsonArray = json.getJSONArray("array");
+		for(JSONObject detailJson : jsonArray.jsonIter()){
+			OverseaDetailDTO detailDTO = JSONUtil.toBean(detailJson, OverseaDetailDTO.class);
+			detailDTO.setUsername(getUsername());
+			detailDTO.setOverseaId(overseaId);
+			theService.saveDetail(detailDTO, false);
+		}
+		rs.put("data", new JSONObject());
 		rs.put("error", false);
 		return rs.toString();
 	}

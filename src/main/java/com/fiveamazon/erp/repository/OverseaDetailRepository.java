@@ -14,6 +14,6 @@ import java.util.List;
 @Repository
 public interface OverseaDetailRepository extends JpaRepository<OverseaDetailPO, Integer> {
     OverseaDetailPO getById(Integer id);
-    List<OverseaDetailPO> findByOverseaId(Integer overseaId);
+    List<OverseaDetailPO> findByOverseaIdOrderByBox(Integer overseaId);
     void deleteByOverseaId(Integer overseaId);
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="ture" scanPeriod="60 seconds" debug="false">
-
-	<property name="logback.logdir" value="/applog/erp"/>
+	<springProperty scope="context" name="logback.logdir" source="logging.logpath"/>
 	<property name="logback.appname" value="erp"/>
 	<contextName>erp</contextName>
 	

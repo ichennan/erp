@@ -5,7 +5,6 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.dto.ProductDTO;
-import com.fiveamazon.erp.dto.PurchaseDetailDTO;
 import com.fiveamazon.erp.dto.SkuInfoDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ProductService;
@@ -82,6 +81,16 @@ public class ProductController extends SimpleCommonController {
 		List<StorePO> storePOList = productService.findAllStore();
 		for(StorePO storePO: storePOList){
 			rs.put("id" + storePO.getId(), new JSONObject(storePO));
+		}
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/refreshCacheSkus", method= RequestMethod.POST)
+	public String refreshCacheSkus(){
+		JSONObject rs = new JSONObject();
+		List<SkuInfoVO> list = skuService.findAll();
+		for(SkuInfoVO item: list){
+			rs.put("id" + item.getId(), new JSONObject(item));
 		}
 		return rs.toString();
 	}

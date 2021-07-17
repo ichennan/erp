@@ -1,44 +1,3 @@
-CREATE EVENT event_snapshot_sku_inventory
-ON SCHEDULE EVERY 1 DAY
-STARTS '2020-08-17 23:40:00'
-ON COMPLETION PRESERVE
-COMMENT 'Sku Snapshot Every Mid-Night'
-DO
-
-insert into snapshot_sku(
-snapshot_date
-
-,sku_id
-,product_id
-,sum_product_purchase_quantity
-,sum_product_shipment_quantity
-,sum_product_shipment_ontheway_quantity
-,sum_product_packet_quantity
-,sum_product_shipment_arrived_quantity
-,product_inventory_quantity
-,sum_sku_shipment_quantity
-,sum_sku_shipment_ontheway_quantity
-,sum_sku_shipment_arrived_quantity
-)
-
-select
-DATE_FORMAT(NOW(),'%Y%m%d')
-
-,id
-,product_id
-,sum_product_purchase_quantity
-,sum_product_shipment_quantity
-,sum_product_shipment_ontheway_quantity
-,sum_product_packet_quantity
-,sum_product_shipment_arrived_quantity
-,product_inventory_quantity
-,sum_sku_shipment_quantity
-,sum_sku_shipment_ontheway_quantity
-,sum_sku_shipment_arrived_quantity
-from view_sku_info
-
-;;;;;;;;;;;;;;;;;;;;;;;;
-
 DROP TRIGGER trigger_purchase_price;
 
 CREATE TRIGGER trigger_purchase_price
@@ -60,8 +19,9 @@ select p.id as id,
        ifnull(sumShipmentQuantity, 0) as sum_product_shipment_quantity,
        ifnull(sumShipmentOnthewayQuantity, 0) as sum_product_shipment_ontheway_quantity,
        ifnull(sumPacketQuantity, 0) as sum_product_packet_quantity,
+       ifnull(sumOverseaQuantity, 0) as sum_product_oversea_quantity,
        (ifnull(sumShipmentQuantity, 0) - ifnull(sumShipmentOnthewayQuantity, 0)) as sum_product_shipment_arrived_quantity,
-       (ifnull(sumPurchaseQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0)) as product_inventory_quantity
+       (ifnull(sumPurchaseQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0) - ifnull(sumOverseaQuantity, 0)) as product_inventory_quantity
        from tbl_product p
 
 left join
@@ -88,6 +48,11 @@ left join
 as t_packet
 on p.id = t_packet.product_id
 
+left join
+(select product_id, ifnull(sum(quantity), 0) as sumOverseaQuantity from tbl_oversea_detail where fba_no <> '' group by product_id)
+as t_oversea
+on p.id = t_oversea.product_id
+
 ;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -98,8 +63,9 @@ select p.id as id,
        p.product_id as product_id,
        ifnull(sumSkuShipmentQuantity, 0) as sum_sku_shipment_quantity,
        ifnull(sumSkuShipmentOnthewayQuantity, 0) as sum_sku_shipment_ontheway_quantity,
-       (ifnull(sumSkuShipmentQuantity, 0) - ifnull(sumSkuShipmentOnthewayQuantity, 0)) as sum_sku_shipment_arrived_quantity
-       from tbl_sku_info p
+       (ifnull(sumSkuShipmentQuantity, 0) - ifnull(sumSkuShipmentOnthewayQuantity, 0)) as sum_sku_shipment_arrived_quantity,
+       ifnull(sumSkuOverseaQuantity, 0) as sum_sku_oversea_quantity
+from tbl_sku_info p
 
 left join
     (select sku_id, sum(quantity) as sumSkuShipmentQuantity from tbl_shipment_detail where box <> 'Plan' group by sku_id)
@@ -115,6 +81,11 @@ left join
 as t_shipment_ontheway
 on p.id = t_shipment_ontheway.sku_id
 
+left join
+(select sku_id, sum(quantity) as sumSkuOverseaQuantity from tbl_oversea_detail where fba_no <> '' group by sku_id)
+as t_oversea
+on p.id = t_oversea.sku_id
+
 ;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -124,10 +95,11 @@ create or replace view view_purchase as
 select `p`.*,
        `t`.`product_id_group` AS `product_id_group`
 from
-(   `tbl_purchase` as `p`
-    left join
-    (   select group_concat(`tbl_purchase_detail`.`product_id` separator ',') AS `product_id_group`,
-               `tbl_purchase_detail`.`purchase_id` AS `purchase_id`
+    (`tbl_purchase` as `p`
+        left join
+        (select group_concat(concat(`tbl_purchase_detail`.`product_id`, '-', `tbl_purchase_detail`.`received_quantity`) separator ',')
+            AS `product_id_group`,
+            `tbl_purchase_detail`.`purchase_id` AS `purchase_id`
         from `tbl_purchase_detail`
         group by `tbl_purchase_detail`.`purchase_id`
     ) as `t`
@@ -149,10 +121,11 @@ create or replace view view_shipment as
 select `p`.*,
        `t`.`product_id_group` AS `product_id_group`
 from
-(   `tbl_shipment` as `p`
-    left join
-    (   select group_concat(`tbl_shipment_detail`.`product_id` separator ',') AS `product_id_group`,
-               `tbl_shipment_detail`.`shipment_id` AS `shipment_id`
+    (`tbl_shipment` as `p`
+        left join
+        (select group_concat(concat(`tbl_shipment_detail`.`product_id`, '-', `tbl_shipment_detail`.`quantity`) separator ',')
+            AS `product_id_group`,
+            `tbl_shipment_detail`.`shipment_id` AS `shipment_id`
         from `tbl_shipment_detail`
         group by `tbl_shipment_detail`.`shipment_id`
     ) as `t`
@@ -174,6 +147,24 @@ on tsd.sku_id = tsi.id
 where tsd.box != 'Plan'
 );
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_oversea as
+
+select `p`.*,
+       `t`.`product_id_group` AS `product_id_group`
+from
+    (`tbl_oversea` as `p`
+        left join
+        (select group_concat(concat(`tbl_oversea_detail`.`product_id`, '-', `tbl_oversea_detail`.`quantity`) separator ',')
+            AS `product_id_group`,
+            `tbl_oversea_detail`.`oversea_id` AS `oversea_id`
+        from `tbl_oversea_detail`
+        group by `tbl_oversea_detail`.`oversea_id`
+    ) as `t`
+    on (`p`.`id` = `t`.`oversea_id`)
+);
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 --
@@ -190,10 +181,12 @@ vp.sum_product_shipment_quantity,
 vp.sum_product_shipment_ontheway_quantity,
 vp.sum_product_packet_quantity,
 vp.sum_product_shipment_arrived_quantity,
+vp.sum_product_oversea_quantity,
 vp.product_inventory_quantity,
 vs.sum_sku_shipment_quantity,
 vs.sum_sku_shipment_ontheway_quantity,
-vs.sum_sku_shipment_arrived_quantity
+vs.sum_sku_shipment_arrived_quantity,
+vs.sum_sku_oversea_quantity
 
 from `tbl_sku_info` as `s`
 
@@ -202,6 +195,8 @@ on (`s`.`product_id` = `vp`.`id`)
 
 left join `view_inventory_sku` as `vs`
 on (`s`.`id` = `vs`.`id`)
+
+;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -219,3 +214,51 @@ left join
 on p.id = s.product_id
 left join view_inventory_product vip
 on p.id = vip.id
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DROP EVENT event_snapshot_sku_inventory;
+CREATE EVENT event_snapshot_sku_inventory
+ON SCHEDULE EVERY 1 DAY
+STARTS '2020-08-17 23:55:00'
+ON COMPLETION PRESERVE
+COMMENT 'Sku Snapshot Every Mid-Night'
+DO
+
+insert into snapshot_sku(
+snapshot_date
+
+,sku_id
+,product_id
+,sum_product_purchase_quantity
+,sum_product_shipment_quantity
+,sum_product_shipment_ontheway_quantity
+,sum_product_packet_quantity
+,sum_product_shipment_arrived_quantity
+,sum_product_oversea_quantity
+,product_inventory_quantity
+,sum_sku_shipment_quantity
+,sum_sku_shipment_ontheway_quantity
+,sum_sku_shipment_arrived_quantity
+,sum_sku_oversea_quantity
+)
+
+select
+    DATE_FORMAT(NOW(),'%Y%m%d')
+
+     ,id
+     ,product_id
+     ,sum_product_purchase_quantity
+     ,sum_product_shipment_quantity
+     ,sum_product_shipment_ontheway_quantity
+     ,sum_product_packet_quantity
+     ,sum_product_shipment_arrived_quantity
+     ,sum_product_oversea_quantity
+     ,product_inventory_quantity
+     ,sum_sku_shipment_quantity
+     ,sum_sku_shipment_ontheway_quantity
+     ,sum_sku_shipment_arrived_quantity
+     ,sum_sku_oversea_quantity
+from view_sku_info
+
+;

@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "tbl_oversea")
-public class OverseaPO extends SimpleCommonEntity {
+@Table(name = "view_oversea")
+public class OverseaViewPO extends SimpleCommonEntity {
     String warehouseName;
     String deliveryDate;
     String carrier;
@@ -27,6 +27,7 @@ public class OverseaPO extends SimpleCommonEntity {
     Integer boxCount;
     String trackingNumber;
     String weightRemark;
+    String productIdGroup;
 
     public JSONObject toJson(){
         return new JSONObject(this);

@@ -5,8 +5,9 @@ select p.id as id,
        ifnull(sumShipmentQuantity, 0) as sum_product_shipment_quantity,
        ifnull(sumShipmentOnthewayQuantity, 0) as sum_product_shipment_ontheway_quantity,
        ifnull(sumPacketQuantity, 0) as sum_product_packet_quantity,
+       ifnull(sumOverseaQuantity, 0) as sum_product_oversea_quantity,
        (ifnull(sumShipmentQuantity, 0) - ifnull(sumShipmentOnthewayQuantity, 0)) as sum_product_shipment_arrived_quantity,
-       (ifnull(sumPurchaseQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0)) as product_inventory_quantity
+       (ifnull(sumPurchaseQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0) - ifnull(sumOverseaQuantity, 0)) as product_inventory_quantity
        from tbl_product p
 
 left join
@@ -32,5 +33,10 @@ left join
 (select product_id, ifnull(sum(quantity), 0) as sumPacketQuantity from tbl_packet_detail group by product_id)
 as t_packet
 on p.id = t_packet.product_id
+
+left join
+(select product_id, ifnull(sum(quantity), 0) as sumOverseaQuantity from tbl_oversea_detail where fba_no <> '' group by product_id)
+as t_oversea
+on p.id = t_oversea.product_id
 
 ;

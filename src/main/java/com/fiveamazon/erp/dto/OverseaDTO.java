@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 public class OverseaDTO extends SimpleCommonDTO {
+    String warehouseName;
     String deliveryDate;
     String carrier;
     String route;
@@ -17,7 +18,7 @@ public class OverseaDTO extends SimpleCommonDTO {
     BigDecimal amount;
     String paymentDate;
     String signedDate;
-    String statusDelivery;
+    String status;
     Integer boxCount;
     String trackingNumber;
     String weightRemark;

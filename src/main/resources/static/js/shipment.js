@@ -173,7 +173,7 @@ function showList(){
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
                 var storeName = parent.$.retrieveStoreName(obj.storeId);
-                var tds = [obj.excelDate, obj.deliveryDate, obj.signedDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup)];
+                var tds = [obj.excelDate, obj.deliveryDate, obj.signedDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<body>
+<div>
+    <div class="row" id="overseaBox">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title"></h3>
+                <a href="#" class="pull-right"><i class="fa fa-backward"></i> 返回</a>
+            </div>
+            <div id="overseaTableDiv"></div>
+            <form id="overseaForm" class="form-horizontal" action="#">
+                <div class="box-body">
+                    <input type="hidden" pid="id"/>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <button sec:authorize="hasAuthority('ROLE_Packet_Edit')" type="button" class="btn btn-success create" onclick="createOversea()">创建海外仓</button>
+                        <button type="button" class="btn cancel" onclick="window.location.href='#'">取消</button>
+                        <button type="submit" class="hide"></button>
+                    </div>
+                </div>
+                <!-- /.box-footer -->
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

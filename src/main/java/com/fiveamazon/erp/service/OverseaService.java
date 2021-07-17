@@ -1,10 +1,12 @@
 package com.fiveamazon.erp.service;
 
 
+import com.fiveamazon.erp.dto.OverseaBatchInsertDTO;
 import com.fiveamazon.erp.dto.OverseaDTO;
 import com.fiveamazon.erp.dto.OverseaDetailDTO;
 import com.fiveamazon.erp.entity.OverseaDetailPO;
 import com.fiveamazon.erp.entity.OverseaPO;
+import com.fiveamazon.erp.entity.OverseaViewPO;
 
 import java.util.List;
 
@@ -19,13 +21,15 @@ public interface OverseaService {
 
     OverseaDetailPO getDetailById(Integer id);
 
-    List<OverseaPO> findAll();
+    List<OverseaViewPO> findAll();
 
     OverseaPO save(OverseaDTO dto);
 
-    OverseaDetailPO saveDetail(OverseaDetailDTO dto);
+    OverseaDetailPO saveDetail(OverseaDetailDTO dto, Boolean refreshSku);
 
     List<OverseaDetailPO> findAllDetail(Integer overseaId);
+
+    void batchInsert(OverseaBatchInsertDTO dto);
 //
 //    ShipmentPO save(ShipmentDTO shipmentDTO);
 //

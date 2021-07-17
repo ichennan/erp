@@ -13,8 +13,7 @@
                 <div class="col-md-12">
                     <div class="box box-info">
                         <div class="box-header with-border">
-
-                            <div class="col-md-4">
+                            <div class="col-xs-4">
                                 <select id="fbaStoreId" class="select2">
                                     <option value="">店铺选择</option>
                                     <option value="111">庙美国</option>
@@ -26,12 +25,16 @@
                                     <option value="411">拾子美国</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <input type="radio" name="statusSelected" value="all" checked /><span>显示所有</span>
-                                <input type="radio" name="statusSelected" value="plan" /><span>显示计划</span>
+                            <div class="col-xs-4">
+<!--                                <input type="radio" name="statusSelected" value="all" checked /><span>显示所有</span>-->
+<!--                                <input type="radio" name="statusSelected" value="batch" /><span>显示筛选</span>-->
+                                <span class="batchSelected spanOption defaultSelected" batchSelected="all">显示所有</span>
+                                <span class="batchSelected spanOption" batchSelected="batch">显示筛选</span>
                             </div>
-                            <!--<button id="testButton" type="button"> test </button>-->
-                            <!--<button type="button" class="btn btn-success" onclick="createPlan()">开始计划</button>-->
+                            <div class="col-xs-4">
+                                <button type="button" class="btn btn-success" onclick="showOversea()">发海外仓</button>
+                                <button type="button" class="btn btn-danger text-right" id="cleanBatch" onclick="cleanBatch()">清空数字</button>
+                            </div>
                         </div>
                         <div class="box-body" id="tableDiv">
                         </div>
@@ -97,7 +100,7 @@
                 </div>
             </div>
 
-
+            <div th:replace="sku_batch"></div>
 
             <div class="row" id="chartBox">
                 <div class="col-md-12 hidden">
@@ -151,6 +154,8 @@
 <div th:replace="common/common_js :: js"></div>
 <script type="text/javascript" th:src="@{/webjars/jquery-file-upload/js/jquery.fileupload.js}"></script>
 <script type="text/javascript" th:src="@{/webjars/highcharts/highcharts.js}"></script>
+<script type="text/javascript" th:src="@{'/js/common_fn.js?v=' + ${version}}"></script>
+<script type="text/javascript" th:src="@{'/js/sku_batch.js?v=' + ${version}}"></script>
 </body>
 </html>
 

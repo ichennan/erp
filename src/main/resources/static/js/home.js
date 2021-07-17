@@ -2,6 +2,7 @@
 $(function () {
     $.cacheProducts = {};
     $.cacheStores = {};
+    $.cacheSkus = {};
     App.setbasePath("../");
     addTabs({
         id: '10008',
@@ -122,6 +123,7 @@ $(function () {
 
     $.refreshCacheProducts();
     $.refreshCacheStores();
+    $.refreshCacheSkus();
 });
 
 $.refreshCacheProducts = function () {
@@ -134,12 +136,34 @@ $.refreshCacheProducts = function () {
         dataType: "json",
         success: function (rs) {
             $.cacheProducts = rs;
-            console.log("$.cacheProducts");
+            console.log("refreshCacheProducts.success");
             console.log($.cacheProducts);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
-            console.log("error");
+            console.log("refreshCacheStores.error");
+        },
+        complete: function () {
+        }
+    });
+}
+
+$.refreshCacheSkus = function () {
+    console.log("home.js.refreshCacheSkus()");
+    var data = {};
+    $.ajax({
+        type: "POST",
+        url: "product/refreshCacheSkus",
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            $.cacheSkus = rs;
+            console.log("refreshCacheSkus.success");
+            console.log($.cacheSkus);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $.showErrorModal(XMLHttpRequest.responseText);
+            console.log("refreshCacheSkus.error");
         },
         complete: function () {
         }
@@ -156,12 +180,12 @@ $.refreshCacheStores = function () {
         dataType: "json",
         success: function (rs) {
             $.cacheStores = rs;
-            console.log("$.cacheStores");
+            console.log("refreshCacheStores.success");
             console.log($.cacheStores);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
-            console.log("error");
+            console.log("refreshCacheStores.error");
         },
         complete: function () {
         }
@@ -186,6 +210,24 @@ $.refreshProductsSelect = function($select){
     })
 }
 
+$.refreshSkusSelect = function($select){
+    console.log("home.js.refreshSkusSelect()");
+    var data = [];
+    for(key in $.cacheSkus){
+        var optionObj = {};
+        optionObj.id = key.substr(2);
+        optionObj.text = $.cacheSkus[key].skuDesc;
+        data.push(optionObj);
+    }
+
+    $select.select2({
+        data: data,
+        placeholder:'请选择',
+        allowClear:true,
+        width: "100%"
+    })
+}
+
 $.showProductNameGroupByProductIdGroup = function(productIdGroupString){
     console.log("home.js.showProductNameGroupByProductIdGroup(): " + productIdGroupString);
     var productNameGroup = [];
@@ -199,6 +241,30 @@ $.showProductNameGroupByProductIdGroup = function(productIdGroupString){
             productNameGroup.push(productName);
         }
     })
+    return productNameGroup;
+}
+
+$.showProductNameGroupByProductIdGroupWithQuantity = function(productIdGroupString){
+    console.log("home.js.showProductNameGroupByProductIdGroupWithQuantity(): " + productIdGroupString);
+    var productNameGroup = [];
+    var productObjs = {};
+    if(!productIdGroupString){
+        return productNameGroup;
+    }
+    var productIdGroup = productIdGroupString.split(",");
+
+    $.each(productIdGroup, function (index, obj) {
+        var productInfo = obj.split("-");
+        var productId = productInfo[0];
+        var productQuantity = productInfo[1] * 1;
+        productObjs["id" + productId] = (productObjs["id" + productId] ? productObjs["id" + productId] : 0) * 1 + productQuantity;
+    })
+
+    for(var key in productObjs){
+        var productName = $.cacheProducts[key] ? $.cacheProducts[key].snname + "[" + productObjs[key] + "]" : "ERROR" + key;
+        productNameGroup.push(productName);
+    }
+
     return productNameGroup;
 }
 
