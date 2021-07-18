@@ -18,6 +18,12 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 
+    $(".backToList").click(function(){
+        $.isNoRefreshList = true;
+        location.hash = "#";
+        $(window).trigger('hashchange');
+    })
+
     $("#fbaStoreId").change(function () {
         $("#tableDiv").find("tr").removeClass("selected");
         var storeId = $(this).val();
@@ -40,7 +46,11 @@ $(document).ready(function(){
         $("span.batchSelected").removeClass("selected");
         $this.addClass("selected");
         var batchSelected = $this.attr("batchSelected");
+        $(".batchButton").hide();
         if(batchSelected == "batch"){
+            $(".batchButton").show();
+            $("#listTable .theadSearch input").val("").trigger("change");
+            $("#fbaStoreId").val("").trigger("change");
             $("#tableDiv tbody").find("tr:not(.batch)").hide();
         }else{
             $("#tableDiv tbody").find("tr:not(.batch)").show();
@@ -52,6 +62,9 @@ $(document).ready(function(){
 
 function cleanBatch(){
     $('td.batchTd input').val('').trigger("keyup");
+    $("#listTable .theadSearch input").val("").trigger("change");
+    $("#fbaStoreId").val("").trigger("change");
+    $("span.spanOption.defaultSelected").trigger("click");
 }
 
 function showList(){

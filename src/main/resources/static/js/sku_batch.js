@@ -4,11 +4,16 @@ $(document).ready(function(){
 });
 
 function showOversea(){
+    console.log("showOversea");
+    var batchArray = getBatchArray();
+    if(!batchArray){
+        alert("请输入箱子编号");
+        return;
+    }
     $("#tableBox").hide();
     $("#contentBox").hide();
     $("#overseaBox").show();
     $("#overseaTableDiv").empty();
-    var batchArray = getBatchArray();
     //
     var table = $("<table id='overseaTable' class='table table-bordered data-table'></table>");
     var thead = $("<thead><tr></tr></thead>");
@@ -18,20 +23,35 @@ function showOversea(){
     })
     var tbody = $("<tbody></tbody>");
     table.append(thead).append(tbody);
-    var box = 0;
+    var cccObjArray = [];
     $.each(batchArray, function(index, obj){
-        var batchQuantity = obj.batchQuantity;
-        for(var i = 1; i <= batchQuantity; i++){
-            box++;
-            createOverseaRow(table, box, obj);
-        }
+        var batchBoxArray = obj.batchQuantity.split(/\s+/);
+        $.each(batchBoxArray, function (index_2, obj_2) {
+            var box = obj_2 * 1;
+            if(box && box != 0){
+                var cccObj = $.extend({}, obj);
+                cccObj.box = box;
+                cccObjArray.push(cccObj);
+            }
+        })
     })
+
+    cccObjArray.sort(function(a, b){
+        return a.box - b.box;
+    })
+
+    console.log(cccObjArray);
+
+    $.each(cccObjArray, function(index, obj){
+        createOverseaRow(table, obj);
+    })
+
     $("#overseaTableDiv").append(table);
 }
 
-function createOverseaRow(table, box, obj){
+function createOverseaRow(table, obj){
     var boxTd = $("<td tid='box'><input /></td>");
-    boxTd.find("input").val(box);
+    boxTd.find("input").val(obj.box);
     var quantityTd = $("<td tid='quantity'><input /></td>");
     var productDescriptionTd = $("<td tid='productDescription'><input style='min-width: 120px' /></td>");
     var boxDescriptionTd = $("<td tid='boxDescription'><input style='min-width: 180px' /></td>");
@@ -109,6 +129,8 @@ function createOversea(){
         success: function (rs) {
             console.log("createOversea.success");
             console.log(rs);
+            $.isNoRefreshList = false;
+            location.hash = "#";
             $(window).trigger('hashchange');
             $("#cleanBatch").trigger("click");
             $.showToastr();
