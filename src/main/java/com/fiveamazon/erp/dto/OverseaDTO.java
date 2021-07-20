@@ -22,4 +22,5 @@ public class OverseaDTO extends SimpleCommonDTO {
     Integer boxCount;
     String trackingNumber;
     String weightRemark;
+    Integer storeId;
 }

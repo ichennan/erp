@@ -27,6 +27,7 @@ public class OverseaPO extends SimpleCommonEntity {
     Integer boxCount;
     String trackingNumber;
     String weightRemark;
+    Integer storeId;
 
     public JSONObject toJson(){
         return new JSONObject(this);

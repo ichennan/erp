@@ -153,7 +153,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['上传日期','发货日期','签收日期','FBA No.','货代', '线路','箱/重/价','店铺','采购产品'];
+    var theadNames = ['id','发货日期','签收日期','FBA No.','货代', '线路','箱/重/价','店铺','采购产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -173,7 +173,7 @@ function showList(){
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
                 var storeName = parent.$.retrieveStoreName(obj.storeId);
-                var tds = [obj.excelDate, obj.deliveryDate, obj.signedDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
+                var tds = [obj.id, obj.deliveryDate, obj.signedDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");

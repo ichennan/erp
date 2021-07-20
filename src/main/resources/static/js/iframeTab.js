@@ -2270,9 +2270,9 @@ $(function () {
                 //a标签
                 var $a;
                 if (level > 0) {
-                    $a = $('<a style="padding-left:' + (level * 20) + 'px"></a>');
+                    $a = $('<a href="javascript:;" style="padding-left:' + (level * 20) + 'px"></a>');
                 } else {
-                    $a = $('<a></a>');
+                    $a = $('<a href="javascript:;"></a>');
                 }
 
                 //图标

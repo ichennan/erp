@@ -228,6 +228,24 @@ $.refreshSkusSelect = function($select){
     })
 }
 
+$.refreshStoresSelect = function($select){
+    console.log("home.js.refreshStoresSelect()");
+    var data = [];
+    $.each($.cacheStores, function(index, obj){
+        var optionObj = {};
+        optionObj.id = obj.id;
+        optionObj.text = obj.name;
+        data.push(optionObj);
+    })
+
+    $select.select2({
+        data: data,
+        placeholder:'请选择',
+        allowClear:true,
+        width: "100%"
+    })
+}
+
 $.showProductNameGroupByProductIdGroup = function(productIdGroupString){
     console.log("home.js.showProductNameGroupByProductIdGroup(): " + productIdGroupString);
     var productNameGroup = [];
@@ -270,6 +288,9 @@ $.showProductNameGroupByProductIdGroupWithQuantity = function(productIdGroupStri
 
 $.retrieveStoreName = function(storeId){
     console.log("retrieveStoreName(): " + storeId);
+    if(!storeId){
+        return '';
+    }
     var storeName = $.cacheStores["id" + storeId] ? $.cacheStores["id" + storeId].name + " " : "";
     return storeName;
 }

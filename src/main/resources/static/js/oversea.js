@@ -22,7 +22,9 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 
-    // parent.$.refreshProductsSelect($detailForm.find("[pid=productId]"));
+    //
+    parentJs.$.refreshStoresSelect($itemForm.find("[pid=storeId]"));
+    //
     parentJs.$.refreshSkusSelect($detailForm.find("[pid=skuId]"));
 
     $(".datetimepicker").datetimepicker({
@@ -115,7 +117,7 @@ function showList(){
         success: function (rs) {
             console.log(rs);
             createListTableBody(table, rs);
-            createDataTable(table);
+            createDataTable(table, {"order": 2});
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
@@ -228,7 +230,7 @@ function createListTableHead(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['发货日期', '海外仓', '发货编号', '箱子数', '发货产品'];
+    var theadNames = ['id', '店铺', '发货日期', '海外仓', '发货编号', '箱数', '发货产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -243,7 +245,8 @@ function createListTableBody(table, rs){
     console.log("createListTableBody");
     $.each(rs.array, function (index, obj) {
         var tr = $("<tr></tr>");
-        var tds = [obj.deliveryDate, obj.warehouseName, obj.deliveryNo, obj.boxCount, parentJs.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
+        var storeName = parentJs.$.retrieveStoreName(obj.storeId);
+        var tds = [obj.id, storeName, obj.deliveryDate, obj.warehouseName, obj.deliveryNo, obj.boxCount, parentJs.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
@@ -332,8 +335,9 @@ function saveDetail(action){
     });
 }
 
-function createDataTable(table){
+function createDataTable(table, opt){
     console.log("createDataTable");
+    var order = (opt && opt.order) ? opt.order : 0;
     var tableId = table.attr("id");
     console.log("tableId: " + tableId);
     var datatable = table.DataTable({
@@ -343,7 +347,7 @@ function createDataTable(table){
         "bSort": true,
         "language": $.dataTablesLanguage,
         "pageLength": 1000000,
-        "order": [[ 1, "desc" ]],
+        "order": [[ order, "desc" ]],
     });
     if(table.find('.theadSearch')){
         table.find('.theadSearch').find('input').css("width", "100%");
@@ -365,10 +369,17 @@ function createItemForm() {
     console.log("createItemForm()");
     var itemArray = [];
     var i = -1;
+    itemArray[++i] = {"label": "店铺", "pid": "storeId", "required": true, "inputType": "select"};
     itemArray[++i] = {"label": "海外仓名字", "pid": "warehouseName", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "箱数", "pid": "boxCount", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "发货日期", "pid": "deliveryDate", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "发货编号", "pid": "deliveryNo", "inputType": "text"};
+    itemArray[++i] = {"label": "发货状态", "pid": "status", "required": true, "inputType": "select", "array": []};
+    itemArray[i].array.push({"label": "--", "value": ""});
+    itemArray[i].array.push({"label": "未发货", "value": "未发货"});
+    itemArray[i].array.push({"label": "已发货", "value": "已发货"});
+    itemArray[i].array.push({"label": "已签收", "value": "已签收"});
+    itemArray[i].array.push({"label": "均转FBA", "value": "均转FBA"});
     itemArray[++i] = {"label": "货代", "pid": "carrier", "inputType": "text"};
     itemArray[++i] = {"label": "线路", "pid": "route", "inputType": "text"};
     itemArray[++i] = {"label": "单价", "pid": "unitPrice", "inputType": "text"};
@@ -377,12 +388,6 @@ function createItemForm() {
     itemArray[++i] = {"label": "付款日期", "pid": "paymentDate", "inputType": "text"};
     itemArray[++i] = {"label": "签收日期", "pid": "signedDate", "inputType": "text"};
     itemArray[++i] = {"label": "备注", "pid": "remark", "inputType": "text"};
-    itemArray[++i] = {"label": "发货状态", "pid": "status", "required": true, "inputType": "select", "array": []};
-    itemArray[i].array.push({"label": "--", "value": ""});
-    itemArray[i].array.push({"label": "未发货", "value": "未发货"});
-    itemArray[i].array.push({"label": "已发货", "value": "已发货"});
-    itemArray[i].array.push({"label": "已签收", "value": "已签收"});
-    itemArray[i].array.push({"label": "均转FBA", "value": "均转FBA"});
     $.drawContentForm($itemForm, itemArray);
 }
 function createDetailForm() {

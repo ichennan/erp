@@ -28,6 +28,7 @@ public class OverseaViewPO extends SimpleCommonEntity {
     String trackingNumber;
     String weightRemark;
     String productIdGroup;
+    Integer storeId;
 
     public JSONObject toJson(){
         return new JSONObject(this);

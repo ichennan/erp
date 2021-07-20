@@ -639,8 +639,6 @@ function calculatePurchaseQuanity(){
         var price = $this.find("td[columnName = 费用]").text() * 1;
         sumPurchaseCount = sumPurchaseCount + 1;
         sumPurchasePrice = sumPurchasePrice + 1 * price;
-        console.log("id: " + $this.find("td[columnName = id]").text());
-        console.log("price: " + $this.find("td[columnName = 费用]").text());
     })
     $("#sumPurchaseCount").text(sumPurchaseCount);
     $("#sumPurchasePrice").text(sumPurchasePrice);

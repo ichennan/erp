@@ -14,6 +14,9 @@ function showOversea(){
     $("#contentBox").hide();
     $("#overseaBox").show();
     $("#overseaTableDiv").empty();
+    $("#overseaForm").find("[pid]").each(function () {
+        $(this).val('').trigger("change");
+    });
     //
     var table = $("<table id='overseaTable' class='table table-bordered data-table'></table>");
     var thead = $("<thead><tr></tr></thead>");
@@ -78,6 +81,12 @@ function createOverseaForm() {
     itemArray[++i] = {"label": "海外仓名字", "pid": "warehouseName", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "箱数", "pid": "boxCount", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "发货日期", "pid": "deliveryDate", "required": true, "inputType": "text"};
+    itemArray[++i] = {"label": "发货状态", "pid": "status", "inputType": "select", "array": []};
+    itemArray[i].array.push({"label": "--", "value": ""});
+    itemArray[i].array.push({"label": "未发货", "value": "未发货"});
+    itemArray[i].array.push({"label": "已发货", "value": "已发货"});
+    itemArray[i].array.push({"label": "已签收", "value": "已签收"});
+    itemArray[i].array.push({"label": "均转FBA", "value": "均转FBA"});
     itemArray[++i] = {"label": "发货编号", "pid": "deliveryNo", "inputType": "text"};
     itemArray[++i] = {"label": "货代", "pid": "carrier", "inputType": "text"};
     itemArray[++i] = {"label": "线路", "pid": "route", "inputType": "text"};
@@ -87,12 +96,6 @@ function createOverseaForm() {
     itemArray[++i] = {"label": "付款日期", "pid": "paymentDate", "inputType": "text"};
     itemArray[++i] = {"label": "签收日期", "pid": "signedDate", "inputType": "text"};
     itemArray[++i] = {"label": "备注", "pid": "remark", "inputType": "text"};
-    itemArray[++i] = {"label": "发货状态", "pid": "status", "inputType": "select", "array": []};
-    itemArray[i].array.push({"label": "--", "value": ""});
-    itemArray[i].array.push({"label": "未发货", "value": "未发货"});
-    itemArray[i].array.push({"label": "已发货", "value": "已发货"});
-    itemArray[i].array.push({"label": "已签收", "value": "已签收"});
-    itemArray[i].array.push({"label": "均转FBA", "value": "均转FBA"});
     $.drawContentForm($("#overseaForm"), itemArray);
 }
 
@@ -102,7 +105,7 @@ function createOversea(){
     $("#overseaForm").find("[pid]").each(function () {
         item[$(this).attr("pid")] = $(this).val();
     });
-    data.item = item;
+    var overseaSotreId = '';
     var array = [];
     $("#overseaTable tbody tr").each(function (index, obj) {
         var $this = $(this);
@@ -111,6 +114,9 @@ function createOversea(){
         detailObj.skuId = $this.attr("skuId");
         detailObj.sku = $this.attr("sku");
         detailObj.storeId = $this.attr("storeId");
+        if(detailObj.storeId){
+            overseaSotreId = detailObj.storeId;
+        }
         detailObj.box = $this.find("td[tid=box]").find("input").val();
         detailObj.quantity = $this.find("td[tid=quantity]").find("input").val();
         detailObj.productDescription = $this.find("td[tid=productDescription]").find("input").val();
@@ -118,6 +124,8 @@ function createOversea(){
         detailObj.weight = $this.find("td[tid=weight]").find("input").val();
         array.push(detailObj);
     })
+    item.storeId = overseaSotreId;
+    data.item = item;
     data.array = array;
     console.log(data);
     $.ajax({

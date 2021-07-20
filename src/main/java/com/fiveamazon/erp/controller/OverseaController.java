@@ -109,7 +109,6 @@ public class OverseaController extends SimpleCommonController {
 	@RequestMapping(value = "/batchInsert", method= RequestMethod.POST)
 	public String batchInsert(@RequestBody String abc){
 		log.info("batchInsert");
-		log.info(abc);
 		JSONObject rs = new JSONObject();
 		JSONObject json = new JSONObject(abc);
 		JSONObject itemJson = json.getJSONObject("item");
