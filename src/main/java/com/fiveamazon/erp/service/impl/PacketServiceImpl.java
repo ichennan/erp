@@ -2,7 +2,6 @@ package com.fiveamazon.erp.service.impl;
 
 import com.fiveamazon.erp.dto.PacketDTO;
 import com.fiveamazon.erp.dto.PacketDetailDTO;
-import com.fiveamazon.erp.dto.PacketDetailViewDTO;
 import com.fiveamazon.erp.entity.PacketDetailPO;
 import com.fiveamazon.erp.entity.PacketPO;
 import com.fiveamazon.erp.repository.PacketDetailRepository;
@@ -75,6 +74,9 @@ public class PacketServiceImpl implements PacketService {
 
     @Override
     public PacketDetailPO saveDetail(PacketDetailPO packetDetailPO) {
+        if(null == packetDetailPO.getQuantity()){
+            packetDetailPO.setQuantity(0);
+        }
         return packetDetailRepository.save(packetDetailPO);
     }
 

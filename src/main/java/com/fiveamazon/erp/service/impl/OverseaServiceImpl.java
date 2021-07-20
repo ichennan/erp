@@ -14,6 +14,7 @@ import com.fiveamazon.erp.repository.OverseaViewRepository;
 import com.fiveamazon.erp.service.OverseaService;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,12 @@ public class OverseaServiceImpl implements OverseaService {
     }
 
     private OverseaDetailPO saveDetail(OverseaDetailPO item){
+        if(StringUtils.isBlank(item.getFbaNo())){
+            item.setFbaNo("");
+        }
+        if(null == item.getQuantity()){
+            item.setQuantity(0);
+        }
         return theDetailRepository.save(item);
     }
 
@@ -114,6 +121,7 @@ public class OverseaServiceImpl implements OverseaService {
             Integer skuId = dto.getSkuId();
             SkuInfoPO skuInfoPO = skuService.getById(skuId);
             if(skuInfoPO != null){
+                item.setSku(skuInfoPO.getSku());
                 item.setProductId(skuInfoPO.getProductId());
                 item.setStoreId(skuInfoPO.getStoreId());
             }

@@ -64,11 +64,20 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentPO save(ShipmentPO shipmentPO) {
+        if(StringUtils.isBlank(shipmentPO.getSignedDate())){
+            shipmentPO.setSignedDate("");
+        }
         return shipmentRepository.save(shipmentPO);
     }
 
     @Override
     public ShipmentDetailPO saveDetail(ShipmentDetailPO shipmentDetailPO) {
+        if(StringUtils.isBlank(shipmentDetailPO.getBox())){
+            shipmentDetailPO.setBox("");
+        }
+        if(null == shipmentDetailPO.getQuantity()){
+            shipmentDetailPO.setQuantity(0);
+        }
         return shipmentDetailRepository.save(shipmentDetailPO);
     }
 

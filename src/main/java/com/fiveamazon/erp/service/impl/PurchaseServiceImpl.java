@@ -26,8 +26,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -140,6 +138,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseDetailPO saveDetail(PurchaseDetailPO purchaseDetailPO) {
+        if(null == purchaseDetailPO.getReceivedQuantity()){
+            purchaseDetailPO.setReceivedQuantity(0);
+        }
         return purchaseDetailRepository.save(purchaseDetailPO);
     }
 

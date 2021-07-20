@@ -1,7 +1,6 @@
 package com.fiveamazon.erp.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
@@ -13,6 +12,7 @@ import com.fiveamazon.erp.repository.StoreRepository;
 import com.fiveamazon.erp.service.ProductService;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -68,6 +68,18 @@ public class ProductServiceImpl implements ProductService {
     public ProductPO save(ProductPO productPO) {
         if(null == productPO.getPurchasePrice()){
             productPO.setPurchasePrice(new BigDecimal(0));
+        }
+        if(StringUtils.isBlank(productPO.getSn())){
+            productPO.setSn("");
+        }
+        if(StringUtils.isBlank(productPO.getColor())){
+            productPO.setColor("");
+        }
+        if(StringUtils.isBlank(productPO.getSize())){
+            productPO.setSize("");
+        }
+        if(StringUtils.isBlank(productPO.getName())){
+            productPO.setName("");
         }
         return productRepository.save(productPO);
     }
