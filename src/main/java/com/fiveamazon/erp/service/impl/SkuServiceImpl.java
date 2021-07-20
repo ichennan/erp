@@ -5,9 +5,10 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonException;
 import com.fiveamazon.erp.common.SimpleConstant;
-import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.dto.SkuInfoDTO;
-import com.fiveamazon.erp.entity.*;
+import com.fiveamazon.erp.entity.SkuInfoPO;
+import com.fiveamazon.erp.entity.SkuInfoVO;
+import com.fiveamazon.erp.entity.SnapshotSkuPO;
 import com.fiveamazon.erp.repository.SkuInfoRepository;
 import com.fiveamazon.erp.repository.SkuInfoViewRepository;
 import com.fiveamazon.erp.repository.SnapshotSkuRepository;
@@ -19,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +69,7 @@ public class SkuServiceImpl implements SkuService {
             if(shipmentService.countBySkuId(skuId) > 0){
                 throw new SimpleCommonException("该SKU 已存在于FBA表中，无法删除，请联系管理员");
             }
+            log.error("SkuServiceImpl.deleteSku" + new JSONObject(skuInfoDTO).toString());
             skuInfoRepository.deleteById(skuId);
             return null;
         }
@@ -83,6 +86,8 @@ public class SkuServiceImpl implements SkuService {
                 if(shipmentService.countBySkuId(skuId) > 0){
                     throw new SimpleCommonException("该SKU 已存在于FBA表中，无法更改，请联系管理员");
                 }
+                log.error("SkuServiceImpl.updateSku old" + new JSONObject(skuInfoPO).toString());
+                log.error("SkuServiceImpl.updateSku new" + new JSONObject(skuInfoDTO).toString());
             }
             BeanUtils.copyProperties(skuInfoDTO, skuInfoPO, "id");
             skuInfoPO.setUpdateDate(new Date());
