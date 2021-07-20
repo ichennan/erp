@@ -49,7 +49,7 @@ as t_packet
 on p.id = t_packet.product_id
 
 left join
-(select product_id, ifnull(sum(quantity), 0) as sumOverseaQuantity from tbl_oversea_detail where fba_no <> '' group by product_id)
+(select product_id, ifnull(sum(quantity), 0) as sumOverseaQuantity from tbl_oversea_detail where fba_no = '' group by product_id)
 as t_oversea
 on p.id = t_oversea.product_id
 
@@ -82,7 +82,7 @@ as t_shipment_ontheway
 on p.id = t_shipment_ontheway.sku_id
 
 left join
-(select sku_id, sum(quantity) as sumSkuOverseaQuantity from tbl_oversea_detail where fba_no <> '' group by sku_id)
+(select sku_id, sum(quantity) as sumSkuOverseaQuantity from tbl_oversea_detail where fba_no = '' group by sku_id)
 as t_oversea
 on p.id = t_oversea.sku_id
 
