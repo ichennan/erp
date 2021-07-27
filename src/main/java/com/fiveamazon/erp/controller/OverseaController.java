@@ -37,7 +37,7 @@ public class OverseaController extends SimpleCommonController {
 	}
 
 	@RequestMapping(value = "/findList", method= RequestMethod.POST)
-	public String findAll(){
+	public String findList(){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
 		List<OverseaViewPO> list = theService.findAll();
@@ -49,21 +49,8 @@ public class OverseaController extends SimpleCommonController {
 		return rs.toString();
 	}
 
-//	@RequestMapping(value = "/findAllDetail", method= RequestMethod.POST)
-//	public String findAllDetail(Integer shipmentId){
-//		JSONObject rs = new JSONObject();
-//		JSONArray array = new JSONArray();
-//		List<ShipmentDetailPO> shipmentDetailPOS = shipmentService.findAllDetail(shipmentId);
-//		for(ShipmentDetailPO shipmentDetailPO: shipmentDetailPOS){
-//			array.put(shipmentDetailPO.toJson());
-//		}
-//		rs.put("array", array);
-//		rs.put("error", false);
-//		return rs.toString();
-//	}
-
 	@RequestMapping(value = "/getItem", method= RequestMethod.POST)
-	public String getDetail(@RequestParam("id")Integer id){
+	public String getItem(@RequestParam("id")Integer id){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
 		OverseaPO item = theService.getById(id);
@@ -78,7 +65,7 @@ public class OverseaController extends SimpleCommonController {
 	}
 
 	@RequestMapping(value = "/saveItem", method= RequestMethod.POST)
-	public String saveDetail(@RequestBody OverseaDTO dto){
+	public String saveItem(@RequestBody OverseaDTO dto){
 		dto.setUsername(getUsername());
 		JSONObject rs = new JSONObject();
 		OverseaPO item = theService.save(dto);
@@ -86,18 +73,9 @@ public class OverseaController extends SimpleCommonController {
 		rs.put("error", false);
 		return rs.toString();
 	}
-//
-//	@RequestMapping(value = "/getDetailListDetail", method= RequestMethod.POST)
-//	public String getDetailListDetail(@RequestParam("id")Integer id){
-//		JSONObject rs = new JSONObject();
-//		ShipmentDetailPO shipmentDetailPO = shipmentService.getDetailById(id);
-//		rs.put("data", shipmentDetailPO.toJson());
-//		rs.put("error", false);
-//		return rs.toString();
-//	}
-//
+
 	@RequestMapping(value = "/saveDetail", method= RequestMethod.POST)
-	public String saveDetailListDetail(OverseaDetailDTO dto){
+	public String saveDetail(OverseaDetailDTO dto){
 		dto.setUsername(getUsername());
 		JSONObject rs = new JSONObject();
 		OverseaDetailPO item = theService.saveDetail(dto, true);
@@ -127,20 +105,5 @@ public class OverseaController extends SimpleCommonController {
 		rs.put("error", false);
 		return rs.toString();
 	}
-
-//	//
-//
-//	@RequestMapping(value = "/findAllProducts", method= RequestMethod.POST)
-//	public String findAllProducts(ShipmentProductSearchDTO searchDTO){
-//		JSONObject rs = new JSONObject();
-//		JSONArray array = new JSONArray();
-//		List<ShipmentProductViewPO> list = shipmentService.findAllProducts(searchDTO);
-//		for(ShipmentProductViewPO item: list){
-//			array.put(item.toJson());
-//		}
-//		rs.put("array", array);
-//		rs.put("error", false);
-//		return rs.toString();
-//	}
 }
 

@@ -88,6 +88,14 @@ $(function () {
         },
         {
             id: "9060",
+            text: "盘点管理",
+            roles: "ROLE_Shipment",
+            icon: "fa fa-home",
+            url: "stocktaking",
+            targetType: "iframe-tab"
+        },
+        {
+            id: "9070",
             text: "小包管理",
             roles: "ROLE_Shipment",
             icon: "fa fa-truck",
@@ -272,7 +280,7 @@ $.showProductNameGroupByProductIdGroupWithQuantity = function(productIdGroupStri
     var productIdGroup = productIdGroupString.split(",");
 
     $.each(productIdGroup, function (index, obj) {
-        var productInfo = obj.split("-");
+        var productInfo = obj.split("|");
         var productId = productInfo[0];
         var productQuantity = productInfo[1] * 1;
         productObjs["id" + productId] = (productObjs["id" + productId] ? productObjs["id" + productId] : 0) * 1 + productQuantity;

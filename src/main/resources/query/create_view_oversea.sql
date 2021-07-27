@@ -5,7 +5,7 @@ select `p`.*,
 from
     (`tbl_oversea` as `p`
         left join
-        (select group_concat(concat(`tbl_oversea_detail`.`product_id`, '-', `tbl_oversea_detail`.`quantity`) separator ',')
+        (select group_concat(concat(`tbl_oversea_detail`.`product_id`, '|', `tbl_oversea_detail`.`quantity`) separator ',')
             AS `product_id_group`,
             `tbl_oversea_detail`.`oversea_id` AS `oversea_id`
         from `tbl_oversea_detail`

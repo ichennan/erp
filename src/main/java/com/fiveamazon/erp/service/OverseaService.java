@@ -30,14 +30,4 @@ public interface OverseaService {
     List<OverseaDetailPO> findAllDetail(Integer overseaId);
 
     void batchInsert(OverseaBatchInsertDTO dto);
-//
-//    ShipmentPO save(ShipmentDTO shipmentDTO);
-//
-//    ShipmentDetailPO saveDetail(ShipmentDetailDTO shipmentDetailDTO);
-//
-//    void createByExcel(UploadFbaDTO uploadFbaDTO);
-//
-//    List<ShipmentProductViewPO> findAllProducts(ShipmentProductSearchDTO searchDTO);
-//
-//    Long countBySkuId(Integer skuId);
 }
