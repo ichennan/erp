@@ -1,9 +1,9 @@
 DROP EVENT event_snapshot_sku_inventory;
 CREATE EVENT event_snapshot_sku_inventory
 ON SCHEDULE EVERY 1 DAY
-STARTS '2020-08-17 23:55:00'
+STARTS '2021-07-28 23:45:00'
 ON COMPLETION PRESERVE
-COMMENT 'Sku Snapshot Every Mid-Night'
+COMMENT 'Sku Snapshot Every Mid-Night 2345'
 DO
 
 insert into snapshot_sku(
@@ -17,6 +17,7 @@ snapshot_date
 ,sum_product_packet_quantity
 ,sum_product_shipment_arrived_quantity
 ,sum_product_oversea_quantity
+,sum_product_stocktaking_quantity
 ,product_inventory_quantity
 ,sum_sku_shipment_quantity
 ,sum_sku_shipment_ontheway_quantity
@@ -35,6 +36,7 @@ DATE_FORMAT(NOW(),'%Y%m%d')
 ,sum_product_packet_quantity
 ,sum_product_shipment_arrived_quantity
 ,sum_product_oversea_quantity
+,sum_product_stocktaking_quantity
 ,product_inventory_quantity
 ,sum_sku_shipment_quantity
 ,sum_sku_shipment_ontheway_quantity

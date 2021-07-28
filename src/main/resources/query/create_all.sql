@@ -115,8 +115,9 @@ select p.id as id,
        ifnull(sumShipmentOnthewayQuantity, 0) as sum_product_shipment_ontheway_quantity,
        ifnull(sumPacketQuantity, 0) as sum_product_packet_quantity,
        ifnull(sumOverseaQuantity, 0) as sum_product_oversea_quantity,
+       ifnull(sumStocktakingQuantity, 0) as sum_product_stocktaking_quantity,
        (ifnull(sumShipmentQuantity, 0) - ifnull(sumShipmentOnthewayQuantity, 0)) as sum_product_shipment_arrived_quantity,
-       (ifnull(sumPurchaseQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0) - ifnull(sumOverseaQuantity, 0)) as product_inventory_quantity
+       (ifnull(sumPurchaseQuantity, 0) - ifnull(sumStocktakingQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0) - ifnull(sumOverseaQuantity, 0)) as product_inventory_quantity
        from tbl_product p
 
 left join
@@ -148,7 +149,13 @@ left join
 as t_oversea
 on p.id = t_oversea.product_id
 
+left join
+(select product_id, ifnull(sum(adjustment_quantity), 0) as sumStocktakingQuantity from tbl_stocktaking_detail group by product_id)
+as t_stocktaking
+on p.id = t_stocktaking.product_id
+
 ;
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -217,6 +224,7 @@ vp.sum_product_shipment_ontheway_quantity,
 vp.sum_product_packet_quantity,
 vp.sum_product_shipment_arrived_quantity,
 vp.sum_product_oversea_quantity,
+vp.sum_product_stocktaking_quantity,
 vp.product_inventory_quantity,
 vs.sum_sku_shipment_quantity,
 vs.sum_sku_shipment_ontheway_quantity,
@@ -238,9 +246,9 @@ on (`s`.`id` = `vs`.`id`)
 DROP EVENT event_snapshot_sku_inventory;
 CREATE EVENT event_snapshot_sku_inventory
 ON SCHEDULE EVERY 1 DAY
-STARTS '2020-08-17 23:55:00'
+STARTS '2021-07-28 23:45:00'
 ON COMPLETION PRESERVE
-COMMENT 'Sku Snapshot Every Mid-Night'
+COMMENT 'Sku Snapshot Every Mid-Night 2345'
 DO
 
 insert into snapshot_sku(
@@ -254,6 +262,7 @@ snapshot_date
 ,sum_product_packet_quantity
 ,sum_product_shipment_arrived_quantity
 ,sum_product_oversea_quantity
+,sum_product_stocktaking_quantity
 ,product_inventory_quantity
 ,sum_sku_shipment_quantity
 ,sum_sku_shipment_ontheway_quantity
@@ -262,21 +271,22 @@ snapshot_date
 )
 
 select
-    DATE_FORMAT(NOW(),'%Y%m%d')
+DATE_FORMAT(NOW(),'%Y%m%d')
 
-     ,id
-     ,product_id
-     ,sum_product_purchase_quantity
-     ,sum_product_shipment_quantity
-     ,sum_product_shipment_ontheway_quantity
-     ,sum_product_packet_quantity
-     ,sum_product_shipment_arrived_quantity
-     ,sum_product_oversea_quantity
-     ,product_inventory_quantity
-     ,sum_sku_shipment_quantity
-     ,sum_sku_shipment_ontheway_quantity
-     ,sum_sku_shipment_arrived_quantity
-     ,sum_sku_oversea_quantity
+,id
+,product_id
+,sum_product_purchase_quantity
+,sum_product_shipment_quantity
+,sum_product_shipment_ontheway_quantity
+,sum_product_packet_quantity
+,sum_product_shipment_arrived_quantity
+,sum_product_oversea_quantity
+,sum_product_stocktaking_quantity
+,product_inventory_quantity
+,sum_sku_shipment_quantity
+,sum_sku_shipment_ontheway_quantity
+,sum_sku_shipment_arrived_quantity
+,sum_sku_oversea_quantity
 from view_sku_info
 
 ;
