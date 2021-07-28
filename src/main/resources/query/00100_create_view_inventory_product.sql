@@ -8,7 +8,7 @@ select p.id as id,
        ifnull(sumOverseaQuantity, 0) as sum_product_oversea_quantity,
        ifnull(sumStocktakingQuantity, 0) as sum_product_stocktaking_quantity,
        (ifnull(sumShipmentQuantity, 0) - ifnull(sumShipmentOnthewayQuantity, 0)) as sum_product_shipment_arrived_quantity,
-       (ifnull(sumPurchaseQuantity, 0) - ifnull(sumStocktakingQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0) - ifnull(sumOverseaQuantity, 0)) as product_inventory_quantity
+       (ifnull(sumPurchaseQuantity, 0) + ifnull(sumStocktakingQuantity, 0) - ifnull(sumShipmentQuantity, 0) - ifnull(sumPacketQuantity, 0) - ifnull(sumOverseaQuantity, 0)) as product_inventory_quantity
        from tbl_product p
 
 left join
