@@ -101,6 +101,7 @@ function setAutoCompleteSuppliers(){
             console.log("findAutoCompleteSupplier.success");
             console.log(rs);
             $(".autoCompleteSuppliers").autocomplete({
+                minLength: 0,
                 source: rs.array
             });
         },
@@ -272,7 +273,6 @@ function saveDetail(action){
     $contentForm.find("[pid]").each(function () {
         data[$(this).attr("pid")] = $(this).val();
     });
-    data.supplier = data.supplier.replace("1", "");
     console.log(data);
     var ajaxUrl = 'saveDetail';
     $.ajax({

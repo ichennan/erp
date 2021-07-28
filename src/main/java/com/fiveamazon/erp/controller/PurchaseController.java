@@ -3,11 +3,13 @@ package com.fiveamazon.erp.controller;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonController;
-import com.fiveamazon.erp.dto.*;
+import com.fiveamazon.erp.dto.PurchaseDTO;
+import com.fiveamazon.erp.dto.PurchaseDetailDTO;
+import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
+import com.fiveamazon.erp.dto.PurchaseSearchDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.PurchaseService;
-import com.fiveamazon.erp.service.ShipmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +62,7 @@ public class PurchaseController extends SimpleCommonController {
 		List<String> supplierList = purchaseService.findSupplierList();
 		for(String supplier: supplierList){
 			if(StringUtils.isNotEmpty(supplier)){
-				array.put(supplier + "1");
+				array.put(supplier);
 			}
 		}
 		rs.put("array", array);
