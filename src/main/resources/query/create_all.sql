@@ -10,6 +10,101 @@ FOR EACH ROW
             create_date = NOW();
         END IF
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_oversea as
+
+select `p`.*,
+       `t`.`product_id_group` AS `product_id_group`
+from
+    (`tbl_oversea` as `p`
+        left join
+    (select group_concat(concat(`tbl_oversea_detail`.`product_id`, '|', `tbl_oversea_detail`.`quantity`) separator ',')
+                                              AS `product_id_group`,
+            `tbl_oversea_detail`.`oversea_id` AS `oversea_id`
+     from `tbl_oversea_detail`
+     group by `tbl_oversea_detail`.`oversea_id`
+    ) as `t`
+    on (`p`.`id` = `t`.`oversea_id`)
+);
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_purchase as
+
+select `p`.*,
+       `t`.`product_id_group` AS `product_id_group`
+from
+    (`tbl_purchase` as `p`
+        left join
+    (select group_concat(concat(`tbl_purchase_detail`.`product_id`, '|', `tbl_purchase_detail`.`received_quantity`) separator ',')
+                                                AS `product_id_group`,
+            `tbl_purchase_detail`.`purchase_id` AS `purchase_id`
+     from `tbl_purchase_detail`
+     group by `tbl_purchase_detail`.`purchase_id`
+    ) as `t`
+    on (`p`.`id` = `t`.`purchase_id`)
+);
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_shipment as
+
+select `p`.*,
+       `t`.`product_id_group` AS `product_id_group`
+from
+    (`tbl_shipment` as `p`
+        left join
+    (select group_concat(concat(`tbl_shipment_detail`.`product_id`, '|', `tbl_shipment_detail`.`quantity`) separator ',')
+                                                AS `product_id_group`,
+            `tbl_shipment_detail`.`shipment_id` AS `shipment_id`
+     from `tbl_shipment_detail`
+     group by `tbl_shipment_detail`.`shipment_id`
+    ) as `t`
+    on (`p`.`id` = `t`.`shipment_id`)
+);
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_stocktaking as
+
+select `p`.*,
+       `t`.`product_id_group` AS `product_id_group`
+from
+    (`tbl_stocktaking` as `p`
+        left join
+    (select group_concat(concat(`tbl_stocktaking_detail`.`product_id`, '|', `tbl_stocktaking_detail`.`adjustment_quantity`) separator ',')
+                                                      AS `product_id_group`,
+            `tbl_stocktaking_detail`.`stocktaking_id` AS `stocktaking_id`
+     from `tbl_stocktaking_detail`
+     group by `tbl_stocktaking_detail`.`stocktaking_id`
+    ) as `t`
+    on (`p`.`id` = `t`.`stocktaking_id`)
+);
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_purchase_product as(
+select pd.*, p.excel_date, p.book_date, p.delivery_date, p.received_date, p.supplier from tbl_purchase_detail pd
+left join tbl_purchase p
+on pd.purchase_id = p.id
+);
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_shipment_product as(
+select tsd.*,
+ts.excel_date, ts.delivery_date, ts.signed_date, ts.payment_date, ts.store_id, ts.store, ts.carrier, ts.fba_no,
+ts.route, ts.tracking_number, ts.status_delivery, ts.excel_id,
+tsi.asin, tsi.fnsku
+from tbl_shipment_detail tsd
+left join tbl_shipment ts
+on tsd.shipment_id = ts.id
+left join tbl_sku_info tsi
+on tsd.sku_id = tsi.id
+where tsd.box != 'Plan'
+);
+
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 create or replace view view_inventory_product as
@@ -88,100 +183,22 @@ on p.id = t_oversea.sku_id
 
 ;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-create or replace view view_purchase as
+--
+-- based on view view_inventory_product
+--
 
-select `p`.*,
-       `t`.`product_id_group` AS `product_id_group`
-from
-    (`tbl_purchase` as `p`
-        left join
-        (select group_concat(concat(`tbl_purchase_detail`.`product_id`, '|', `tbl_purchase_detail`.`received_quantity`) separator ',')
-            AS `product_id_group`,
-            `tbl_purchase_detail`.`purchase_id` AS `purchase_id`
-        from `tbl_purchase_detail`
-        group by `tbl_purchase_detail`.`purchase_id`
-    ) as `t`
-    on (`p`.`id` = `t`.`purchase_id`)
-);
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-create or replace view view_purchase_product as(
-select pd.*, p.excel_date, p.book_date, p.delivery_date, p.received_date, p.supplier from tbl_purchase_detail pd
-left join tbl_purchase p
-on pd.purchase_id = p.id
-);
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-create or replace view view_shipment as
-
-select `p`.*,
-       `t`.`product_id_group` AS `product_id_group`
-from
-    (`tbl_shipment` as `p`
-        left join
-        (select group_concat(concat(`tbl_shipment_detail`.`product_id`, '|', `tbl_shipment_detail`.`quantity`) separator ',')
-            AS `product_id_group`,
-            `tbl_shipment_detail`.`shipment_id` AS `shipment_id`
-        from `tbl_shipment_detail`
-        group by `tbl_shipment_detail`.`shipment_id`
-    ) as `t`
-    on (`p`.`id` = `t`.`shipment_id`)
-);
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-create or replace view view_shipment_product as(
-select tsd.*,
-ts.excel_date, ts.delivery_date, ts.signed_date, ts.payment_date, ts.store_id, ts.store, ts.carrier, ts.fba_no,
-ts.route, ts.tracking_number, ts.status_delivery, ts.excel_id,
-tsi.asin, tsi.fnsku
-from tbl_shipment_detail tsd
-left join tbl_shipment ts
-on tsd.shipment_id = ts.id
-left join tbl_sku_info tsi
-on tsd.sku_id = tsi.id
-where tsd.box != 'Plan'
-);
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-create or replace view view_oversea as
-
-select `p`.*,
-       `t`.`product_id_group` AS `product_id_group`
-from
-    (`tbl_oversea` as `p`
-        left join
-        (select group_concat(concat(`tbl_oversea_detail`.`product_id`, '|', `tbl_oversea_detail`.`quantity`) separator ',')
-            AS `product_id_group`,
-            `tbl_oversea_detail`.`oversea_id` AS `oversea_id`
-        from `tbl_oversea_detail`
-        group by `tbl_oversea_detail`.`oversea_id`
-    ) as `t`
-    on (`p`.`id` = `t`.`oversea_id`)
-);
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-create or replace view view_stocktaking as
-
-select `p`.*,
-       `t`.`product_id_group` AS `product_id_group`
-from
-    (`tbl_stocktaking` as `p`
-        left join
-    (select group_concat(concat(`tbl_stocktaking_detail`.`product_id`, '|', `tbl_stocktaking_detail`.`adjustment_quantity`) separator ',')
-                                                      AS `product_id_group`,
-            `tbl_stocktaking_detail`.`stocktaking_id` AS `stocktaking_id`
-     from `tbl_stocktaking_detail`
-     group by `tbl_stocktaking_detail`.`stocktaking_id`
-    ) as `t`
-    on (`p`.`id` = `t`.`stocktaking_id`)
-);
+create or replace view view_product as
+select p.*,
+       ifnull(s.sku_count, 0) as sku_count,
+       ifnull(vip.product_inventory_quantity, 0) as inventory_quantity
+from tbl_product p
+left join
+    (select product_id, count(1) as sku_count from tbl_sku_info where sku is not null group by product_id) as s
+on p.id = s.product_id
+left join view_inventory_product vip
+on p.id = vip.id
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -215,23 +232,6 @@ left join `view_inventory_sku` as `vs`
 on (`s`.`id` = `vs`.`id`)
 
 ;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
---
--- based on view view_inventory_product
---
-
-create or replace view view_product as
-select p.*,
-       ifnull(s.sku_count, 0) as sku_count,
-       ifnull(vip.product_inventory_quantity, 0) as inventory_quantity
-from tbl_product p
-left join
-    (select product_id, count(1) as sku_count from tbl_sku_info where sku is not null group by product_id) as s
-on p.id = s.product_id
-left join view_inventory_product vip
-on p.id = vip.id
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
