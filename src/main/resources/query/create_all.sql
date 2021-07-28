@@ -97,7 +97,7 @@ select `p`.*,
 from
     (`tbl_purchase` as `p`
         left join
-        (select group_concat(concat(`tbl_purchase_detail`.`product_id`, '-', `tbl_purchase_detail`.`received_quantity`) separator ',')
+        (select group_concat(concat(`tbl_purchase_detail`.`product_id`, '|', `tbl_purchase_detail`.`received_quantity`) separator ',')
             AS `product_id_group`,
             `tbl_purchase_detail`.`purchase_id` AS `purchase_id`
         from `tbl_purchase_detail`
@@ -123,7 +123,7 @@ select `p`.*,
 from
     (`tbl_shipment` as `p`
         left join
-        (select group_concat(concat(`tbl_shipment_detail`.`product_id`, '-', `tbl_shipment_detail`.`quantity`) separator ',')
+        (select group_concat(concat(`tbl_shipment_detail`.`product_id`, '|', `tbl_shipment_detail`.`quantity`) separator ',')
             AS `product_id_group`,
             `tbl_shipment_detail`.`shipment_id` AS `shipment_id`
         from `tbl_shipment_detail`
@@ -156,13 +156,31 @@ select `p`.*,
 from
     (`tbl_oversea` as `p`
         left join
-        (select group_concat(concat(`tbl_oversea_detail`.`product_id`, '-', `tbl_oversea_detail`.`quantity`) separator ',')
+        (select group_concat(concat(`tbl_oversea_detail`.`product_id`, '|', `tbl_oversea_detail`.`quantity`) separator ',')
             AS `product_id_group`,
             `tbl_oversea_detail`.`oversea_id` AS `oversea_id`
         from `tbl_oversea_detail`
         group by `tbl_oversea_detail`.`oversea_id`
     ) as `t`
     on (`p`.`id` = `t`.`oversea_id`)
+);
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_stocktaking as
+
+select `p`.*,
+       `t`.`product_id_group` AS `product_id_group`
+from
+    (`tbl_stocktaking` as `p`
+        left join
+    (select group_concat(concat(`tbl_stocktaking_detail`.`product_id`, '|', `tbl_stocktaking_detail`.`adjustment_quantity`) separator ',')
+                                                      AS `product_id_group`,
+            `tbl_stocktaking_detail`.`stocktaking_id` AS `stocktaking_id`
+     from `tbl_stocktaking_detail`
+     group by `tbl_stocktaking_detail`.`stocktaking_id`
+    ) as `t`
+    on (`p`.`id` = `t`.`stocktaking_id`)
 );
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
