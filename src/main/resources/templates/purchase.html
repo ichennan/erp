@@ -24,8 +24,8 @@
                                 <div class="form-group">
                                     <div class="col-xs-6">
 <!--                                        <span class="searchDateType spanOption" searchDateType="excelDate">上传日期</span>-->
-                                        <span class="searchDateType spanOption defaultSelected" searchDateType="deliveryDate">发货日期</span>
-                                        <span class="searchDateType spanOption" searchDateType="receivedDate">收货日期</span>
+                                        <span class="hidden searchDateType spanOption defaultSelected" searchDateType="deliveryDate">发货日期</span>
+<!--                                        <span class="searchDateType spanOption" searchDateType="receivedDate">收货日期</span>-->
                                     </div>
                                     <div class="col-xs-6" tableType="purchaseProductList">
                                         <select class="form-control select2" sid="productId">
@@ -54,8 +54,9 @@
                             <!-- /.box-body -->
                             <div class="box-footer">
                                 <div class="pull-right">
-                                    <button tableType="purchaseProductList" type="button" class="btn btn-success create" onclick="showListProducts()">按产品搜索</button>
-                                    <button  tableType="purchaseList" type="button" class="btn btn-success create" onclick="showList()">搜索</button>
+                                    <button tableType="purchaseProductList" type="button" class="btn btn-success" onclick="showListProducts()">按产品搜索</button>
+                                    <button  tableType="purchaseList" type="button" class="btn btn-success" onclick="showList()">按批次搜索</button>
+                                    <button  tableType="purchaseList" type="button" class="btn btn-warn" onclick="downloadList()">按批次搜索并下载</button>
                                     <button type="button" class="btn btn-default cancel" onclick="resetSearch()">重置</button>
                                     <button type="submit" class="hide"></button>
                                 </div>
@@ -261,6 +262,11 @@
         </section>
     </div>
 </div>
+
+<form id="downloadForm" method="POST" target="_self">
+    <input type="hidden" name="formData" id="formData" />
+</form>
+
 <div th:replace="common/common_js :: js"></div>
 </body>
 </html>

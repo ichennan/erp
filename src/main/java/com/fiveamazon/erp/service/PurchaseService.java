@@ -2,6 +2,7 @@ package com.fiveamazon.erp.service;
 
 
 import com.fiveamazon.erp.dto.*;
+import com.fiveamazon.erp.dto.download.PurchaseDownloadDTO;
 import com.fiveamazon.erp.entity.PurchaseDetailPO;
 import com.fiveamazon.erp.entity.PurchasePO;
 import com.fiveamazon.erp.entity.PurchaseProductViewPO;
@@ -37,4 +38,6 @@ public interface PurchaseService {
     List<PurchaseProductViewPO> findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO);
 
     List<String> findSupplierList();
+
+    List<PurchaseDownloadDTO> download(PurchaseSearchDTO searchDTO);
 }

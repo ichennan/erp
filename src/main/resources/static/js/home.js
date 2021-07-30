@@ -271,7 +271,7 @@ $.showProductNameGroupByProductIdGroup = function(productIdGroupString){
 }
 
 $.showProductNameGroupByProductIdGroupWithQuantity = function(productIdGroupString){
-    console.log("home.js.showProductNameGroupByProductIdGroupWithQuantity(): " + productIdGroupString);
+    // console.log("home.js.showProductNameGroupByProductIdGroupWithQuantity(): " + productIdGroupString);
     var productNameGroup = [];
     var productObjs = {};
     if(!productIdGroupString){

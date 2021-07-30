@@ -2,8 +2,10 @@ package com.fiveamazon.erp.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.*;
+import com.fiveamazon.erp.dto.download.PurchaseDownloadDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
 import com.fiveamazon.erp.repository.PurchaseProductViewRepository;
@@ -291,5 +293,29 @@ public class PurchaseServiceImpl implements PurchaseService {
             }
         };
         return purchaseProductViewRepository.findAll(specification, pageRequest).getContent();
+    }
+
+    @Override
+    public List<PurchaseDownloadDTO> download(PurchaseSearchDTO searchDTO) {
+        List<PurchaseDownloadDTO> downloadList = new ArrayList<>();
+        String dateFrom = searchDTO.getDateFrom().replaceAll("-", "");
+        String dateTo = searchDTO.getDateTo().replaceAll("-", "");
+        List<JSONObject> list = purchaseProductViewRepository.donwload(searchDTO.getSupplier(), dateFrom, dateTo);
+        for(JSONObject item : list){
+            String sn = item.getStr("sn");
+            String name = item.getStr("name");
+            String color = item.getStr("color");
+            String snname = (StringUtils.isBlank(sn) ? "" : (sn + " "))
+                    + name
+                    + (StringUtils.isBlank(color) ? "" : (" " + color));
+            Integer receivedQuantity = item.getInt("receivedQuantity");
+            BigDecimal unitPrice = item.getBigDecimal("unitPrice");
+            BigDecimal totalPrice = unitPrice.multiply(new BigDecimal(receivedQuantity));
+            item.put("snname", snname);
+            item.put("totalPrice", totalPrice);
+            PurchaseDownloadDTO downloadDTO = JSONUtil.toBean(item, PurchaseDownloadDTO.class);
+            downloadList.add(downloadDTO);
+        }
+        return downloadList;
     }
 }

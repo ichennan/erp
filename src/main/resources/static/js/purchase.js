@@ -122,9 +122,31 @@ function resetSearch(){
     $("[sid=productId]").val("").trigger("change");
 }
 
+function searchFormCollect(){
+    console.log("searchFormCollect()");
+    var queryData = {};
+    queryData.dateFrom = $("[sid=dateFrom]").val();
+    queryData.dateTo = $("[sid=dateTo]").val();
+    queryData.supplier = $("[sid=supplier]").val();
+    queryData.dateType = $(".searchDateType.spanOption.selected").attr("searchDateType");
+    console.log(queryData);
+    return queryData;
+}
+
+function downloadList(){
+    console.log("downloadList()");
+    showList();
+    var queryData = searchFormCollect();
+    var dataStr = $.jsonToString(queryData);
+    $("input#formData").attr("value", dataStr);
+    $("form#downloadForm").attr("action", "purchase/downloadList");
+    $("form#downloadForm").submit();
+}
+
 function showList(){
     console.log("showList()");
     $("#tableBox").show();
+    $("#searchBox").show();
     $("#contentBox").hide();
     $("#detailListBox").hide();
     //
@@ -141,17 +163,12 @@ function showList(){
     var tbody = $("<tbody></tbody>");
     listTable.append(thead).append(theadSearch).append(tbody);
     $("#tableDiv").append(listTable);
-    var data = {};
-    data.dateFrom = $("[sid=dateFrom]").val();
-    data.dateTo = $("[sid=dateTo]").val();
-    data.supplier = $("[sid=supplier]").val();
-    data.dateType = $(".searchDateType.spanOption.selected").attr("searchDateType");
-    console.log(data);
+    var queryData = searchFormCollect();
     var ajaxUrl = 'findAll'
     $.ajax({
         type: "POST",
         url: ajaxCtx + ajaxUrl,
-        data: data,
+        data: queryData,
         dataType: "json",
         success: function (rs) {
             console.log(rs);
@@ -212,6 +229,7 @@ function toDetail(id){
 function showDetail(){
     console.log("showDetail: " + detailId);
     $("#tableBox").hide();
+    $("#searchBox").hide();
     $("#contentBox").show();
     $("#detailListTable").remove();
     //

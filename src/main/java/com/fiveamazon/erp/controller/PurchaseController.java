@@ -1,12 +1,19 @@
 package com.fiveamazon.erp.controller;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.dto.PurchaseDTO;
 import com.fiveamazon.erp.dto.PurchaseDetailDTO;
 import com.fiveamazon.erp.dto.PurchaseProductSearchDTO;
 import com.fiveamazon.erp.dto.PurchaseSearchDTO;
+import com.fiveamazon.erp.dto.download.PurchaseDownloadDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.PurchaseService;
@@ -19,6 +26,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -126,8 +137,6 @@ public class PurchaseController extends SimpleCommonController {
 		return rs.toString();
 	}
 
-	//
-
 	@RequestMapping(value = "/findAllProducts", method= RequestMethod.POST)
 	public String findAllProducts(PurchaseProductSearchDTO purchaseProductSearchDTO){
 		JSONObject rs = new JSONObject();
@@ -140,5 +149,49 @@ public class PurchaseController extends SimpleCommonController {
 		rs.put("error", false);
 		return rs.toString();
 	}
+
+	@RequestMapping(value = "/downloadList", method= RequestMethod.POST)
+	public String downloadList(HttpServletResponse response, @RequestParam String formData) throws IOException {
+		log.info("PurchaseController.downloadList: " + formData);
+		JSONObject rs = new JSONObject();
+		JSONObject formDataJson = new JSONObject(formData);
+		PurchaseSearchDTO searchDTO = JSONUtil.toBean(formDataJson, PurchaseSearchDTO.class);
+		List<PurchaseDownloadDTO> downloadDTOList = purchaseService.download(searchDTO);
+
+//		if(searchResultJson.getLong("total") > maxDownload){
+//			throw new CommonException("查询结果超过 " + maxDownload + " 条，请缩小下载范围");
+//		}
+		String fileName = URLEncoder.encode("Purchase" + DateUtil.format(new Date(), "yyyyMMddHHmmss"), "UTF-8");
+
+		response.setContentType("application/vnd.ms-excel");
+		response.setCharacterEncoding("utf-8");
+		response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+
+		// excel头策略
+		WriteCellStyle headWriteCellStyle = new WriteCellStyle();
+		WriteFont headWriteFont = new WriteFont();
+		headWriteFont.setFontHeightInPoints((short) 11);
+		headWriteFont.setBold(false);
+		headWriteCellStyle.setWriteFont(headWriteFont);
+
+		// excel内容策略
+		WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+		WriteFont contentWriteFont = new WriteFont();
+		contentWriteFont.setFontHeightInPoints((short)11);
+		contentWriteCellStyle.setWriteFont(contentWriteFont);
+
+		// 设置handler
+		HorizontalCellStyleStrategy styleStrategy =
+				new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
+
+		EasyExcel.write(response.getOutputStream(), PurchaseDownloadDTO.class)
+				.sheet("Order List")
+				.registerWriteHandler(styleStrategy)
+				.doWrite(downloadDTOList);
+		rs.putOpt("error", false);
+		return rs.toString();
+	}
 }
+
+
 

@@ -144,6 +144,7 @@ function resetSearch(){
 function showList(){
     console.log("showList()");
     $("#tableBox").show();
+    $("#searchBox").show();
     $("#contentBox").hide();
     $("#detailListBox").hide();
     $("span.searchSignedStatus.defaultSelected").trigger("click");
@@ -238,6 +239,7 @@ function showDetail(){
     // autoSaveAlertTimer = setInterval(autoSaveAlert, 300000);
     console.log("showDetail: " + detailId);
     $("#tableBox").hide();
+    $("#searchBox").hide();
     $("#contentBox").show();
     $("#detailListTable").remove();
     //
