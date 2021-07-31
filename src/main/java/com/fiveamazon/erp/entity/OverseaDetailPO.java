@@ -23,6 +23,8 @@ public class OverseaDetailPO extends SimpleCommonEntity {
     String productDescription;
     String boxDescription;
     String fbaNo;
+    String fbaBox;
+    String fbaDate;
 
     public JSONObject toJson(){
         return new JSONObject(this);

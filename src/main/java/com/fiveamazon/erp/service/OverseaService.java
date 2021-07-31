@@ -27,6 +27,8 @@ public interface OverseaService {
 
     OverseaDetailPO saveDetail(OverseaDetailDTO dto, Boolean refreshSku);
 
+    OverseaDetailPO saveFba(OverseaDetailDTO dto);
+
     List<OverseaDetailPO> findAllDetail(Integer overseaId);
 
     void batchInsert(OverseaBatchInsertDTO dto);

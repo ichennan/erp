@@ -5,28 +5,10 @@ var $contentForm = $("#contentForm");
 var $detailListContentForm = $("#detailListContentForm");
 var originalBoxDetailListString;
 var ajaxCtx = 'shipment/';
+var tableType = "";
 // var autoSaveAlertTimer;
 $(document).ready(function(){
-    $(window).on("hashchange",function () {
-        // if(autoSaveAlertTimer){
-        //     clearInterval(autoSaveAlertTimer);
-        // }
-        var hash = location.hash ? location.hash : '';
-        var hash6 = hash.substring(0, 7).toString();
-        console.log('hashChange to ' + hash);
-        if (hash6 == "#detail") {
-            //detailId=123456
-            detailId = hash.substring(10);
-            showDetail();
-        } else {
-            detailId = 0;
-            showList();
-            showListProducts();
-        }
-    }).trigger("hashchange");
-
     parent.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
-
     console.log("parent.$.cacheProducts");
     var $searchProductIdSelect = $("[sid=productId]");
     var searchProductIdSelectData = [];
@@ -53,7 +35,7 @@ $(document).ready(function(){
         var $this = $(this);
         $("span.tableType").removeClass("selected");
         $this.addClass("selected");
-        var tableType = $this.attr("tableType");
+        tableType = $this.attr("tableType");
         $("[tableType]").hide();
         $("[tableType=" + tableType + "]").show();
         $("[tableType].spanOption").show();
@@ -70,6 +52,11 @@ $(document).ready(function(){
         $("span.searchDateRange").removeClass("selected");
         $this.addClass("selected");
         var searchDateRange = $this.attr("searchDateRange");
+        console.log("searchDateRange: " + searchDateRange);
+        if(!searchDateRange){
+            $("[sid=dateFrom]").val("").trigger("change");
+            return;
+        }
         var dateTo = moment($("[sid=dateTo]").val());
         var dateFrom = moment(dateTo).add(-1 * searchDateRange, 'months').calendar();
         dateFrom = moment(dateFrom).add(1, 'days').calendar();
@@ -103,6 +90,26 @@ $(document).ready(function(){
     })
 
     resetSearch();
+    $(window).on("hashchange",function () {
+        // if(autoSaveAlertTimer){
+        //     clearInterval(autoSaveAlertTimer);
+        // }
+        var hash = location.hash ? location.hash : '';
+        var hash6 = hash.substring(0, 7).toString();
+        console.log('hashChange to ' + hash);
+        if (hash6 == "#detail") {
+            //detailId=123456
+            detailId = hash.substring(10);
+            showDetail();
+        } else {
+            detailId = 0;
+            if(tableType == "shipmentProductList"){
+                showListProducts();
+            }else{
+                showList();
+            }
+        }
+    }).trigger("hashchange");
 });
 
 function resetSearch(){
@@ -154,7 +161,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['id','发货日期','签收日期','FBA No.','货代', '线路','箱/重/价','店铺','采购产品'];
+    var theadNames = ['id','发货日期','FBA No.','货代', '线路','箱/重/价','店铺','采购产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -174,7 +181,7 @@ function showList(){
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
                 var storeName = parent.$.retrieveStoreName(obj.storeId);
-                var tds = [obj.id, obj.deliveryDate, obj.signedDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
+                var tds = [obj.id, obj.deliveryDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");
@@ -846,10 +853,8 @@ function nextBox(){
 
 function showListProducts(){
     console.log("showListProducts()");
-    if(!$(".searchDateType.spanOption.selected").length){
-        return;
-    }
     $("#tableBox").show();
+    $("#searchBox").show();
     $("#contentBox").hide();
     $("#detailListProductsBox").hide();
     //

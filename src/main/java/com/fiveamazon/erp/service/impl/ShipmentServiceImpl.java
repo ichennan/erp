@@ -67,6 +67,12 @@ public class ShipmentServiceImpl implements ShipmentService {
         if(StringUtils.isBlank(shipmentPO.getSignedDate())){
             shipmentPO.setSignedDate("");
         }
+        if(StringUtils.isBlank(shipmentPO.getWeightRemark())){
+            shipmentPO.setWeightRemark("");
+        }
+        if(null == shipmentPO.getWeight()){
+            shipmentPO.setWeight(new BigDecimal(0));
+        }
         return shipmentRepository.save(shipmentPO);
     }
 
@@ -77,6 +83,9 @@ public class ShipmentServiceImpl implements ShipmentService {
         }
         if(null == shipmentDetailPO.getQuantity()){
             shipmentDetailPO.setQuantity(0);
+        }
+        if(null == shipmentDetailPO.getWeight()){
+            shipmentDetailPO.setWeight(new BigDecimal(0));
         }
         return shipmentDetailRepository.save(shipmentDetailPO);
     }
@@ -306,5 +315,63 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public Long countBySkuId(Integer skuId) {
         return shipmentDetailRepository.countBySkuIdEquals(skuId);
+    }
+
+    @Override
+    public ShipmentPO saveByOverseaDetail(OverseaDetailPO overseaDetailPO, OverseaDetailDTO overseaDetailDTO){
+        Date today = new Date();
+        String username = overseaDetailDTO.getUsername();
+        String action = overseaDetailDTO.getAction();
+        String fbaNo = overseaDetailDTO.getFbaNo();
+        String fbaBox = overseaDetailDTO.getFbaBox();
+        String fbaDate = overseaDetailDTO.getFbaDate();
+        BigDecimal weight = overseaDetailPO.getWeight();
+        log.info("weight: " + weight);
+        Long fbaNoCount = shipmentRepository.countByFbaNo(fbaNo);
+        ShipmentPO shipmentPO;
+        if("create".equalsIgnoreCase(action)){
+            if(fbaNoCount > 0){
+                throw new SimpleCommonException("该FBA单号存在 ! 请勿重复创建 或者选择 追加至已有FBA " + fbaNo);
+            }
+            shipmentPO = new ShipmentPO();
+            shipmentPO.setCreateDate(today);
+            shipmentPO.setCreateUser(username);
+            shipmentPO.setStoreId(overseaDetailPO.getStoreId());
+            shipmentPO.setFbaNo(fbaNo);
+            shipmentPO.setCarrier("FBA自提");
+            shipmentPO.setRoute("FBA");
+            //已发货
+            shipmentPO.setStatusDelivery("1");
+            shipmentPO.setRemark("create by overseaDetailId: " + overseaDetailPO.getId());
+            shipmentPO.setWeightRemark("" + weight);
+            shipmentPO.setWeight(weight);
+        }else{
+            //i.e. action = update
+            if(fbaNoCount <= 0){
+                throw new SimpleCommonException("该FBA单号不存在 ! 请点击创建FBA " + fbaNo);
+            }
+            shipmentPO = shipmentRepository.getByFbaNo(fbaNo);
+            shipmentPO.setUpdateDate(today);
+            shipmentPO.setUpdateUser(username);
+            shipmentPO.setWeightRemark(shipmentPO.getWeightRemark() + "+" + weight);
+            shipmentPO.setWeight(weight.add(shipmentPO.getWeight()));
+        }
+        if(StringUtils.isNotBlank(fbaDate)){
+            shipmentPO.setDeliveryDate(fbaDate);
+        }
+        shipmentPO = save(shipmentPO);
+
+        Integer shipmentId = shipmentPO.getId();
+        ShipmentDetailPO shipmentDetailPO = new ShipmentDetailPO();
+        shipmentDetailPO.setShipmentId(shipmentId);
+        shipmentDetailPO.setBox(fbaBox);
+        //
+        shipmentDetailPO.setProductId(overseaDetailPO.getProductId());
+        shipmentDetailPO.setSkuId(overseaDetailPO.getSkuId());
+        shipmentDetailPO.setQuantity(overseaDetailPO.getQuantity());
+        shipmentDetailPO.setWeight(weight);
+        shipmentDetailPO.setRemark("create by overseaDetailId: " + overseaDetailPO.getId());
+        saveDetail(shipmentDetailPO);
+        return shipmentPO;
     }
 }

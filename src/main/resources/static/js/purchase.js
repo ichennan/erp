@@ -4,24 +4,10 @@ var detailId = 0;
 var detailListDetailId = 0;
 var $contentForm = $("#contentForm");
 var $detailListContentForm = $("#detailListContentForm");
-var ajaxCtx = 'purchase/'
-var ajaxCtx_product = 'product/'
+var ajaxCtx = 'purchase/';
+var ajaxCtx_product = 'product/';
+var tableType = "";
 $(document).ready(function(){
-    $(window).on("hashchange",function () {
-        var hash = location.hash ? location.hash : '';
-        var hash6 = hash.substring(0, 7).toString();
-        console.log('hashChange to ' + hash);
-        if (hash6 == "#detail") {
-            //detailId=123456
-            detailId = hash.substring(10);
-            showDetail();
-        } else {
-            detailId = 0;
-            showList();
-            showListProducts();
-        }
-    }).trigger("hashchange");
-
     parent.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
 
     console.log("parent.$.cacheProducts");
@@ -50,7 +36,7 @@ $(document).ready(function(){
         var $this = $(this);
         $("span.tableType").removeClass("selected");
         $this.addClass("selected");
-        var tableType = $this.attr("tableType");
+        tableType = $this.attr("tableType");
         $("[tableType]").hide();
         $("[tableType=" + tableType + "]").show();
         $("[tableType].spanOption").show();
@@ -67,6 +53,10 @@ $(document).ready(function(){
         $("span.searchDateRange").removeClass("selected");
         $this.addClass("selected");
         var searchDateRange = $this.attr("searchDateRange");
+        if(!searchDateRange){
+            $("[sid=dateFrom]").val("").trigger("change");
+            return;
+        }
         var dateTo = moment($("[sid=dateTo]").val(), "YYYY-MM-DD");
         var dateFrom = moment(dateTo).add(-1 * searchDateRange, 'months').calendar();
         dateFrom = moment(dateFrom).add(1, 'days').calendar();
@@ -76,17 +66,25 @@ $(document).ready(function(){
     })
 
     setAutoCompleteSuppliers();
-
     resetSearch();
 
-    // var autoCompleteSuppliers = [
-    //     "芳姐1",
-    //     "棉想1",
-    //     "广州纯尚1"
-    // ];
-    // $(".autoCompleteSuppliers").autocomplete({
-    //     source: autoCompleteSuppliers
-    // });
+    $(window).on("hashchange",function () {
+        var hash = location.hash ? location.hash : '';
+        var hash6 = hash.substring(0, 7).toString();
+        console.log('hashChange to ' + hash);
+        if (hash6 == "#detail") {
+            //detailId=123456
+            detailId = hash.substring(10);
+            showDetail();
+        } else {
+            detailId = 0;
+            if(tableType == "purchaseProductList"){
+                showListProducts();
+            }else{
+                showList();
+            }
+        }
+    }).trigger("hashchange");
 });
 
 function setAutoCompleteSuppliers(){
@@ -546,14 +544,10 @@ function null2zero(abc){
 
 //
 
-
-
 function showListProducts(){
     console.log("showListProducts()");
-    if(!$(".searchDateType.spanOption.selected").length){
-        return;
-    }
     $("#tableBox").show();
+    $("#searchBox").show();
     $("#contentBox").hide();
     $("#detailListProductsBox").hide();
     //
@@ -585,7 +579,6 @@ function showListProducts(){
         success: function (rs) {
             console.log(rs);
             $.each(rs.array, function (index, obj) {
-                console.log("purchaseId: " + obj.purchaseId);
                 var tr = $("<tr></tr>");
                 var tds = [obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.supplier, parent.$.cacheProducts["id" + obj.productId].snname, obj.receivedQuantity, obj.unitPrice];
                 $.each(tds, function (index_2, obj_2) {

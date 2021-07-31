@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShipmentRepository extends JpaRepository<ShipmentPO, Integer> {
     Long countByFbaNo(String fbaNo);
+    ShipmentPO getByFbaNo(String fbaNo);
+
 }

@@ -295,7 +295,7 @@ $.showProductNameGroupByProductIdGroupWithQuantity = function(productIdGroupStri
 }
 
 $.retrieveStoreName = function(storeId){
-    console.log("retrieveStoreName(): " + storeId);
+    // console.log("retrieveStoreName(): " + storeId);
     if(!storeId){
         return '';
     }

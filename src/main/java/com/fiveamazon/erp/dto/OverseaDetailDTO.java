@@ -19,4 +19,6 @@ public class OverseaDetailDTO extends SimpleCommonDTO {
     String boxDescription;
     String action;
     String fbaNo;
+    String fbaBox;
+    String fbaDate;
 }

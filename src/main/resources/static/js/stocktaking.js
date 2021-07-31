@@ -82,7 +82,7 @@ function showList(){
         success: function (rs) {
             console.log(rs);
             createListTableBody(table, rs);
-            createDataTable(table, {"order": 2});
+            createDataTable(table, {"order": 1});
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);

@@ -12,6 +12,7 @@ import com.fiveamazon.erp.repository.OverseaDetailRepository;
 import com.fiveamazon.erp.repository.OverseaRepository;
 import com.fiveamazon.erp.repository.OverseaViewRepository;
 import com.fiveamazon.erp.service.OverseaService;
+import com.fiveamazon.erp.service.ShipmentService;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +37,8 @@ public class OverseaServiceImpl implements OverseaService {
     private OverseaDetailRepository theDetailRepository;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private ShipmentService shipmentService;
 
     @Override
     public Long countAll() {
@@ -95,6 +99,9 @@ public class OverseaServiceImpl implements OverseaService {
         if(null == item.getQuantity()){
             item.setQuantity(0);
         }
+        if(null == item.getWeight()){
+            item.setWeight(new BigDecimal(0));
+        }
         return theDetailRepository.save(item);
     }
 
@@ -126,6 +133,26 @@ public class OverseaServiceImpl implements OverseaService {
                 item.setStoreId(skuInfoPO.getStoreId());
             }
         }
+        return saveDetail(item);
+    }
+
+    @Override
+    public OverseaDetailPO saveFba(OverseaDetailDTO dto) {
+        Date today = new Date();
+        Integer id = dto.getId();
+        OverseaDetailPO item = getDetailById(id);
+        item.setUpdateDate(today);
+        item.setUpdateUser(dto.getUsername());
+        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
+            item.setFbaNo("");
+            item.setFbaBox("");
+            item.setFbaDate("");
+            return saveDetail(item);
+        }
+        item.setFbaNo(dto.getFbaNo());
+        item.setFbaBox(dto.getFbaBox());
+        item.setFbaDate(dto.getFbaDate());
+        shipmentService.saveByOverseaDetail(item, dto);
         return saveDetail(item);
     }
 

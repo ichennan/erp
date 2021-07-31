@@ -29,6 +29,8 @@ public interface ShipmentService {
 
     ShipmentDetailPO saveDetail(ShipmentDetailDTO shipmentDetailDTO);
 
+    ShipmentPO saveByOverseaDetail(OverseaDetailPO overseaDetailPO, OverseaDetailDTO overseaDetailDTO);
+
     void createByExcel(UploadFbaDTO uploadFbaDTO);
 
     List<ShipmentProductViewPO> findAllProducts(ShipmentProductSearchDTO searchDTO);

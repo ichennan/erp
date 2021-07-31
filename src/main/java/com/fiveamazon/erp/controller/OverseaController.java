@@ -84,6 +84,17 @@ public class OverseaController extends SimpleCommonController {
 		return rs.toString();
 	}
 
+	@RequestMapping(value = "/saveFba", method= RequestMethod.POST)
+	public String saveFba(OverseaDetailDTO dto){
+		log.info("OverseaController.saveFba: " + new JSONObject(dto).toString());
+		dto.setUsername(getUsername());
+		JSONObject rs = new JSONObject();
+		OverseaDetailPO item = theService.saveFba(dto);
+		rs.put("data", item.toJson());
+		rs.put("error", false);
+		return rs.toString();
+	}
+
 	@RequestMapping(value = "/batchInsert", method= RequestMethod.POST)
 	public String batchInsert(@RequestBody String abc){
 		log.info("batchInsert");

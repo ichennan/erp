@@ -3,11 +3,13 @@ var itemId = 0;
 var detailId = 0;
 var $itemForm = $("#itemForm");
 var $detailForm = $("#detailForm");
+var $fbaForm = $("#fbaForm");
 var ajaxCtx = 'oversea/';
 var parentJs = parent;
 $(document).ready(function(){
     createItemForm();
     createDetailForm();
+    createFbaForm();
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
         var hash4 = hash.substring(0, 5).toString();
@@ -26,6 +28,7 @@ $(document).ready(function(){
     parentJs.$.refreshStoresSelect($itemForm.find("[pid=storeId]"));
     //
     parentJs.$.refreshSkusSelect($detailForm.find("[pid=skuId]"));
+    // parentJs.$.refreshSkusSelect($fbaForm.find("[pid=skuId]"));
 
     $(".datetimepicker").datetimepicker({
         todayButton: true,
@@ -60,6 +63,32 @@ $(document).ready(function(){
     // resetSearch();
 });
 
+function showFba(obj){
+    $('#fbaModal').modal('show');
+    $fbaForm.find("[pid]").each(function () {
+        $(this).val("").trigger("change");
+    });
+
+    if(obj){
+        $fbaForm.find("[pid]").each(function () {
+            var jpa = obj[$(this).attr("pid")];
+            $(this).val(jpa).trigger("change");
+        });
+        var productId = obj["productId"];
+        var storeId = obj["storeId"];
+        var skuId = obj["skuId"];
+        if(storeId){
+            $fbaForm.find("[pid=temp_store]").val(parentJs.$.cacheStores["id" + storeId].name);
+        }
+        if(productId){
+            $fbaForm.find("[pid=temp_product]").val(parentJs.$.cacheProducts["id" + productId].snname);
+        }
+        if(skuId){
+            $fbaForm.find("[pid=temp_sku]").val(parentJs.$.cacheSkus["id" + skuId].sku);
+        }
+    }
+}
+
 
 
 function toItem(id){
@@ -86,9 +115,6 @@ function showDetail(obj){
         });
         var productId = obj["productId"];
         var storeId = obj["storeId"];
-        console.log("---");
-        console.log(productId);
-        console.log(storeId);
         if(storeId){
             $detailForm.find("[pid=temp_store]").val(parentJs.$.cacheStores["id" + storeId].name);
         }
@@ -269,7 +295,7 @@ function createDetailTableHead(){
     $("#detailTableDiv").empty();
     var detailTable = $("<table class='table table-bordered data-table' id='detailTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
-    var theadNames = ['第几箱', '数量', 'SKU', '产品识别码'];
+    var theadNames = ['', '第几箱', '数量', 'SKU', '产品识别码'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
     })
@@ -284,6 +310,15 @@ function createDetailTableBody(table, rs){
     $.each(rs.array, function (index, obj) {
         var tr = $("<tr></tr>");
         var tds = [obj.box, obj.quantity, parentJs.$.cacheSkus["id" + obj.skuId].sku, obj.productDescription];
+        //
+        var fbaIconTd = $("<td>" + "" + "</td>");
+        fbaIconTd.append("<i class='fa fa-amazon'></i>");
+        fbaIconTd.click(function(){
+            showFba(obj);
+            return false;
+        })
+        tr.append(fbaIconTd);
+        //
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
@@ -331,6 +366,47 @@ function saveDetail(action){
         },
         complete: function () {
             console.log("saveDetail.complete");
+        }
+    });
+}
+
+function saveFba(action){
+    console.log("saveFba: " + action);
+    if(action != 'delete' && !validateForm($fbaForm)){
+        return false;
+    }
+    var data = {};
+    data.action = action;
+    $fbaForm.find("[pid]").each(function () {
+        data[$(this).attr("pid")] = $(this).val();
+    });
+
+    if(action == 'create' && !data.fbaDate){
+        alert("创建FBA时请输入日期，追加时可为空");
+        return false;
+    }
+    data.overseaId = itemId;
+    console.log(data);
+    var ajaxUrl = 'saveFba';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log("saveFba.success");
+            console.log(rs);
+            $('#fbaModal').modal('hide');
+            toItem(itemId);
+            $.showToastr();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("saveFba.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("saveFba.complete");
         }
     });
 }
@@ -402,8 +478,27 @@ function createDetailForm() {
     itemArray[++i] = {"label": "重量", "pid": "weight", "inputType": "text"};
     itemArray[++i] = {"label": "箱子识别码", "pid": "boxDescription", "inputType": "text"};
     itemArray[++i] = {"label": "产品识别码", "pid": "productDescription", "inputType": "text"};
-    itemArray[++i] = {"label": "FBA单号", "pid": "fbaNo", "inputType": "text"};
+    itemArray[++i] = {"label": "FBA单号", "pid": "fbaNo", "inputType": "text", "readonly":true};
+    itemArray[++i] = {"label": "FBA箱号", "pid": "fbaBox", "inputType": "text", "readonly":true};
+    itemArray[++i] = {"label": "FBA发货日期", "pid": "fbaDate", "inputType": "text", "readonly":true};
     $.drawContentForm($detailForm, itemArray);
+}
+function createFbaForm() {
+    console.log("createDetailForm()");
+    var itemArray = [];
+    var i = -1;
+    itemArray[++i] = {"label": "店铺", "pid": "temp_store", "readonly":true, "inputType": "text"};
+    itemArray[++i] = {"label": "产品", "pid": "temp_product", "readonly":true, "inputType": "text"};
+    itemArray[++i] = {"label": "SKU", "pid": "temp_sku", "readonly":true, "inputType": "text"};
+    itemArray[++i] = {"label": "第几箱", "pid": "box", "inputType": "text", "readonly":true};
+    itemArray[++i] = {"label": "数量", "pid": "quantity", "inputType": "text", "readonly":true};
+    itemArray[++i] = {"label": "重量", "pid": "weight", "inputType": "text", "readonly":true};
+    itemArray[++i] = {"label": "箱子识别码", "pid": "boxDescription", "inputType": "text", "readonly":true};
+    itemArray[++i] = {"label": "产品识别码", "pid": "productDescription", "inputType": "text", "readonly":true};
+    itemArray[++i] = {"label": "FBA单号", "pid": "fbaNo", "inputType": "text", "required": true};
+    itemArray[++i] = {"label": "FBA箱号", "pid": "fbaBox", "inputType": "text", "required": true};
+    itemArray[++i] = {"label": "FBA发货日期", "pid": "fbaDate", "inputType": "text"};
+    $.drawContentForm($fbaForm, itemArray);
 }
 
 
