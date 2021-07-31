@@ -57,12 +57,9 @@ $(document).ready(function(){
             $("[sid=dateFrom]").val("").trigger("change");
             return;
         }
-        var dateTo = moment($("[sid=dateTo]").val(), "YYYY-MM-DD");
-        var dateFrom = moment(dateTo).add(-1 * searchDateRange, 'months').calendar();
-        dateFrom = moment(dateFrom).add(1, 'days').calendar();
-        console.log(dateTo);
-        console.log(dateFrom);
-        $("[sid=dateFrom]").val(moment(dateFrom).format("YYYY-MM-DD")).trigger("change");
+        var dateToMoment = moment($("[sid=dateTo]").val(), "YYYY-MM-DD");
+        var dateFromMoment = moment(dateToMoment).add(-1 * searchDateRange, 'months').add(1, 'days');
+        $("[sid=dateFrom]").val(moment(dateFromMoment).format("YYYY-MM-DD")).trigger("change");
     })
 
     setAutoCompleteSuppliers();
