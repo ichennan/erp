@@ -34,6 +34,6 @@ public interface PurchaseProductViewRepository extends JpaRepository<PurchasePro
             " where (:supplier = '' or ppv.supplier = :supplier) " +
             " and (:deliveryDateTo = '' or ppv.deliveryDate <= :deliveryDateTo)" +
             " and (:deliveryDateFrom = '' or ppv.deliveryDate >= :deliveryDateFrom)" +
-            " order by ppv.deliveryDate, ppv.purchaseId")
+            " order by ppv.deliveryDate desc, ppv.purchaseId desc")
     List<JSONObject> donwload(String supplier, String deliveryDateFrom, String deliveryDateTo);
 }

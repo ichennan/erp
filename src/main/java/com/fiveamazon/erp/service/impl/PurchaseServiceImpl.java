@@ -5,7 +5,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.*;
-import com.fiveamazon.erp.dto.download.PurchaseDownloadDTO;
+import com.fiveamazon.erp.dto.download.PurchaseDetailDownloadDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.PurchaseDetailRepository;
 import com.fiveamazon.erp.repository.PurchaseProductViewRepository;
@@ -296,8 +296,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public List<PurchaseDownloadDTO> download(PurchaseSearchDTO searchDTO) {
-        List<PurchaseDownloadDTO> downloadList = new ArrayList<>();
+    public List<PurchaseDetailDownloadDTO> downloadDetail(PurchaseSearchDTO searchDTO) {
+        List<PurchaseDetailDownloadDTO> downloadList = new ArrayList<>();
         String dateFrom = searchDTO.getDateFrom().replaceAll("-", "");
         String dateTo = searchDTO.getDateTo().replaceAll("-", "");
         List<JSONObject> list = purchaseProductViewRepository.donwload(searchDTO.getSupplier(), dateFrom, dateTo);
@@ -313,7 +313,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             BigDecimal totalPrice = unitPrice.multiply(new BigDecimal(receivedQuantity));
             item.put("snname", snname);
             item.put("totalPrice", totalPrice);
-            PurchaseDownloadDTO downloadDTO = JSONUtil.toBean(item, PurchaseDownloadDTO.class);
+            PurchaseDetailDownloadDTO downloadDTO = JSONUtil.toBean(item, PurchaseDetailDownloadDTO.class);
             downloadList.add(downloadDTO);
         }
         return downloadList;

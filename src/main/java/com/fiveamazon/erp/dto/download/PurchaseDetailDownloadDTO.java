@@ -15,11 +15,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @ContentRowHeight(30)
-public class PurchaseDownloadDTO extends BaseRowModel{
+public class PurchaseDetailDownloadDTO extends BaseRowModel{
 
     @ExcelProperty(value = "发货ID", index = 0)
     @ColumnWidth(15)
-    private Integer id;
+    private Integer purchaseId;
 
     @ExcelProperty(value = "发货日期", index = 1)
     @ColumnWidth(15)
@@ -29,8 +29,20 @@ public class PurchaseDownloadDTO extends BaseRowModel{
     @ColumnWidth(20)
     private String supplier;
 
-    @ExcelProperty(value = "总费用", index = 3)
+    @ExcelProperty(value = "产品", index = 3)
+    @ColumnWidth(50)
+    private String snname;
+
+    @ExcelProperty(value = "数量", index = 4)
     @ColumnWidth(15)
-    private BigDecimal amount;
+    private Integer receivedQuantity;
+
+    @ExcelProperty(value = "单价", index = 5)
+    @ColumnWidth(15)
+    private BigDecimal unitPrice;
+
+    @ExcelProperty(value = "数量*单价", index = 6)
+    @ColumnWidth(15)
+    private BigDecimal totalPrice;
 
 }
