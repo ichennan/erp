@@ -29,19 +29,23 @@ public class PurchaseDetailDownloadDTO extends BaseRowModel{
     @ColumnWidth(20)
     private String supplier;
 
-    @ExcelProperty(value = "产品", index = 3)
+    @ExcelProperty(value = "型号", index = 3)
+    @ColumnWidth(20)
+    private String sn;
+
+    @ExcelProperty(value = "产品", index = 4)
     @ColumnWidth(50)
     private String snname;
 
-    @ExcelProperty(value = "数量", index = 4)
+    @ExcelProperty(value = "数量", index = 5)
     @ColumnWidth(15)
     private Integer receivedQuantity;
 
-    @ExcelProperty(value = "单价", index = 5)
+    @ExcelProperty(value = "单价", index = 6)
     @ColumnWidth(15)
     private BigDecimal unitPrice;
 
-    @ExcelProperty(value = "数量*单价", index = 6)
+    @ExcelProperty(value = "数量*单价", index = 7)
     @ColumnWidth(15)
     private BigDecimal totalPrice;
 

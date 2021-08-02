@@ -20,6 +20,7 @@ import com.fiveamazon.erp.dto.download.PurchaseDownloadDTO;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.PurchaseService;
+import com.fiveamazon.erp.util.FreezeAndFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -210,7 +211,7 @@ public class PurchaseController extends SimpleCommonController {
 //		ExcelWriterBuilder excelWriterBuilder =  EasyExcel.write(response.getOutputStream());
 //		excelWriterBuilder.registerWriteHandler(styleStrategy);
 //		ExcelWriter excelWriter = excelWriterBuilder.build();
-		ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).registerWriteHandler(styleStrategy).build();
+		ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).registerWriteHandler(new FreezeAndFilter()).registerWriteHandler(styleStrategy).build();
 		WriteSheet writeSheet1 = EasyExcel.writerSheet("采购批次").head(PurchaseDownloadDTO.class).build();
 		WriteSheet writeSheet2 = EasyExcel.writerSheet("采购详情").head(PurchaseDetailDownloadDTO.class).build();
 		excelWriter.write(purchaseDownloadDTOList, writeSheet1);
