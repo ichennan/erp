@@ -34,60 +34,69 @@ import java.util.List;
 @Transactional
 public class ShipmentServiceImpl implements ShipmentService {
     @Autowired
-    private ShipmentRepository shipmentRepository;
+    private ShipmentRepository theRepository;
     @Autowired
-    private ShipmentViewRepository shipmentViewRepository;
+    private ShipmentViewRepository theViewRepository;
     @Autowired
-    private ShipmentDetailRepository shipmentDetailRepository;
+    private ShipmentDetailRepository theDetailRepository;
     @Autowired
-    private ShipmentProductViewRepository shipmentProductViewRepository;
+    private ShipmentProductViewRepository theProductViewRepository;
+
+    @Override
+    public ShipmentPO save(ShipmentPO item) {
+        if(StringUtils.isBlank(item.getSignedDate())){
+            item.setSignedDate("");
+        }
+        if(StringUtils.isBlank(item.getWeightRemark())){
+            item.setWeightRemark("");
+        }
+        if(null == item.getWeight()){
+            item.setWeight(new BigDecimal(0));
+        }
+        if(null == item.getAmount()){
+            item.setAmount(new BigDecimal(0));
+        }
+        if(null == item.getUnitPrice()){
+            item.setUnitPrice(new BigDecimal(0));
+        }
+        if(null == item.getChargeWeight()){
+            item.setChargeWeight(new BigDecimal(0));
+        }
+        return theRepository.save(item);
+    }
+
+    @Override
+    public ShipmentDetailPO saveDetail(ShipmentDetailPO item) {
+        if(StringUtils.isBlank(item.getBox())){
+            item.setBox("");
+        }
+        if(null == item.getQuantity()){
+            item.setQuantity(0);
+        }
+        if(null == item.getWeight()){
+            item.setWeight(new BigDecimal(0));
+        }
+        return theDetailRepository.save(item);
+    }
 
     @Override
     public Long countAll() {
-        return shipmentRepository.count();
+        return theRepository.count();
     }
 
     @Override
     public ShipmentPO getById(Integer id) {
-        return shipmentRepository.getOne(id);
+        return theRepository.getOne(id);
     }
 
     @Override
     public ShipmentDetailPO getDetailById(Integer id) {
-        return shipmentDetailRepository.getOne(id);
+        return theDetailRepository.getOne(id);
     }
 
     @Override
     public List<ShipmentViewPO> findAll() {
-        return shipmentViewRepository.findAll();
-    }
-
-    @Override
-    public ShipmentPO save(ShipmentPO shipmentPO) {
-        if(StringUtils.isBlank(shipmentPO.getSignedDate())){
-            shipmentPO.setSignedDate("");
-        }
-        if(StringUtils.isBlank(shipmentPO.getWeightRemark())){
-            shipmentPO.setWeightRemark("");
-        }
-        if(null == shipmentPO.getWeight()){
-            shipmentPO.setWeight(new BigDecimal(0));
-        }
-        return shipmentRepository.save(shipmentPO);
-    }
-
-    @Override
-    public ShipmentDetailPO saveDetail(ShipmentDetailPO shipmentDetailPO) {
-        if(StringUtils.isBlank(shipmentDetailPO.getBox())){
-            shipmentDetailPO.setBox("");
-        }
-        if(null == shipmentDetailPO.getQuantity()){
-            shipmentDetailPO.setQuantity(0);
-        }
-        if(null == shipmentDetailPO.getWeight()){
-            shipmentDetailPO.setWeight(new BigDecimal(0));
-        }
-        return shipmentDetailRepository.save(shipmentDetailPO);
+        return theViewRepository.findAll();
     }
 
     @Override
@@ -105,7 +114,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             shipmentPO.setUpdateUser(shipmentDTO.getUsername());
             //if excel, the detail can't be updated, because it will delete sku
             if(null == excelId || excelId == 0){
-                shipmentDetailRepository.deleteByShipmentIdEqualsAndBoxNotLike(shipmentId, "Plan");
+                theDetailRepository.deleteByShipmentIdEqualsAndBoxNotLike(shipmentId, "Plan");
                 for(ShipmentDetailDTO shipmentDetailDTO: shipmentDTO.getShipmentDetailList()){
                     shipmentDetailDTO.setUsername(shipmentDTO.getUsername());
                     saveDetail(shipmentDetailDTO);
@@ -124,7 +133,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public ShipmentDetailPO saveDetail(ShipmentDetailDTO shipmentDetailDTO) {
         if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(shipmentDetailDTO.getAction())){
-            shipmentDetailRepository.deleteById(shipmentDetailDTO.getId());
+            theDetailRepository.deleteById(shipmentDetailDTO.getId());
             return null;
         }
         Integer shipmentDetailId = shipmentDetailDTO.getId();
@@ -144,7 +153,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public List<ShipmentDetailPO> findAllDetail(Integer shipmentId) {
-        return shipmentDetailRepository.findAllByShipmentIdOrderByBox(shipmentId);
+        return theDetailRepository.findAllByShipmentIdOrderByBox(shipmentId);
     }
 
     @Override
@@ -153,7 +162,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Integer boxCount = uploadFbaDTO.getBoxCount();
         List<ExcelFbaPackListPO> array = uploadFbaDTO.getArray();
         String fbaNo = uploadFbaDTO.getShipmentId();
-        if(shipmentRepository.countByFbaNo(fbaNo) > 0){
+        if(theRepository.countByFbaNo(fbaNo) > 0){
             throw new SimpleCommonException("Duplicate FBA Found ! 请勿重复上传该FBA: " + fbaNo);
         }
         String excelDate = DateUtil.format(new Date(), "yyyyMMdd");
@@ -308,13 +317,13 @@ public class ShipmentServiceImpl implements ShipmentService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         };
-        return shipmentProductViewRepository.findAll(specification, pageRequest).getContent();
+        return theProductViewRepository.findAll(specification, pageRequest).getContent();
     }
 
 
     @Override
     public Long countBySkuId(Integer skuId) {
-        return shipmentDetailRepository.countBySkuIdEquals(skuId);
+        return theDetailRepository.countBySkuIdEquals(skuId);
     }
 
     @Override
@@ -327,7 +336,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         String fbaDate = overseaDetailDTO.getFbaDate();
         BigDecimal weight = overseaDetailPO.getWeight();
         log.info("weight: " + weight);
-        Long fbaNoCount = shipmentRepository.countByFbaNo(fbaNo);
+        Long fbaNoCount = theRepository.countByFbaNo(fbaNo);
         ShipmentPO shipmentPO;
         if("create".equalsIgnoreCase(action)){
             if(fbaNoCount > 0){
@@ -350,7 +359,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             if(fbaNoCount <= 0){
                 throw new SimpleCommonException("该FBA单号不存在 ! 请点击创建FBA " + fbaNo);
             }
-            shipmentPO = shipmentRepository.getByFbaNo(fbaNo);
+            shipmentPO = theRepository.getByFbaNo(fbaNo);
             shipmentPO.setUpdateDate(today);
             shipmentPO.setUpdateUser(username);
             shipmentPO.setWeightRemark(shipmentPO.getWeightRemark() + "+" + weight);
@@ -373,5 +382,10 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentDetailPO.setRemark("create by overseaDetailId: " + overseaDetailPO.getId());
         saveDetail(shipmentDetailPO);
         return shipmentPO;
+    }
+
+    @Override
+    public List<ShipmentPO> findByDate(String dateFrom, String dateTo) {
+        return theRepository.findByDeliveryDateBetweenOrderByStoreIdAscDeliveryDateAsc(dateFrom, dateTo);
     }
 }

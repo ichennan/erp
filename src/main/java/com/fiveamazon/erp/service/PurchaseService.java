@@ -3,10 +3,7 @@ package com.fiveamazon.erp.service;
 
 import com.fiveamazon.erp.dto.*;
 import com.fiveamazon.erp.dto.download.PurchaseDetailDownloadDTO;
-import com.fiveamazon.erp.entity.PurchaseDetailPO;
-import com.fiveamazon.erp.entity.PurchasePO;
-import com.fiveamazon.erp.entity.PurchaseProductViewPO;
-import com.fiveamazon.erp.entity.PurchaseViewPO;
+import com.fiveamazon.erp.entity.*;
 
 import java.util.List;
 
@@ -40,4 +37,6 @@ public interface PurchaseService {
     List<String> findSupplierList();
 
     List<PurchaseDetailDownloadDTO> downloadDetail(PurchaseSearchDTO searchDTO);
+
+    List<PurchasePO> findByDate(String dateFrom, String dateTo);
 }

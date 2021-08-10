@@ -36,4 +36,6 @@ public interface ShipmentService {
     List<ShipmentProductViewPO> findAllProducts(ShipmentProductSearchDTO searchDTO);
 
     Long countBySkuId(Integer skuId);
+
+    List<ShipmentPO> findByDate(String dateFrom, String dateTo);
 }

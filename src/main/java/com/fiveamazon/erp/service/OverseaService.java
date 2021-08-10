@@ -32,4 +32,6 @@ public interface OverseaService {
     List<OverseaDetailPO> findAllDetail(Integer overseaId);
 
     void batchInsert(OverseaBatchInsertDTO dto);
+
+    List<OverseaPO> findByDate(String dateFrom, String dateTo);
 }

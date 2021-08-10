@@ -14,6 +14,7 @@ import java.util.List;
  */
 @Repository
 public interface ProductRepository extends JpaRepository<ProductPO, Integer> {
+	ProductPO getById(Integer id);
 	ProductPO getByName(String name);
 
 	List<ProductPO> findByEnablePacketSeqGreaterThanOrderByEnablePacketSeq(Integer zero);

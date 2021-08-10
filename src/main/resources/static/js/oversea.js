@@ -461,6 +461,7 @@ function createItemForm() {
     itemArray[++i] = {"label": "单价", "pid": "unitPrice", "inputType": "text"};
     itemArray[++i] = {"label": "收费重量", "pid": "chargeWeight", "inputType": "text"};
     itemArray[++i] = {"label": "实付运费", "pid": "amount", "inputType": "text"};
+    itemArray[++i] = {"label": "海外仓费用", "pid": "overseaAmount", "inputType": "text"};
     itemArray[++i] = {"label": "付款日期", "pid": "paymentDate", "inputType": "text"};
     itemArray[++i] = {"label": "签收日期", "pid": "signedDate", "inputType": "text"};
     itemArray[++i] = {"label": "备注", "pid": "remark", "inputType": "text"};

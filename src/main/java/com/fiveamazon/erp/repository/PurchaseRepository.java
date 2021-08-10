@@ -2,7 +2,6 @@ package com.fiveamazon.erp.repository;
 
 
 import com.fiveamazon.erp.entity.PurchasePO;
-import com.fiveamazon.erp.entity.ShipmentPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,4 +18,6 @@ public interface PurchaseRepository extends JpaRepository<PurchasePO, Integer> {
 
     @Query("select distinct(p.supplier) from PurchasePO p")
     List<String> findSupplierList();
+
+    List<PurchasePO> findByDeliveryDateBetweenOrderByDeliveryDateAsc(String dateFrom, String dateTo);
 }

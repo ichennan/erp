@@ -37,29 +37,51 @@ import java.util.List;
 @Transactional
 public class PurchaseServiceImpl implements PurchaseService {
     @Autowired
-    private PurchaseRepository purchaseRepository;
+    private PurchaseRepository theRepository;
     @Autowired
-    private PurchaseViewRepository purchaseViewRepository;
+    private PurchaseViewRepository theViewRepository;
     @Autowired
-    private PurchaseProductViewRepository purchaseProductViewRepository;
+    private PurchaseProductViewRepository theProductViewRepository;
     @Autowired
-    private PurchaseDetailRepository purchaseDetailRepository;
+    private PurchaseDetailRepository theDetailRepository;
     @Autowired
     private ProductService productService;
 
     @Override
+    public PurchasePO save(PurchasePO purchasePO) {
+        if(null == purchasePO.getAmount()){
+            purchasePO.setAmount(new BigDecimal(0));
+        }
+        if(null == purchasePO.getFreight()){
+            purchasePO.setFreight(new BigDecimal(0));
+        }
+        return theRepository.save(purchasePO);
+    }
+
+    @Override
+    public PurchaseDetailPO saveDetail(PurchaseDetailPO purchaseDetailPO) {
+        if(null == purchaseDetailPO.getReceivedQuantity()){
+            purchaseDetailPO.setReceivedQuantity(0);
+        }
+        if(null == purchaseDetailPO.getUnitPrice()){
+            purchaseDetailPO.setUnitPrice(new BigDecimal(0));
+        }
+        return theDetailRepository.save(purchaseDetailPO);
+    }
+
+    @Override
     public Long countAll() {
-        return purchaseRepository.count();
+        return theRepository.count();
     }
 
     @Override
     public PurchasePO getById(Integer id) {
-        return purchaseRepository.getOne(id);
+        return theRepository.getOne(id);
     }
 
     @Override
     public PurchaseDetailPO getDetailById(Integer id) {
-        return purchaseDetailRepository.getOne(id);
+        return theDetailRepository.getOne(id);
     }
 
     @Override
@@ -103,25 +125,20 @@ public class PurchaseServiceImpl implements PurchaseService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         };
-        return purchaseViewRepository.findAll(specification, pageRequest).getContent();
-    }
-
-    @Override
-    public PurchasePO save(PurchasePO purchasePO) {
-        return purchaseRepository.save(purchasePO);
+        return theViewRepository.findAll(specification, pageRequest).getContent();
     }
 
     @Override
     public List<String> findSupplierList() {
-        return purchaseRepository.findSupplierList();
+        return theRepository.findSupplierList();
     }
 
     @Override
     public PurchasePO save(PurchaseDTO purchaseDTO) {
         Integer purchaseId = purchaseDTO.getId();
         if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(purchaseDTO.getAction())){
-            purchaseDetailRepository.deleteByPurchaseId(purchaseId);
-            purchaseRepository.deleteById(purchaseId);
+            theDetailRepository.deleteByPurchaseId(purchaseId);
+            theRepository.deleteById(purchaseId);
             return new PurchasePO();
         }
         PurchasePO purchasePO;
@@ -139,18 +156,10 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public PurchaseDetailPO saveDetail(PurchaseDetailPO purchaseDetailPO) {
-        if(null == purchaseDetailPO.getReceivedQuantity()){
-            purchaseDetailPO.setReceivedQuantity(0);
-        }
-        return purchaseDetailRepository.save(purchaseDetailPO);
-    }
-
-    @Override
     public PurchaseDetailPO saveDetail(PurchaseDetailDTO purchaseDetailDTO) {
         Integer purchaseDetailId = purchaseDetailDTO.getId();
         if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(purchaseDetailDTO.getAction())){
-            purchaseDetailRepository.deleteById(purchaseDetailId);
+            theDetailRepository.deleteById(purchaseDetailId);
             return new PurchaseDetailPO();
         }
         PurchaseDetailPO purchaseDetailPO;
@@ -169,7 +178,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public List<PurchaseDetailPO> findAllDetail(Integer purchaseId) {
-        return purchaseDetailRepository.findAllByPurchaseId(purchaseId);
+        return theDetailRepository.findAllByPurchaseId(purchaseId);
     }
 
     @Override
@@ -216,7 +225,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 shuliang = Integer.valueOf(orderDetail.getShuliang());
             }catch (Exception e){
             }
-            PurchasePO purchasePO = purchaseRepository.getByExcelIdAndExcelDingdan(excelId, dingdanhao);
+            PurchasePO purchasePO = theRepository.getByExcelIdAndExcelDingdan(excelId, dingdanhao);
             BigDecimal amount = purchasePO.getAmount();
             Integer purchaseId = purchasePO.getId();
             PurchaseDetailPO purchaseDetailPO = new PurchaseDetailPO();
@@ -292,7 +301,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         };
-        return purchaseProductViewRepository.findAll(specification, pageRequest).getContent();
+        return theProductViewRepository.findAll(specification, pageRequest).getContent();
     }
 
     @Override
@@ -300,7 +309,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         List<PurchaseDetailDownloadDTO> downloadList = new ArrayList<>();
         String dateFrom = searchDTO.getDateFrom().replaceAll("-", "");
         String dateTo = searchDTO.getDateTo().replaceAll("-", "");
-        List<JSONObject> list = purchaseProductViewRepository.donwload(searchDTO.getSupplier(), dateFrom, dateTo);
+        List<JSONObject> list = theProductViewRepository.donwload(searchDTO.getSupplier(), dateFrom, dateTo);
         for(JSONObject item : list){
             String sn = item.getStr("sn");
             String name = item.getStr("name");
@@ -317,5 +326,10 @@ public class PurchaseServiceImpl implements PurchaseService {
             downloadList.add(downloadDTO);
         }
         return downloadList;
+    }
+
+    @Override
+    public List<PurchasePO> findByDate(String dateFrom, String dateTo) {
+        return theRepository.findByDeliveryDateBetweenOrderByDeliveryDateAsc(dateFrom, dateTo);
     }
 }

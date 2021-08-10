@@ -40,6 +40,41 @@ public class OverseaServiceImpl implements OverseaService {
     @Autowired
     private ShipmentService shipmentService;
 
+    public OverseaPO save(OverseaPO item) {
+        if(StringUtils.isBlank(item.getSignedDate())){
+            item.setSignedDate("");
+        }
+        if(StringUtils.isBlank(item.getWeightRemark())){
+            item.setWeightRemark("");
+        }
+        if(null == item.getWeight()){
+            item.setWeight(new BigDecimal(0));
+        }
+        if(null == item.getAmount()){
+            item.setAmount(new BigDecimal(0));
+        }
+        if(null == item.getUnitPrice()){
+            item.setUnitPrice(new BigDecimal(0));
+        }
+        if(null == item.getChargeWeight()){
+            item.setChargeWeight(new BigDecimal(0));
+        }
+        return theRepository.save(item);
+    }
+
+    private OverseaDetailPO saveDetail(OverseaDetailPO item){
+        if(StringUtils.isBlank(item.getFbaNo())){
+            item.setFbaNo("");
+        }
+        if(null == item.getQuantity()){
+            item.setQuantity(0);
+        }
+        if(null == item.getWeight()){
+            item.setWeight(new BigDecimal(0));
+        }
+        return theDetailRepository.save(item);
+    }
+
     @Override
     public Long countAll() {
         return theRepository.count();
@@ -65,10 +100,6 @@ public class OverseaServiceImpl implements OverseaService {
         return theDetailRepository.findByOverseaIdOrderByBox(overseaId);
     }
 
-    public OverseaPO save(OverseaPO item) {
-        return theRepository.save(item);
-    }
-
     @Override
     public OverseaPO save(OverseaDTO dto) {
         Date today = new Date();
@@ -90,19 +121,6 @@ public class OverseaServiceImpl implements OverseaService {
         }
         BeanUtils.copyProperties(dto, item, "id");
         return save(item);
-    }
-
-    private OverseaDetailPO saveDetail(OverseaDetailPO item){
-        if(StringUtils.isBlank(item.getFbaNo())){
-            item.setFbaNo("");
-        }
-        if(null == item.getQuantity()){
-            item.setQuantity(0);
-        }
-        if(null == item.getWeight()){
-            item.setWeight(new BigDecimal(0));
-        }
-        return theDetailRepository.save(item);
     }
 
     @Override
@@ -164,5 +182,10 @@ public class OverseaServiceImpl implements OverseaService {
             detailDTO.setOverseaId(overseaId);
             saveDetail(detailDTO, false);
         }
+    }
+
+    @Override
+    public List<OverseaPO> findByDate(String dateFrom, String dateTo) {
+        return null;
     }
 }

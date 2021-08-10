@@ -2,9 +2,10 @@ package com.fiveamazon.erp.repository;
 
 
 import com.fiveamazon.erp.entity.OverseaPO;
-import com.fiveamazon.erp.entity.ShipmentPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author chennan
@@ -13,4 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OverseaRepository extends JpaRepository<OverseaPO, Integer> {
     OverseaPO getById(Integer id);
+
+    List<OverseaPO> findByDeliveryDateBetweenOrderByStoreIdAscDeliveryDateAsc(String dateFrom, String dateTo);
+
 }
