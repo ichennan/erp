@@ -1,12 +1,15 @@
 package com.fiveamazon.erp.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
+import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.entity.*;
-import com.fiveamazon.erp.epo.ExcelFbaRowEO;
-import com.fiveamazon.erp.epo.ExcelFbatsvRowEO;
-import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
-import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
+import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
+import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
+import com.fiveamazon.erp.epo.*;
 import com.fiveamazon.erp.repository.*;
+import com.fiveamazon.erp.repository.excel.ExcelTransactionDetailRepository;
+import com.fiveamazon.erp.repository.excel.ExcelTransactionRepository;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +40,33 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private ExcelFbaPackListRepository excelFbaPackListRepository;
     @Autowired
+    private ExcelTransactionRepository excelTransactionRepository;
+    @Autowired
+    private ExcelTransactionDetailRepository excelTransactionDetailRepository;
+    @Autowired
     private SkuService skuService;
+
+    @Override
+    public void insertTransactionRow(Integer excelId, List<ExcelTransactionRowEO> excelTransactionRowEOList) {
+        log.info("ExcelServiceImpl.insertExcelTransactionRow");
+        for(ExcelTransactionRowEO item : excelTransactionRowEOList){
+            Date transactionTime;
+            try{
+                transactionTime = DateUtil.parse(item.getTransactionTimeStr(), SimpleConstant.TRANSACTION_TIME_DATE_FORMAT);
+            }catch(Exception e){
+                log.error("transactionTimeStr DateTime Format Error: " + item.getTransactionTimeStr());
+                continue;
+            }
+            ExcelTransactionDetailPO excelTransactionDetailPO = new ExcelTransactionDetailPO();
+            BeanUtils.copyProperties(item, excelTransactionDetailPO);
+            excelTransactionDetailPO.setExcelId(excelId);
+            excelTransactionDetailPO.setTransactionTime(transactionTime);
+            if(null == excelTransactionDetailPO.getQuantity()){
+                excelTransactionDetailPO.setQuantity(0);
+            }
+            excelTransactionDetailRepository.save(excelTransactionDetailPO);
+        }
+    }
 
     @Override
     public void insertExcelSupplierDeliveryOrder(Integer excelId, List<ExcelSupplierDeliveryOrderEO> excelSupplierDeliveryOrderEOList) {
@@ -268,7 +297,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public Integer saveExcelSupplierDelivery(ExcelSupplierDeliveryPO excelSupplierDeliveryPO) {
-        log.warn("ExcelServiceImpl.saveExcelSupplierDelivery");
+        log.info("ExcelServiceImpl.saveExcelSupplierDelivery");
         excelSupplierDeliveryPO.setCreateDate(new Date());
         excelSupplierDeliveryRepository.save(excelSupplierDeliveryPO);
         return excelSupplierDeliveryPO.getId();
@@ -276,10 +305,18 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public Integer saveExcelFba(ExcelFbaPO excelFbaPO) {
-        log.warn("ExcelServiceImpl.saveExcelSupplierDelivery");
+        log.info("ExcelServiceImpl.saveExcelSupplierDelivery");
         excelFbaPO.setCreateDate(new Date());
         excelFbaRepository.save(excelFbaPO);
         return excelFbaPO.getId();
+    }
+
+    @Override
+    public Integer saveExcelTransaction(ExcelTransactionPO excelTransactionPO) {
+        log.info("ExcelServiceImpl.saveExcelTransaction: " + excelTransactionPO);
+        excelTransactionPO.setCreateDate(new Date());
+        excelTransactionRepository.save(excelTransactionPO);
+        return excelTransactionPO.getId();
     }
 
     @Override

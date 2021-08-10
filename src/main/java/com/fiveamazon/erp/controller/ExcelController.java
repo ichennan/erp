@@ -1,7 +1,6 @@
 package com.fiveamazon.erp.controller;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
@@ -12,13 +11,12 @@ import com.aspose.cells.SaveFormat;
 import com.aspose.cells.Workbook;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.common.SimpleCommonException;
+import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.UploadFbaDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
-import com.fiveamazon.erp.epo.ExcelFbaRowEO;
-import com.fiveamazon.erp.epo.ExcelFbatsvRowEO;
-import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
-import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
+import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
+import com.fiveamazon.erp.epo.*;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.ProductService;
 import com.fiveamazon.erp.service.PurchaseService;
@@ -114,6 +112,7 @@ public class ExcelController extends SimpleCommonController {
 		String originalFileName = multipartFile.getOriginalFilename();
 		log.info("Original File Name:" + originalFileName);
 		Integer excelId;
+		String tempExcelName;
 		//
 		switch (fileCategory){
 			case "fba":
@@ -129,10 +128,20 @@ public class ExcelController extends SimpleCommonController {
 				ExcelFbaPO excelFbaPO4tsv = new ExcelFbaPO();
 				excelFbaPO4tsv.setFileName(originalFileName);
 				excelId = excelService.saveExcelFba(excelFbaPO4tsv);
-				String tempExcelName = convertTsvToXlsx(uploadFileName);
+				tempExcelName = convertTsvToXlsx(uploadFileName);
 				//
 				AnalysisEventListener<ExcelFbatsvRowEO> listenerExcelFbatsvEO = CommonExcelUtils.getListener(this.batchInsertExcelFbatsvPackList(excelId), 100);
 				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelFbatsvRowEO.class, listenerExcelFbatsvEO).sheet(0).headRowNumber(0).doRead();
+				rs.put("excelId", excelId);
+				break;
+			case SimpleConstant.FILE_CATEGORY_MonthlyUnifiedTransaction:
+				ExcelTransactionPO excelTransactionPO = new ExcelTransactionPO();
+				excelTransactionPO.setFileName(originalFileName);
+				excelId = excelService.saveExcelTransaction(excelTransactionPO);
+				tempExcelName = convertCsvToXlsx(uploadFileName);
+				//
+				AnalysisEventListener<ExcelTransactionRowEO> listenerExcelTransactionEO = CommonExcelUtils.getListener(this.batchInsertTransactionRow(excelId), 100);
+				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelTransactionRowEO.class, listenerExcelTransactionEO).sheet(0).headRowNumber(8).doRead();
 				rs.put("excelId", excelId);
 				break;
 			case "supplierDelivery":
@@ -188,6 +197,10 @@ public class ExcelController extends SimpleCommonController {
 		return fbatsvPackListEoList -> excelService.insertFbatsvPackList(excelId, fbatsvPackListEoList);
 	}
 
+	private Consumer<List<ExcelTransactionRowEO>> batchInsertTransactionRow(Integer excelId){
+		return excelTransactionRowEOList -> excelService.insertTransactionRow(excelId, excelTransactionRowEOList);
+	}
+
 	public String convertTsvToXlsx(String tsvFileName){
 		LoadOptions opts = new LoadOptions(LoadFormat.TSV);
 		String timeStamp = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
@@ -199,6 +212,20 @@ public class ExcelController extends SimpleCommonController {
 		}catch (Exception e){
 			log.error(e.getMessage());
 			throw new SimpleCommonException("tsv转换xlsx失败");
+		}
+	}
+
+	public String convertCsvToXlsx(String tsvFileName){
+		LoadOptions opts = new LoadOptions(LoadFormat.CSV);
+		String timeStamp = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
+		String tempExcelName = "temp-" + timeStamp + "-" + tsvFileName + ".xlsx";
+		try{
+			com.aspose.cells.Workbook wb = new Workbook(uploadFileFolder + tsvFileName, opts);
+			wb.save(uploadFileFolder + tempExcelName, SaveFormat.XLSX);
+			return tempExcelName;
+		}catch (Exception e){
+			log.error(e.getMessage());
+			throw new SimpleCommonException("csv转换xlsx失败");
 		}
 	}
 

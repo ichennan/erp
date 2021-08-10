@@ -57,6 +57,9 @@ $(document).ready(function(){
                 case "supplierDelivery":
                     showList();
                     break;
+                case "MonthlyUnifiedTransaction":
+                    alert("上传成功: " + excelId);
+                    break;
             }
         },
         add: function (e, data) {
@@ -69,7 +72,7 @@ $(document).ready(function(){
                 data.fileCategory = uploadFileData;
             }
 
-            if (!(/\.(xls|xlsx|tsv)$/i).test(uploadFile.name)) {
+            if (!(/\.(xls|xlsx|tsv|csv)$/i).test(uploadFile.name)) {
                 $.showErrorModal("Only excel files (xls, xlsx) files allowed");
                 goUpload = false;
             }
