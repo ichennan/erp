@@ -1,6 +1,7 @@
 package com.fiveamazon.erp.repository;
 
 
+import com.fiveamazon.erp.entity.PurchasePO;
 import com.fiveamazon.erp.entity.ShipmentDetailPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Repository
 public interface ShipmentDetailRepository extends JpaRepository<ShipmentDetailPO, Integer> {
+    ShipmentDetailPO getById(Integer id);
     List<ShipmentDetailPO> findAllByShipmentIdOrderByBox(Integer shipmentId);
     void deleteByShipmentIdEqualsAndBoxNotLike(Integer shipmentId, String plan);
 

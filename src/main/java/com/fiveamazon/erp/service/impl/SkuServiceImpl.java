@@ -43,12 +43,12 @@ public class SkuServiceImpl implements SkuService {
 
     @Override
     public SkuInfoPO getById(Integer id) {
-        return skuInfoRepository.getOne(id);
+        return skuInfoRepository.getById(id);
     }
 
     @Override
     public SkuInfoVO getViewById(Integer id) {
-        return skuInfoViewRepository.getOne(id);
+        return skuInfoViewRepository.getById(id);
     }
 
     @Override

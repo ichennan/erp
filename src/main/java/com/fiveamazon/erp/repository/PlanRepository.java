@@ -1,8 +1,8 @@
 package com.fiveamazon.erp.repository;
 
 
+import com.fiveamazon.erp.entity.PlanDetailPO;
 import com.fiveamazon.erp.entity.PlanPO;
-import com.fiveamazon.erp.entity.ShipmentPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PlanRepository extends JpaRepository<PlanPO, Integer> {
+    PlanPO getById(Integer id);
 }

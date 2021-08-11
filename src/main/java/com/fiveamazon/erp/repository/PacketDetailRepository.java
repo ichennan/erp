@@ -15,6 +15,7 @@ import java.util.List;
  */
 @Repository
 public interface PacketDetailRepository extends JpaRepository<PacketDetailPO, Integer> {
+    PacketDetailPO getById(Integer id);
     List<PacketDetailPO> findAllByPacketId(Integer packetId);
     void deleteByPacketIdEquals(Integer shipmentId);
     @Query("select new com.fiveamazon.erp.dto.PacketDetailViewDTO(pd, p) from PacketDetailPO pd left join PacketPO p on  pd.packetId = p.id where pd.productId = :productId")

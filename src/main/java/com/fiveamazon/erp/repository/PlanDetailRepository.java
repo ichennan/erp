@@ -1,6 +1,7 @@
 package com.fiveamazon.erp.repository;
 
 
+import com.fiveamazon.erp.entity.PacketPO;
 import com.fiveamazon.erp.entity.PlanDetailPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,6 @@ import java.util.List;
  */
 @Repository
 public interface PlanDetailRepository extends JpaRepository<PlanDetailPO, Integer> {
+    PlanDetailPO getById(Integer id);
     List<PlanDetailPO> findAllByPlanId(Integer planId);
 }

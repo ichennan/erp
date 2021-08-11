@@ -1,6 +1,7 @@
 package com.fiveamazon.erp.repository;
 
 
+import com.fiveamazon.erp.entity.PacketDetailPO;
 import com.fiveamazon.erp.entity.PacketPO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,4 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PacketRepository extends JpaRepository<PacketPO, Integer> {
+    PacketPO getById(Integer id);
 }

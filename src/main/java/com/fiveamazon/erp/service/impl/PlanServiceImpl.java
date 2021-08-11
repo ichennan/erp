@@ -34,7 +34,7 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public PlanPO getById(Integer id) {
-        return planRepository.getOne(id);
+        return planRepository.getById(id);
     }
 
     @Override

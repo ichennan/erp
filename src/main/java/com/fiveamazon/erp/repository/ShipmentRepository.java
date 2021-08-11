@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Repository
 public interface ShipmentRepository extends JpaRepository<ShipmentPO, Integer> {
+    ShipmentPO getById(Integer id);
     Long countByFbaNo(String fbaNo);
     ShipmentPO getByFbaNo(String fbaNo);
 

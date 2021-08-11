@@ -42,7 +42,7 @@ public class StocktakingServiceImpl implements StocktakingService {
 
     @Override
     public StocktakingDetailPO getDetailById(Integer id) {
-        return theDetailRepository.getOne(id);
+        return theDetailRepository.getById(id);
     }
 
     @Override

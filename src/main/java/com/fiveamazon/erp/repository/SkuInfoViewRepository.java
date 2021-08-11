@@ -14,6 +14,7 @@ import java.util.List;
  */
 @Repository
 public interface SkuInfoViewRepository extends JpaRepository<SkuInfoVO, Integer> {
+    SkuInfoVO getById(Integer id);
     List<SkuInfoVO> findBySkuIsNotNull();
 
     @Query(nativeQuery = true,

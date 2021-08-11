@@ -30,12 +30,12 @@ public class PacketServiceImpl implements PacketService {
 
     @Override
     public PacketPO getById(Integer id) {
-        return packetRepository.getOne(id);
+        return packetRepository.getById(id);
     }
 
     @Override
     public PacketDetailPO getDetailById(Integer id) {
-        return packetDetailRepository.getOne(id);
+        return packetDetailRepository.getById(id);
     }
 
     @Override

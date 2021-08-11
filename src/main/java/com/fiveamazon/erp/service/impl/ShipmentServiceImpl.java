@@ -86,12 +86,12 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentPO getById(Integer id) {
-        return theRepository.getOne(id);
+        return theRepository.getById(id);
     }
 
     @Override
     public ShipmentDetailPO getDetailById(Integer id) {
-        return theDetailRepository.getOne(id);
+        return theDetailRepository.getById(id);
     }
 
     @Override

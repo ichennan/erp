@@ -76,12 +76,12 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchasePO getById(Integer id) {
-        return theRepository.getOne(id);
+        return theRepository.getById(id);
     }
 
     @Override
     public PurchaseDetailPO getDetailById(Integer id) {
-        return theDetailRepository.getOne(id);
+        return theDetailRepository.getById(id);
     }
 
     @Override

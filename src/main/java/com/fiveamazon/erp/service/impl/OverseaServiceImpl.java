@@ -87,7 +87,7 @@ public class OverseaServiceImpl implements OverseaService {
 
     @Override
     public OverseaDetailPO getDetailById(Integer id) {
-        return theDetailRepository.getOne(id);
+        return theDetailRepository.getById(id);
     }
 
     @Override
