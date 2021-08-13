@@ -117,14 +117,14 @@ $(function () {
             icon: "fa fa-cloud-upload",
             url: "excel",
             targetType: "iframe-tab"
-        // },
-        // {
-        //     id: "9100",
-        //     text: "库存查看",
-        //     roles: "",
-        //     icon: "fa fa-balance-scale",
-        //     url: "inventory",
-        //     targetType: "iframe-tab"
+        },
+        {
+            id: "9090",
+            text: "交易查询",
+            roles: "ROLE_Excel",
+            icon: "fa fa-dollar",
+            url: "transaction",
+            targetType: "iframe-tab"
         }
     ];
     $('.sidebar-menu').sidebarMenu({data: menus});

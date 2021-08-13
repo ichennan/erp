@@ -185,7 +185,7 @@ public class OverseaServiceImpl implements OverseaService {
     }
 
     @Override
-    public List<OverseaPO> findByDate(String dateFrom, String dateTo) {
-        return null;
+    public List<OverseaPO> findByDate(String dateFrom, String dateTo, Integer storeId) {
+        return theRepository.findByDeliveryDateBetweenAndStoreIdOrderByStoreIdAscDeliveryDateAsc(dateFrom, dateTo, storeId);
     }
 }

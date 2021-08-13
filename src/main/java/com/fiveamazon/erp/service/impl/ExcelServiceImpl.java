@@ -49,6 +49,10 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void insertTransactionRow(Integer excelId, List<ExcelTransactionRowEO> excelTransactionRowEOList) {
         log.info("ExcelServiceImpl.insertExcelTransactionRow");
+        ExcelTransactionPO  excelTransactionPO = excelTransactionRepository.getById(excelId);
+        Date dateFrom = null == excelTransactionPO.getDateFrom() ? DateUtil.parse("20990101", "yyyyMMdd") : excelTransactionPO.getDateFrom();
+        Date dateTo = null == excelTransactionPO.getDateTo() ? DateUtil.parse("19990101", "yyyyMMdd") : excelTransactionPO.getDateTo();
+        Integer storeId = null;
         for(ExcelTransactionRowEO item : excelTransactionRowEOList){
             Date transactionTime;
             try{
@@ -56,6 +60,21 @@ public class ExcelServiceImpl implements ExcelService {
             }catch(Exception e){
                 log.error("transactionTimeStr DateTime Format Error: " + item.getTransactionTimeStr());
                 continue;
+            }
+            if(transactionTime.before(dateFrom)){
+                dateFrom = transactionTime;
+            }
+            if(transactionTime.after(dateTo)){
+                dateTo = transactionTime;
+            }
+            if(null == storeId){
+                String sku = item.getSku();
+                if(StringUtils.isNotBlank(sku)){
+                    List<SkuInfoPO> skuInfoPOList =  skuService.findBySku(sku);
+                    for(SkuInfoPO skuInfoPO : skuInfoPOList){
+                        storeId = skuInfoPO.getStoreId();
+                    }
+                }
             }
             ExcelTransactionDetailPO excelTransactionDetailPO = new ExcelTransactionDetailPO();
             BeanUtils.copyProperties(item, excelTransactionDetailPO);
@@ -66,6 +85,10 @@ public class ExcelServiceImpl implements ExcelService {
             }
             excelTransactionDetailRepository.save(excelTransactionDetailPO);
         }
+        excelTransactionPO.setDateFrom(dateFrom);
+        excelTransactionPO.setDateTo(dateTo);
+        excelTransactionPO.setStoreId(storeId);
+        excelTransactionRepository.save(excelTransactionPO);
     }
 
     @Override
@@ -334,10 +357,19 @@ public class ExcelServiceImpl implements ExcelService {
         return excelFbaRepository.getOne(excelId);
     }
 
+    @Override
+    public ExcelTransactionPO getTransactionByExcelId(Integer excelId) {
+        return excelTransactionRepository.getById(excelId);
+    }
 
     @Override
     public List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId) {
         return excelFbaPackListRepository.findByExcelId(excelId);
+    }
+
+    @Override
+    public List<ExcelTransactionDetailPO> findTransactionDetailByExcelId(Integer excelId) {
+        return excelTransactionDetailRepository.findByExcelId(excelId);
     }
 
     @Override

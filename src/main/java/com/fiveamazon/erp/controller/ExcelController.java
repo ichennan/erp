@@ -15,22 +15,22 @@ import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.UploadFbaDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
+import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
 import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
 import com.fiveamazon.erp.epo.*;
-import com.fiveamazon.erp.service.ExcelService;
-import com.fiveamazon.erp.service.ProductService;
-import com.fiveamazon.erp.service.PurchaseService;
-import com.fiveamazon.erp.service.ShipmentService;
+import com.fiveamazon.erp.service.*;
 import com.fiveamazon.erp.util.CommonExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -48,6 +48,8 @@ public class ExcelController extends SimpleCommonController {
 	ProductService productService;
 	@Autowired
 	ExcelService excelService;
+	@Autowired
+	TransactionService transactionService;
 	@Autowired
 	PurchaseService purchaseService;
 	@Autowired
@@ -94,6 +96,75 @@ public class ExcelController extends SimpleCommonController {
 		}
 		rs.put("array", array);
 		rs.put("data", new JSONObject(excelFbaPO));
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/findTransactionByExcelId", method= RequestMethod.POST)
+	public String findTransactionByExcelId(@RequestParam("excelId")Integer excelId){
+		JSONObject rs = new JSONObject();
+		ExcelTransactionPO excelTransactionPO = excelService.getTransactionByExcelId(excelId);
+		Integer storeId = excelTransactionPO.getStoreId();
+		StorePO storePO = productService.getStoreById(storeId);
+		String storeName = storePO.getName();
+		List<ExcelTransactionDetailPO> list = excelService.findTransactionDetailByExcelId(excelId);
+		JSONArray array = new JSONArray();
+		JSONObject typeJson = new JSONObject();
+		Date dateFrom = excelTransactionPO.getDateFrom();
+		Date dateTo = excelTransactionPO.getDateTo();
+		for(ExcelTransactionDetailPO item: list){
+			String type = item.getType();
+			BigDecimal total = item.getTotal();
+			if(!StringUtils.hasText(type)){
+				type = "Others";
+			}
+			if(typeJson.containsKey(type)){
+				JSONObject typeContentJson = typeJson.getJSONObject(type);
+				typeContentJson.put("total", typeContentJson.getBigDecimal("total").add(total));
+				typeContentJson.put("count", typeContentJson.getInt("count") + 1);
+			}else{
+				JSONObject typeContentJson = new JSONObject();
+				typeContentJson.put("type", type);
+				typeContentJson.put("total", total);
+				typeContentJson.put("count", 1);
+				typeJson.put(type, typeContentJson);
+			}
+		}
+
+		JSONArray arraySum = new JSONArray();
+		JSONObject jsonStore = new JSONObject();
+		jsonStore.put("type", "Store");
+		jsonStore.put("count", storeName);
+		jsonStore.put("total", "");
+		arraySum.add(jsonStore);
+		//
+		JSONObject jsonDate = new JSONObject();
+		jsonDate.put("type", "Date");
+		jsonDate.put("count", DateUtil.format(dateFrom, "yyyy-MM-dd HH:mm:ss"));
+		jsonDate.put("total", DateUtil.format(dateTo, "yyyy-MM-dd HH:mm:ss"));
+		arraySum.add(jsonDate);
+		//
+		JSONObject jsonSum = new JSONObject();
+		arraySum.add(jsonSum);
+		//
+		Integer countCount = 0;
+		BigDecimal totalTotal = new BigDecimal(0);
+		for(String key : typeJson.keySet()){
+			if("Transfer".equalsIgnoreCase(key)){
+				arraySum.add(typeJson.get(key));
+			}else{
+				countCount += typeJson.getJSONObject(key).getInt("count");
+				totalTotal = totalTotal.add(typeJson.getJSONObject(key).getBigDecimal("total"));
+				array.add(typeJson.get(key));
+			}
+		}
+		//
+		jsonSum.put("type", "Sum");
+		jsonSum.put("count", countCount);
+		jsonSum.put("total", totalTotal);
+
+		rs.put("array", array);
+		rs.put("arraySum", arraySum);
 		rs.put("error", false);
 		return rs.toString();
 	}
@@ -166,6 +237,15 @@ public class ExcelController extends SimpleCommonController {
 		log.warn("ExcelController.uploadToPurchase");
 		log.warn(new JSONObject(uploadSupplierDeliveryDTO).toString());
 		purchaseService.createByExcel(uploadSupplierDeliveryDTO);
+		JSONObject rs = new JSONObject();
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/uploadToTransaction", method= RequestMethod.POST)
+	public String uploadToTransaction(@RequestParam("excelId")Integer excelId){
+		log.warn("ExcelController.uploadToTransaction: " + excelId);
+		transactionService.createByExcel(excelId);
 		JSONObject rs = new JSONObject();
 		rs.put("error", false);
 		return rs.toString();

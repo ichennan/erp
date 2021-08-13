@@ -17,6 +17,6 @@ public interface ShipmentRepository extends JpaRepository<ShipmentPO, Integer> {
     Long countByFbaNo(String fbaNo);
     ShipmentPO getByFbaNo(String fbaNo);
 
-    List<ShipmentPO> findByDeliveryDateBetweenOrderByStoreIdAscDeliveryDateAsc(String dateFrom, String dateTo);
+    List<ShipmentPO> findByDeliveryDateBetweenAndStoreIdOrderByStoreIdAscDeliveryDateAsc(String dateFrom, String dateTo, Integer storeId);
 
 }

@@ -108,6 +108,11 @@ public class SkuServiceImpl implements SkuService {
     }
 
     @Override
+    public List<SkuInfoPO> findBySkuAndStoreId(String sku, Integer storeId) {
+        return skuInfoRepository.findBySkuAndStoreId(sku, storeId);
+    }
+
+    @Override
     public List<SkuInfoVO> findAll() {
         return skuInfoViewRepository.findBySkuIsNotNull();
     }

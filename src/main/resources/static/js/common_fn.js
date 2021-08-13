@@ -5,6 +5,14 @@ $(document).ready(function(){
         timepicker:false,
         format:'Y-m-d'
     });
+    $("#search_reset").click(function () {
+        $searchForm.find("[sid]").val('').trigger("change");
+        $searchForm.find("select[sid]").each(function () {
+            var select = $(this);
+            select.val(select.find("option[defaultSelected]") ? select.find("option[defaultSelected]").val() : "").trigger("change");
+        })
+        return false;
+    }).trigger("click");
 });
 
 
@@ -63,4 +71,23 @@ $.drawContentForm = function(contentForm, itemArray){
         formGroupDiv.append(label).append(inputDiv);
         contentForm.find('.box-body').append(formGroupDiv);
     }
+}
+
+$.bootstrapTableOptions = {
+    sidePagination: "server",
+    search: true,
+    onPostBody:function() {
+        $('.search .search-input').attr('placeholder','搜索');
+    },
+    sortable: true,
+    sortOrder: "desc",
+    sortStable: false,
+    rememberOrder: false,
+    serverSort: true,
+    method: "post",
+    cache: false,
+    pagination: true,
+    pageList: [10, 50, 100, 200, 500, 1000],
+    pageSize: 10,
+    contentType: "application/json"
 }

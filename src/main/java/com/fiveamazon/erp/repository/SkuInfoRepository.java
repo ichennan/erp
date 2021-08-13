@@ -15,6 +15,7 @@ import java.util.List;
 public interface SkuInfoRepository extends JpaRepository<SkuInfoPO, Integer> {
 	SkuInfoPO getById(Integer id);
 	List<SkuInfoPO> findBySku(String sku);
+	List<SkuInfoPO> findBySkuAndStoreId(String sku, Integer storeId);
 	List<SkuInfoPO> findByProductId(Integer productId);
 	void deleteAllByProductId(Integer productId);
 }

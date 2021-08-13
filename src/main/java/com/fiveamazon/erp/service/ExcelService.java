@@ -2,6 +2,7 @@ package com.fiveamazon.erp.service;
 
 
 import com.fiveamazon.erp.entity.*;
+import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
 import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
 import com.fiveamazon.erp.epo.*;
 
@@ -23,6 +24,8 @@ public interface ExcelService {
     List<ExcelSupplierDeliveryOrderPO> findOrderByExcelId(Integer excelId);
     List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId);
     ExcelFbaPO getFbaByExcelId(Integer excelId);
+    ExcelTransactionPO getTransactionByExcelId(Integer excelId);
     List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId);
+    List<ExcelTransactionDetailPO> findTransactionDetailByExcelId(Integer excelId);
     ExcelSupplierDeliveryOrderPO getExcelSupplierDeliveryOrderByExcelIdAndDingdanhao(Integer excelId, String dingdanghao);
 }

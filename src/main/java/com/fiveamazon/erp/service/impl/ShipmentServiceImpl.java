@@ -385,7 +385,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
-    public List<ShipmentPO> findByDate(String dateFrom, String dateTo) {
-        return theRepository.findByDeliveryDateBetweenOrderByStoreIdAscDeliveryDateAsc(dateFrom, dateTo);
+    public List<ShipmentPO> findByDate(String dateFrom, String dateTo, Integer storeId) {
+        return theRepository.findByDeliveryDateBetweenAndStoreIdOrderByStoreIdAscDeliveryDateAsc(dateFrom, dateTo, storeId);
     }
 }

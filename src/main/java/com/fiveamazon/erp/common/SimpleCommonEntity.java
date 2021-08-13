@@ -1,5 +1,6 @@
 package com.fiveamazon.erp.common;
 
+import cn.hutool.json.JSONObject;
 import lombok.Data;
 
 import javax.persistence.GeneratedValue;
@@ -24,4 +25,8 @@ public class SimpleCommonEntity{
     Date createDate;
     Date updateDate;
     String remark;
+
+    public JSONObject toJson(){
+        return new JSONObject(this);
+    }
 }

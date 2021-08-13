@@ -6,6 +6,7 @@ var excelId = 0;
 var theadNames1st = ['订单号', '订单状态', '应收合计', '货品总数', '实际结算','处理时间','发货时间','物流方式','货运单号','货运单批次'];
 var theadNames2nd = ['订单号', '序号', '产品', '编号', '品名','规格','数量','单价','金额','备注'];
 var theadNames3rd = ['店铺', 'sku', '产品', 'skuId', 'qty'];
+var theadNamesTransaction = ['Type', 'Count', 'Total'];
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -22,6 +23,8 @@ $(document).ready(function(){
     }).trigger("hashchange");
 
     $('#fileCategorySelect').change(function () {
+        $("#uploading_div").hide();
+        $("table").remove();
         $this = $(this);
         console.log("fileCategorySelect change");
         var fileCategory = $this.val();
@@ -39,8 +42,16 @@ $(document).ready(function(){
         dataType: 'json',
         previewSourceMaxFileSize: 0,
         process: null,
+        fail: function (e, data) {
+            $("#uploading_div").hide();
+            console.log("upload errrrrrr:");
+            console.log(e);
+            console.log("upload errrrrrr:");
+            console.log(data);
+        },
         done: function (e, data) {
             console.log("fileUpload done");
+            $("#uploading_div").hide();
             console.log(data);
             var fileCategory;
             if(data && data.result){
@@ -58,7 +69,7 @@ $(document).ready(function(){
                     showList();
                     break;
                 case "MonthlyUnifiedTransaction":
-                    alert("上传成功: " + excelId);
+                    showTransactionList();
                     break;
             }
         },
@@ -87,6 +98,7 @@ $(document).ready(function(){
                 data.submit();
                 console.log("excel uploaded: " + uploadFile.name);
             }
+            $("#uploading_div").show();
         }
     });
 
@@ -128,6 +140,33 @@ function resetAll(){
     $("#fileCategorySelect").val("").trigger("change");
 }
 
+function showTransactionList(){
+    console.log("showTransactionList()");
+    $("#tableBox").show();
+    $("#contentBox").hide();
+    //
+    var tableTransaction = createTableTransaction($("#tableDivTransaction"));
+    var data = {};
+    data.excelId = excelId;
+    var ajaxUrl = 'findTransactionByExcelId'
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log(rs);
+            drawTableTransaction(tableTransaction, rs);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $.showErrorModal(XMLHttpRequest.responseText);
+            console.log("error");
+        },
+        complete: function () {
+        }
+    });
+}
+
 function showList(){
     console.log("showList()");
     $("#tableBox").show();
@@ -155,6 +194,21 @@ function showList(){
         complete: function () {
         }
     });
+}
+
+function createTableTransaction(tableDiv){
+    console.log("createTableTransaction()");
+    $("#listTableTransaction").remove();
+    $("#listTableTransaction_wrapper").remove();
+    var listTable = $("<table class='table table-bordered data-table' id='listTableTransaction'></table>");
+    var thead = $("<thead><tr></tr></thead>");
+    $.each(theadNamesTransaction, function (index, obj) {
+        thead.find("tr").append("<th>" + obj + "</th>");
+    })
+    var tbody = $("<tbody></tbody>");
+    listTable.append(thead).append(tbody);
+    tableDiv.append(listTable);
+    return listTable;
 }
 
 function createTable1st(tableDiv){
@@ -200,6 +254,45 @@ function createTable3rd(tableDiv){
     listTable.append(thead).append(tbody);
     tableDiv.append(listTable);
     return listTable;
+}
+
+function drawTableTransaction(table, rs){
+    var array = rs.array;
+    var arraySum = rs.arraySum;
+    console.log("drawTableTransaction()");
+    var tbody = table.find("tbody");
+    $.each(array, function (index, obj) {
+        var tr = $("<tr></tr>");
+        tr.attr("objJson", $.jsonToString(obj));
+        var tds = [obj.type, obj.count, obj.total];
+        $.each(tds, function (index_2, obj_2) {
+            obj_2 = obj_2 ? obj_2 : "";
+            var tdContent = $("<span></span>");
+            tdContent.text(obj_2);
+            var td = $("<td></td>");
+            td.attr("column", theadNames2nd[index_2]);
+            td.append(tdContent);
+            tr.append(td);
+        })
+        tbody.append(tr);
+    });
+    //
+    $.each(arraySum, function (index, obj) {
+        var tr = $("<tr></tr>");
+        tr.attr("objJson", $.jsonToString(obj));
+        tr.addClass("sum");
+        var tds = [obj.type, obj.count, obj.total];
+        $.each(tds, function (index_2, obj_2) {
+            obj_2 = obj_2 ? obj_2 : "";
+            var tdContent = $("<span></span>");
+            tdContent.text(obj_2);
+            var td = $("<td></td>");
+            td.attr("column", theadNames2nd[index_2]);
+            td.append(tdContent);
+            tr.append(td);
+        })
+        tbody.append(tr);
+    });
 }
 
 function drawTable1st(table, array){
@@ -330,6 +423,9 @@ function upload(){
         case "supplierDelivery":
             uploadToPurchase();
             break;
+        case "MonthlyUnifiedTransaction":
+            uploadToTransaction();
+            break;
         default:
             alert("请选择正确文件类型");
             return;
@@ -432,6 +528,40 @@ function uploadToShipment(){
         },
         complete: function () {
             console.log("uploadToShipment.complete");
+        }
+    });
+}
+
+function uploadToTransaction(){
+    console.log("uploadToTransaction");
+    var isError = false;
+    var data = {};
+    data.excelId = excelId;
+    console.log(data);
+    if(isError){
+        $.showErrorModal("Error");
+        return;
+    }
+    var ajaxUrl = 'uploadToTransaction';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        // contentType: "application/json",
+        success: function (rs) {
+            console.log("uploadToTransaction.success");
+            console.log(rs);
+            $.showToastr();
+            resetAll();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("uploadToTransaction.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("uploadToTransaction.complete");
         }
     });
 }

@@ -33,5 +33,5 @@ public interface OverseaService {
 
     void batchInsert(OverseaBatchInsertDTO dto);
 
-    List<OverseaPO> findByDate(String dateFrom, String dateTo);
+    List<OverseaPO> findByDate(String dateFrom, String dateTo, Integer storeId);
 }

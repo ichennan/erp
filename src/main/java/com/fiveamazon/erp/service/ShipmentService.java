@@ -37,5 +37,5 @@ public interface ShipmentService {
 
     Long countBySkuId(Integer skuId);
 
-    List<ShipmentPO> findByDate(String dateFrom, String dateTo);
+    List<ShipmentPO> findByDate(String dateFrom, String dateTo, Integer storeId);
 }

@@ -16,7 +16,7 @@ public class OverseaDTO extends SimpleCommonDTO {
     BigDecimal weight;
     BigDecimal chargeWeight;
     BigDecimal amount;
-    BigDecimal overseaAmount;
+    BigDecimal warehouseAmount;
     String paymentDate;
     String signedDate;
     String status;

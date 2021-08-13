@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ExcelTransactionRepository extends JpaRepository<ExcelTransactionPO, Integer> {
+    ExcelTransactionPO getById(Integer id);
 }

@@ -21,7 +21,7 @@ public class OverseaPO extends SimpleCommonEntity {
     BigDecimal weight;
     BigDecimal chargeWeight;
     BigDecimal amount;
-    BigDecimal overseaAmount;
+    BigDecimal warehouseAmount;
     String paymentDate;
     String signedDate;
     String status;
