@@ -69,12 +69,8 @@ public class ExcelServiceImpl implements ExcelService {
             }
             if(null == storeId){
                 String sku = item.getSku();
-                if(StringUtils.isNotBlank(sku)){
-                    List<SkuInfoPO> skuInfoPOList =  skuService.findBySku(sku);
-                    for(SkuInfoPO skuInfoPO : skuInfoPOList){
-                        storeId = skuInfoPO.getStoreId();
-                    }
-                }
+                String marketplace = item.getMarketplace();
+                storeId = getStoreId(sku, marketplace);
             }
             ExcelTransactionDetailPO excelTransactionDetailPO = new ExcelTransactionDetailPO();
             BeanUtils.copyProperties(item, excelTransactionDetailPO);
@@ -378,5 +374,19 @@ public class ExcelServiceImpl implements ExcelService {
             return null;
         }
         return excelSupplierDeliveryOrderRepository.getByExcelIdAndDingdanhao(excelId, dingdanghao);
+    }
+
+    Integer getStoreId(String sku, String marketplace){
+        if(StringUtils.isBlank(sku) || StringUtils.isBlank(marketplace)){
+            return null;
+        }
+        Integer storeId = null;
+        List<SkuInfoPO> skuInfoPOList =  skuService.findBySku(sku);
+        for(SkuInfoPO skuInfoPO : skuInfoPOList){
+            storeId = skuInfoPO.getStoreId();
+        }
+
+
+        return storeId;
     }
 }

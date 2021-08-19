@@ -21,6 +21,9 @@ $.drawContentForm = function(contentForm, itemArray){
     console.log(itemArray);
     for(var index0 in itemArray){
         var item = itemArray[index0];
+        if(item.pid && !item.label){
+            item.label = item.pid;
+        }
         var formGroupDiv = $('<div class="form-group col-xs-12">');
         var label = $('<label class="col-xs-4 control-label text-right"></label>');
         label.text(item.label);

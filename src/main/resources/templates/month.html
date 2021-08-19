@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<div th:replace="common/common_head :: head(${pageTitle})"></div>
+<body>
+<div class="wrapper">
+    <div class="content-wrapper">
+        <section class="content">
+
+            <div class="row" id="searchBox">
+            </div>
+
+            <div class="row" id="tableBox">
+                <div class="col-md-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <a href="#itemId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增</a>
+                        </div>
+                        <div class="box-body font12" id="tableDiv">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="itemBox">
+                <div class="col-xs-6">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <a href="#" class=""><i class="fa fa-backward"></i> 返回</a>
+                        </div>
+                        <form id="itemForm" action="#" class="form-horizontal">
+                            <div class="box-body">
+                                <input type="hidden" pid="id"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="box-footer">
+                        <div class="pull-right">
+                            <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="generate()">更新报表</button>
+                            <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="download()">下载报表</button>
+                            <button type="button" class="btn cancel" data-dismiss="modal">取消</button>
+                            <button type="submit" class="hide"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <a href="#" class=""></a>
+                        </div>
+                        <form id="itemForm2" action="#" class="form-horizontal">
+                            <div class="box-body">
+                                <input type="hidden" pid="id"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+</div>
+<div th:replace="common/common_js :: js"></div>
+<script type="text/javascript" th:src="@{'/js/common_fn.js?v=' + ${version}}"></script>
+</body>
+</html>
+

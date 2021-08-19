@@ -2,6 +2,7 @@
 var itemId = 0;
 var detailId = 0;
 var $itemForm = $("#itemForm");
+var $itemForm2 = $("#itemForm2");
 var $detailForm = $("#detailForm");
 var $searchForm = $("#searchForm");
 var $listTable = $("#listTable");
@@ -9,6 +10,7 @@ var ajaxCtx = 'transaction/';
 var parentJs = parent;
 $(document).ready(function(){
     createItemForm();
+    createItemForm2();
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
         var hash4 = hash.substring(0, 5).toString();
@@ -116,8 +118,7 @@ function showList(){
         },
         url: ajaxCtx + ajaxUrl,
         onClickRow: function onClickRow(item, $element) {
-            // toDetail(item.id);
-            alert(item.description);
+            toItem(item.id);
         },
         queryParams: function queryParams(params){
             return $.extend(params, queryData);
@@ -151,6 +152,9 @@ function showItem(){
     $itemForm.find("[pid]").each(function () {
         $(this).val("").trigger("change");
     });
+    $itemForm2.find("[pid]").each(function () {
+        $(this).val("").trigger("change");
+    });
     if(itemId - 0 == 0){
         $itemForm.find("button.update").hide();
         $itemForm.find("button.create").show();
@@ -177,7 +181,11 @@ function showItem(){
                 var jpa = rs.data[$(this).attr("pid")];
                 $(this).val(jpa).trigger("change");
             });
-            createDetailTable(rs);
+            $itemForm2.find("[pid]").each(function () {
+                var jpa = rs.data[$(this).attr("pid")];
+                $(this).val(jpa).trigger("change");
+            });
+            // createDetailTable(rs);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("getItem.error");
@@ -354,27 +362,45 @@ function createItemForm() {
     console.log("createItemForm()");
     var itemArray = [];
     var i = -1;
-    itemArray[++i] = {"label": "店铺", "pid": "storeId", "required": true, "inputType": "select"};
-    itemArray[++i] = {"label": "海外仓名字", "pid": "warehouseName", "required": true, "inputType": "text"};
-    itemArray[++i] = {"label": "箱数", "pid": "boxCount", "required": true, "inputType": "text"};
-    itemArray[++i] = {"label": "发货日期", "pid": "deliveryDate", "required": true, "inputType": "text"};
-    itemArray[++i] = {"label": "发货编号", "pid": "deliveryNo", "inputType": "text"};
-    itemArray[++i] = {"label": "发货状态", "pid": "status", "required": true, "inputType": "select", "array": []};
-    itemArray[i].array.push({"label": "--", "value": ""});
-    itemArray[i].array.push({"label": "未发货", "value": "未发货"});
-    itemArray[i].array.push({"label": "已发货", "value": "已发货"});
-    itemArray[i].array.push({"label": "已签收", "value": "已签收"});
-    itemArray[i].array.push({"label": "均转FBA", "value": "均转FBA"});
-    itemArray[++i] = {"label": "货代", "pid": "carrier", "inputType": "text"};
-    itemArray[++i] = {"label": "线路", "pid": "route", "inputType": "text"};
-    itemArray[++i] = {"label": "单价", "pid": "unitPrice", "inputType": "text"};
-    itemArray[++i] = {"label": "收费重量", "pid": "chargeWeight", "inputType": "text"};
-    itemArray[++i] = {"label": "实付运费", "pid": "amount", "inputType": "text"};
-    itemArray[++i] = {"label": "海外仓费用", "pid": "overseaAmount", "inputType": "text"};
-    itemArray[++i] = {"label": "付款日期", "pid": "paymentDate", "inputType": "text"};
-    itemArray[++i] = {"label": "签收日期", "pid": "signedDate", "inputType": "text"};
-    itemArray[++i] = {"label": "备注", "pid": "remark", "inputType": "text"};
+    itemArray[++i] = {"label": "店铺", "pid": "storeId", "inputType": "select"};
+    itemArray[++i] = {"pid": "transactionTime", "inputType": "text"};
+    itemArray[++i] = {"pid": "settlementId", "inputType": "text"};
+    itemArray[++i] = {"pid": "type", "inputType": "text"};
+    itemArray[++i] = {"pid": "orderId", "inputType": "text"};
+    itemArray[++i] = {"pid": "sku", "inputType": "text"};
+    itemArray[++i] = {"pid": "description", "inputType": "text"};
+    itemArray[++i] = {"pid": "quantity", "inputType": "text"};
+    itemArray[++i] = {"pid": "total", "inputType": "text"};
     $.drawContentForm($itemForm, itemArray);
+}
+
+function createItemForm2() {
+    console.log("createItemForm2()");
+    var itemArray = [];
+    var i = -1;
+    itemArray[++i] = {"pid": "excelId", "inputType": "text"};
+    itemArray[++i] = {"pid": "marketplace", "inputType": "text"};
+    itemArray[++i] = {"pid": "accountType", "inputType": "text"};
+    itemArray[++i] = {"pid": "fulfillment", "inputType": "text"};
+    itemArray[++i] = {"pid": "orderCity", "inputType": "text"};
+    itemArray[++i] = {"pid": "orderState", "inputType": "text"};
+    itemArray[++i] = {"pid": "orderPostal", "inputType": "text"};
+    itemArray[++i] = {"pid": "taxCollectionModel", "inputType": "text"};
+    itemArray[++i] = {"pid": "productSales", "inputType": "text"};
+    itemArray[++i] = {"pid": "productSalesTax", "inputType": "text"};
+    itemArray[++i] = {"pid": "shippingCredits", "inputType": "text"};
+    itemArray[++i] = {"pid": "shippingCreditsTax", "inputType": "text"};
+    itemArray[++i] = {"pid": "giftWrapCredits", "inputType": "text"};
+    itemArray[++i] = {"pid": "giftWrapCreditsTax", "inputType": "text"};
+    itemArray[++i] = {"pid": "promotionalRebates", "inputType": "text"};
+    itemArray[++i] = {"pid": "promotionalRebatesTax", "inputType": "text"};
+    itemArray[++i] = {"pid": "marketplaceWithheldTax", "inputType": "text"};
+    itemArray[++i] = {"pid": "sellingFees", "inputType": "text"};
+    itemArray[++i] = {"pid": "fbaFees", "inputType": "text"};
+    itemArray[++i] = {"pid": "otherTransactionFees", "inputType": "text"};
+    itemArray[++i] = {"pid": "other", "inputType": "text"};
+    itemArray[++i] = {"pid": "total", "inputType": "text"};
+    $.drawContentForm($itemForm2, itemArray);
 }
 
 //

@@ -125,6 +125,14 @@ $(function () {
             icon: "fa fa-dollar",
             url: "transaction",
             targetType: "iframe-tab"
+        },
+        {
+            id: "9100",
+            text: "月度报表",
+            roles: "ROLE_Excel",
+            icon: "fa fa-dollar",
+            url: "month",
+            targetType: "iframe-tab"
         }
     ];
     $('.sidebar-menu').sidebarMenu({data: menus});
