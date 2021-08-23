@@ -54,6 +54,11 @@ public class MonthPO extends SimpleCommonEntity {
     //
     BigDecimal amazonOrderProductAmount;
     BigDecimal amazonRefundProductAmount;
+    BigDecimal rate;
+    BigDecimal maoli;
+    BigDecimal liushui;
+    BigDecimal amazonAmountCNY;
+    BigDecimal amazonTransferAmountCNY;
 
     @Override
     public JSONObject toJson(){

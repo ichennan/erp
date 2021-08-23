@@ -1,3 +1,5 @@
+logging:
+  logpath: /Users/nan/applog/erp
 server:
   port: 10086
 spring:
@@ -10,15 +12,13 @@ spring:
 #    username: root
 #    password: Root3)))
 
-
 #    prod
 #    url: jdbc:mysql://rm-8vbr781a847hi2mnnco.mysql.zhangbei.rds.aliyuncs.com:3306/5amazon2020?characterEncoding=utf8&useSSL=true
 #    username: terry
 #    password: Root3)))
 
-
 #    local
-    url: jdbc:mysql://localhost:3306/5amazonLocal2021?characterEncoding=utf8&useSSL=true
+    url: jdbc:mysql://localhost:3306/5amazon20210728?characterEncoding=utf8&useSSL=true
     username: root
     password: Root3)))
 simple:
@@ -27,4 +27,5 @@ simple:
       product: /Users/nan/Test/5amazon/erp/image/product/
     file:
       upload: /Users/nan/Test/5amazon/erp/file/upload/
+      report: /Users/nan/s/
 #      product: E://Test/5amazon/img/productImg/

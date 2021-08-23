@@ -1,6 +1,8 @@
 package com.fiveamazon.erp.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
@@ -8,8 +10,7 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.fiveamazon.erp.common.SimpleConstant;
-import com.fiveamazon.erp.dto.download.PurchaseDetailDownloadDTO;
-import com.fiveamazon.erp.dto.download.PurchaseDownloadDTO;
+import com.fiveamazon.erp.dto.download.*;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.MonthRepository;
 import com.fiveamazon.erp.service.*;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +46,8 @@ public class MonthServiceImpl implements MonthService {
     TransactionService transactionService;
     @Autowired
     SkuService skuService;
+    @Value("${simple.folder.file.report}")
+    private String reportFileFolder;
 
     @Override
     public MonthPO getById(Integer id) {
@@ -61,9 +65,9 @@ public class MonthServiceImpl implements MonthService {
     }
 
     @Override
-    public void generate(Integer id) {
+    public void generate(Integer id, BigDecimal rate) {
         //
-        String filename = "/Users/nan/s/test.xlsx";
+        String filename = reportFileFolder + "test.xlsx";
         WriteCellStyle headWriteCellStyle = new WriteCellStyle();
         WriteFont headWriteFont = new WriteFont();
         headWriteFont.setFontHeightInPoints((short) 15);
@@ -84,22 +88,35 @@ public class MonthServiceImpl implements MonthService {
         MonthPO monthPO = getById(id);
         String month = monthPO.getMonth();
         String dateFrom = month + "01";
-        String dateTo = month + "99";
+        Date dateFromDate = DateUtil.parse(dateFrom, SimpleConstant.DATE_8);
+        Date dateToDate = DateUtil.endOfMonth(dateFromDate);
+        String dateTo = DateUtil.format(dateToDate, SimpleConstant.DATE_8);
         monthPO.setDateFrom(dateFrom);
         monthPO.setDateTo(dateTo);
-        purchaseFee(monthPO, excelWriter);
-        fbaFee(monthPO);
-        overseaFee(monthPO);
-        amazonFee(monthPO);
+//        DateUtil.endOfMonth()
+        //
+        JSONObject productAllJson = new JSONObject();
+        List<ProductPO> productPOS = productService.findAll("name");
+        for(ProductPO productPO: productPOS){
+            productAllJson.put("id" + productPO.getId(), productPO.toJson());
+        }
+        purchaseFee(monthPO, excelWriter, productAllJson);
+        fbaFee(monthPO, excelWriter, productAllJson);
+        overseaFee(monthPO, excelWriter, productAllJson);
+        amazonFee(monthPO, excelWriter, productAllJson);
+        sumFee(monthPO, rate, excelWriter, productAllJson);
         log.error("monthPO: " + monthPO.toString());
         save(monthPO);
         excelWriter.finish();
     }
 
-    void purchaseFee(MonthPO monthPO, ExcelWriter excelWriter){
+    void purchaseFee(MonthPO monthPO, ExcelWriter excelWriter, JSONObject productAllJson){
+        log.info("-------------------------------------");
+        log.info("PurchaseFee");
         log.info("-------------------------------------");
         List<PurchaseDownloadDTO> purchaseDownloadDTOList = new ArrayList<>();
         List<PurchaseDetailDownloadDTO> detailDownloadDTOList = new ArrayList<>();
+        //
         BigDecimal purchaseAmount = new BigDecimal(0);
         Integer purchaseCount = 0;
         Integer purchaseProductQuantity = 0;
@@ -109,6 +126,7 @@ public class MonthServiceImpl implements MonthService {
             PurchaseDownloadDTO purchaseDownloadDTO = new PurchaseDownloadDTO();
             BeanUtils.copyProperties(item, purchaseDownloadDTO);
             purchaseDownloadDTOList.add(purchaseDownloadDTO);
+            //
             purchaseCount++;
             purchaseAmount = purchaseAmount.add(item.getAmount());
             Integer id = item.getId();
@@ -116,7 +134,9 @@ public class MonthServiceImpl implements MonthService {
             for(PurchaseDetailPO detailItem : detailList){
                 log.info("PurchaseDetailPO: " + detailItem.toString());
                 PurchaseDetailDownloadDTO purchaseDetailDownloadDTO = new PurchaseDetailDownloadDTO();
+                BeanUtils.copyProperties(detailItem, purchaseDetailDownloadDTO);
                 detailDownloadDTOList.add(purchaseDetailDownloadDTO);
+                //
                 purchaseProductQuantity += detailItem.getReceivedQuantity();
             }
         }
@@ -134,8 +154,13 @@ public class MonthServiceImpl implements MonthService {
 
     }
 
-    void fbaFee(MonthPO monthPO){
-        String month = monthPO.getMonth();
+    void fbaFee(MonthPO monthPO, ExcelWriter excelWriter, JSONObject productAllJson){
+        log.info("-------------------------------------");
+        log.info("FbaFee");
+        log.info("-------------------------------------");
+        List<ShipmentDownloadDTO> downloadDTOList = new ArrayList<>();
+        List<ShipmentDetailDownloadDTO> detailDownloadDTOList = new ArrayList<>();
+        //
         Integer storeId = monthPO.getStoreId();
         BigDecimal shipmentAmount = new BigDecimal(0);
         BigDecimal productAmount = new BigDecimal(0);
@@ -144,21 +169,35 @@ public class MonthServiceImpl implements MonthService {
         List<ShipmentPO> shipmentPOList = shipmentService.findByDate(monthPO.getDateFrom(), monthPO.getDateTo(), storeId);
         for(ShipmentPO item : shipmentPOList){
             log.info("ShipmentPO: " + item.toString());
+            ShipmentDownloadDTO downloadDTO = new ShipmentDownloadDTO();
+            BeanUtils.copyProperties(item, downloadDTO);
+            downloadDTOList.add(downloadDTO);
+            //
             itemCount++;
             shipmentAmount = shipmentAmount.add(item.getAmount());
             Integer id = item.getId();
             List<ShipmentDetailPO> detailList = shipmentService.findAllDetail(id);
+            String route = item.getRoute();
             for(ShipmentDetailPO detailItem : detailList){
-                productQuantity += detailItem.getQuantity();
-                Integer productId = detailItem.getProductId();
-                ProductPO productPO = productService.getById(productId);
-                if(null == productPO){
-                    log.error("Error Product Id: " + productId);
+                if(SimpleConstant.PLAN.equalsIgnoreCase(detailItem.getBox())){
                     continue;
                 }
-                BigDecimal pa = productPO.getPurchasePrice().multiply(
-                        new BigDecimal(detailItem.getQuantity()));
-                productAmount = productAmount.add(pa);
+                ShipmentDetailDownloadDTO detailDownloadDTO = new ShipmentDetailDownloadDTO();
+                BeanUtils.copyProperties(detailItem, detailDownloadDTO);
+                detailDownloadDTOList.add(detailDownloadDTO);
+                //
+                productQuantity += detailItem.getQuantity();
+                Integer productId = detailItem.getProductId();
+                if(!SimpleConstant.FBA.equalsIgnoreCase(route)){
+                    ProductPO productPO = productService.getById(productId);
+                    if(null == productPO){
+                        log.error("Error Product Id: " + productId);
+                        continue;
+                    }
+                    BigDecimal pa = productPO.getPurchasePrice().multiply(
+                            new BigDecimal(detailItem.getQuantity()));
+                    productAmount = productAmount.add(pa);
+                }
             }
         }
         monthPO.setFbaProductAmount(productAmount);
@@ -169,10 +208,19 @@ public class MonthServiceImpl implements MonthService {
         log.info("FBA Shipment Amount: " + shipmentAmount);
         log.info("FBA Product Amount: " + productAmount);
         log.info("-------------------------------------");
+
+        WriteSheet writeSheet1 = EasyExcel.writerSheet("FBA批次").head(ShipmentDownloadDTO.class).build();
+        WriteSheet writeSheet2 = EasyExcel.writerSheet("FBA详情").head(ShipmentDetailDownloadDTO.class).build();
+        excelWriter.write(downloadDTOList, writeSheet1);
+        excelWriter.write(detailDownloadDTOList, writeSheet2);
     }
 
-    void overseaFee(MonthPO monthPO){
-        String month = monthPO.getMonth();
+    void overseaFee(MonthPO monthPO, ExcelWriter excelWriter, JSONObject productAllJson){
+        log.info("-------------------------------------");
+        log.info("OverseaFee");
+        log.info("-------------------------------------");
+        List<OverseaDownloadDTO> downloadDTOList = new ArrayList<>();
+        List<OverseaDetailDownloadDTO> detailDownloadDTOList = new ArrayList<>();
         Integer storeId = monthPO.getStoreId();
         BigDecimal shipmentAmount = new BigDecimal(0);
         BigDecimal productAmount = new BigDecimal(0);
@@ -181,12 +229,21 @@ public class MonthServiceImpl implements MonthService {
         Integer productQuantity = 0;
         List<OverseaPO> list = overseaService.findByDate(monthPO.getDateFrom(), monthPO.getDateTo(), storeId);
         for(OverseaPO item : list){
+            log.info("OverseaPO: " + item.toString());
+            OverseaDownloadDTO downloadDTO = new OverseaDownloadDTO();
+            BeanUtils.copyProperties(item, downloadDTO);
+            downloadDTOList.add(downloadDTO);
+            //
             itemCount++;
             shipmentAmount = shipmentAmount.add(item.getAmount());
             warehouseAmount = warehouseAmount.add(item.getWarehouseAmount());
             Integer id = item.getId();
             List<OverseaDetailPO> detailList = overseaService.findAllDetail(id);
             for(OverseaDetailPO detailItem : detailList){
+                OverseaDetailDownloadDTO detailDownloadDTO = new OverseaDetailDownloadDTO();
+                BeanUtils.copyProperties(detailItem, detailDownloadDTO);
+                detailDownloadDTOList.add(detailDownloadDTO);
+                //
                 productQuantity += detailItem.getQuantity();
                 Integer productId = detailItem.getProductId();
                 ProductPO productPO = productService.getById(productId);
@@ -209,14 +266,22 @@ public class MonthServiceImpl implements MonthService {
         log.info("Oversea Shipment Amount: " + shipmentAmount);
         log.info("Oversea Product Amount: " + productAmount);
         log.info("-------------------------------------");
+
+        WriteSheet writeSheet1 = EasyExcel.writerSheet("海外仓批次").head(OverseaDownloadDTO.class).build();
+        WriteSheet writeSheet2 = EasyExcel.writerSheet("海外仓详情").head(OverseaDetailDownloadDTO.class).build();
+        excelWriter.write(downloadDTOList, writeSheet1);
+        excelWriter.write(detailDownloadDTOList, writeSheet2);
     }
 
-    void amazonFee(MonthPO monthPO){
-        log.error("amazonFee");
-        String month = monthPO.getMonth();
+    void amazonFee(MonthPO monthPO, ExcelWriter excelWriter, JSONObject productAllJson){
+        log.info("-------------------------------------");
+        log.info("AmazonFee");
+        log.info("-------------------------------------");
+        List<OrderDownloadDTO> downloadDTOList = new ArrayList<>();
         Date dateFrom = DateUtil.parse(monthPO.getDateFrom(), SimpleConstant.DATE_8);
-        Date dateTo = DateUtil.parse(monthPO.getDateTo(), SimpleConstant.DATE_8);
+        Date dateTo = DateUtil.endOfDay(DateUtil.parse(monthPO.getDateTo(), SimpleConstant.DATE_8));
         Integer storeId = monthPO.getStoreId();
+        JSONObject skuAllJson = skuService.findAllByStoreId(storeId);
 
         BigDecimal amazonAdjustmentAmount = new BigDecimal(0);
         Integer amazonAdjustmentQuantity = 0;
@@ -268,14 +333,18 @@ public class MonthServiceImpl implements MonthService {
                     amazonFeeAdjustmentQuantity += quantity;
                     break;
                 case SimpleConstant.AMAZON_TYPE_ORDER:
+                    OrderDownloadDTO downloadDTO = new OrderDownloadDTO();
+                    BeanUtils.copyProperties(item, downloadDTO);
+                    downloadDTOList.add(downloadDTO);
+                    //
                     amazonOrderAmount = amazonOrderAmount.add(total);
                     amazonOrderQuantity += quantity;
-                    amazonOrderProductAmount = amazonOrderProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity));
+                    amazonOrderProductAmount = amazonOrderProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson));
                     break;
                 case SimpleConstant.AMAZON_TYPE_Refund:
                     amazonRefundAmount = amazonRefundAmount.add(total);
                     amazonRefundQuantity += quantity;
-                    amazonRefundProductAmount = amazonRefundProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity));
+                    amazonRefundProductAmount = amazonRefundProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson));
                     break;
                 case SimpleConstant.AMAZON_TYPE_Refund_Retrocharge:
                     amazonRefundRetrochargeAmount = amazonRefundRetrochargeAmount.add(total);
@@ -345,26 +414,93 @@ public class MonthServiceImpl implements MonthService {
         log.info("Order Product Amount: " + amazonOrderProductAmount);
         log.info("Refund Product Amount: " + amazonRefundProductAmount);
         log.info("-------------------------------------");
+
+        WriteSheet writeSheet1 = EasyExcel.writerSheet("订单列表").head(OrderDownloadDTO.class).build();
+        excelWriter.write(downloadDTOList, writeSheet1);
     }
 
-    private BigDecimal calculateAmazonProductAmount(Integer storeId, String sku, Integer quantity){
+    void sumFee(MonthPO monthPO, BigDecimal rate, ExcelWriter excelWriter, JSONObject productAllJson){
+        log.info("-------------------------------------");
+        log.info("SumFee");
+        log.info("-------------------------------------");
+        BigDecimal fbaShipmentAmount = monthPO.getFbaShipmentAmount();
+        BigDecimal fbaProductAmount = monthPO.getFbaProductAmount();
+        BigDecimal overseaShipmentAmount = monthPO.getOverseaShipmentAmount();
+        BigDecimal overseaProductAmount = monthPO.getOverseaProductAmount();
+        BigDecimal overseaWarehouseAmount = monthPO.getOverseaWarehouseAmount();
+        BigDecimal amazonAmount = monthPO.getAmazonAmount();
+        BigDecimal amazonTransferAmount = monthPO.getAmazonTransferAmount();
+        BigDecimal amazonOrderProductAmount = monthPO.getAmazonOrderProductAmount();
+        //
+        BigDecimal amazonAmountCNY =  amazonAmount.multiply(rate);
+        BigDecimal amazonAmountTransferCNY =  amazonTransferAmount.multiply(rate);
+        BigDecimal maoli = amazonAmountCNY.subtract(amazonOrderProductAmount);
+        BigDecimal liushui = amazonAmountCNY
+                .subtract(fbaShipmentAmount)
+                .subtract(fbaProductAmount)
+                .subtract(overseaShipmentAmount)
+                .subtract(overseaProductAmount)
+                .subtract(overseaWarehouseAmount)
+                ;
+        monthPO.setRate(rate);
+        monthPO.setAmazonAmountCNY(amazonAmountCNY);
+        monthPO.setAmazonTransferAmountCNY(amazonAmountTransferCNY);
+        monthPO.setMaoli(maoli);
+        monthPO.setLiushui(liushui);
+        log.info("-------------------------------------");
+        log.info("Amazon Amount CNY: " + amazonAmountCNY);
+        log.info("Maoli: " + maoli);
+        log.info("Liushui: " + liushui);
+        log.info("-------------------------------------");
+    }
+
+    private BigDecimal calculateAmazonProductAmount(Integer storeId, String sku, Integer quantity, JSONObject productAllJson, JSONObject skuAllJson){
         BigDecimal amazonProductAmount = new BigDecimal(0);
         if((StringUtils.isBlank(sku)) || (null == quantity) || (quantity == 0)){
             return amazonProductAmount;
         }
-        List<SkuInfoPO> list = skuService.findBySkuAndStoreId(sku, storeId);
-        for(SkuInfoPO item : list){
-            ProductPO productPO = productService.getById(item.getProductId());
-            if(null != productPO){
-                BigDecimal purchaseAmount = productPO.getPurchasePrice();
-                if(purchaseAmount.compareTo(new BigDecimal(0)) == 0){
-                    log.error("Purchase Price is 0: []", item.getProductId());
-                }else{
-                    amazonProductAmount = amazonProductAmount.add(productPO.getPurchasePrice().multiply(new BigDecimal(quantity)));
+        JSONArray skuArray = skuAllJson.getJSONArray(sku);
+        if(null == skuArray || skuArray.size() < 1){
+            log.error("SKU Not Found: " + sku);
+            return amazonProductAmount;
+        }
+        for(JSONObject skuJson : skuArray.jsonIter()){
+            Integer productId = skuJson.getInt("productId");
+            JSONObject productJson = productAllJson.getJSONObject("id" + productId);
+            if(null == productJson){
+                log.error("Product Not Found: " + productId);
+                continue;
+            }
+            BigDecimal purchasePrice = productJson.getBigDecimal("purchasePrice");
+            if(purchasePrice.compareTo(new BigDecimal(0)) == 0){
+                log.error("Purchase Price is 0: []", productId);
+                continue;
+            }
+            amazonProductAmount = amazonProductAmount.add(purchasePrice.multiply(new BigDecimal(quantity)));
+        }
+//        log.info("amazonProductAmount: " + amazonProductAmount);
+        return amazonProductAmount;
+    }
+
+    @Override
+    public void autoCreate() {
+        Date today = new Date();
+        Integer year = DateUtil.year(today);
+        Integer month = DateUtil.month(today);
+        Integer monthStart = year * 100 + 1;
+        Integer monthEnd = year * 100 + month;
+
+        List<StorePO> storePOList = productService.findAllStore();
+        for(int theMonth = monthStart; theMonth <= monthEnd; theMonth++){
+            for(StorePO storePO : storePOList){
+                MonthPO monthPO = theRepository.getByMonthAndStoreId(String.valueOf(theMonth), storePO.getId());
+                if(null == monthPO){
+                    monthPO = new MonthPO();
+                    monthPO.setMonth(String.valueOf(theMonth));
+                    monthPO.setStoreId(storePO.getId());
+                    save(monthPO);
                 }
             }
         }
-        log.info("amazonProductAmount: " + amazonProductAmount);
-        return amazonProductAmount;
     }
 }

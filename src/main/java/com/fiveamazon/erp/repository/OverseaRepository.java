@@ -15,6 +15,8 @@ import java.util.List;
 public interface OverseaRepository extends JpaRepository<OverseaPO, Integer> {
     OverseaPO getById(Integer id);
 
+    OverseaPO getByDeliveryNo(String deliveryNo);
+
     List<OverseaPO> findByDeliveryDateBetweenAndStoreIdOrderByStoreIdAscDeliveryDateAsc(String dateFrom, String dateTo, Integer storeId);
 
 }

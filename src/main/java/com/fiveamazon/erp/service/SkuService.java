@@ -26,4 +26,6 @@ public interface SkuService {
     JSONObject getSkuElseShipmentObject(Integer productId, Integer skuId);
     JSONObject getProductPurchaseObject(Integer productId);
     JSONObject getProductInventoryObjectBySkuId(Integer skuId);
+    //for MonthPO Amazon Product Amount
+    JSONObject findAllByStoreId(Integer storeId);
 }

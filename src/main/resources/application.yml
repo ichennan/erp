@@ -2,9 +2,13 @@ server:
   servlet:
     context-path: /erp
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   application:
     name: 5Amazon ERP
-    version: L1.0.10
+    version: L1.0.76
   profiles:
     active: local
   thymeleaf:
@@ -13,6 +17,7 @@ spring:
     favicon:
       enabled: true
   jpa:
+    open-in-view: true
     show-sql: true
     hibernate:
       ddl-auto: none

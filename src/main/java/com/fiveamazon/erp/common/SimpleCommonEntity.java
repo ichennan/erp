@@ -25,6 +25,7 @@ public class SimpleCommonEntity{
     Date createDate;
     Date updateDate;
     String remark;
+    String jsonRemark;
 
     public JSONObject toJson(){
         return new JSONObject(this);

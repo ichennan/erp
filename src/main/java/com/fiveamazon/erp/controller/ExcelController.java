@@ -15,6 +15,8 @@ import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.UploadFbaDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillDetailPO;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillPO;
 import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
 import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
 import com.fiveamazon.erp.epo.*;
@@ -54,6 +56,8 @@ public class ExcelController extends SimpleCommonController {
 	PurchaseService purchaseService;
 	@Autowired
 	ShipmentService shipmentService;
+	@Autowired
+	OverseaService overseaService;
 
 	@Value("${simple.folder.file.upload}")
 	private String uploadFileFolder;
@@ -96,6 +100,21 @@ public class ExcelController extends SimpleCommonController {
 		}
 		rs.put("array", array);
 		rs.put("data", new JSONObject(excelFbaPO));
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/findCarrierBillByExcelId", method= RequestMethod.POST)
+	public String findCarrierBillByExcelId(@RequestParam("excelId")Integer excelId){
+		JSONObject rs = new JSONObject();
+		ExcelCarrierBillPO excelPO = excelService.getCarrierBillByExcelId(excelId);
+		List<ExcelCarrierBillDetailPO> detailPOList = excelService.findCarrierBillDetailByExcelId(excelId);
+		JSONArray array = new JSONArray();
+		for(ExcelCarrierBillDetailPO detailPO: detailPOList){
+			array.put(detailPO.toJson());
+		}
+		rs.put("array", array);
+		rs.put("data", new JSONObject(excelPO));
 		rs.put("error", false);
 		return rs.toString();
 	}
@@ -215,6 +234,16 @@ public class ExcelController extends SimpleCommonController {
 				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelTransactionRowEO.class, listenerExcelTransactionEO).sheet(0).headRowNumber(8).doRead();
 				rs.put("excelId", excelId);
 				break;
+			case SimpleConstant.FILE_CATEGORY_CarrierBillCainiao:
+				ExcelCarrierBillPO excelCarrierBillPO = new ExcelCarrierBillPO();
+				excelCarrierBillPO.setFileName(originalFileName);
+				excelCarrierBillPO.setCarrier(SimpleConstant.CARRIER_Cainiao);
+				excelId = excelService.saveExcelCarrierBill(excelCarrierBillPO);
+				//
+				AnalysisEventListener<ExcelCarrierBillCainiaoRowEO> listenerExcelCarrierBillEO = CommonExcelUtils.getListener(this.batchInsertCarrierBillRow(excelId), 1000);
+				EasyExcel.read(uploadFileFolder + uploadFileName, ExcelCarrierBillCainiaoRowEO.class, listenerExcelCarrierBillEO).sheet(0).headRowNumber(3).doRead();
+				rs.put("excelId", excelId);
+				break;
 			case "supplierDelivery":
 				ExcelSupplierDeliveryPO excelSupplierDeliveryPO = new ExcelSupplierDeliveryPO();
 				excelSupplierDeliveryPO.setFileName(originalFileName);
@@ -251,6 +280,16 @@ public class ExcelController extends SimpleCommonController {
 		return rs.toString();
 	}
 
+	@RequestMapping(value = "/uploadToCarrierBill", method= RequestMethod.POST)
+	public String uploadToCarrierBill(@RequestParam("excelId")Integer excelId){
+		log.warn("ExcelController.uploadToCarrierBill: " + excelId);
+		shipmentService.updateCarrierBillByExcel(excelId);
+		overseaService.updateCarrierBillByExcel(excelId);
+		JSONObject rs = new JSONObject();
+		rs.put("error", false);
+		return rs.toString();
+	}
+
 	@RequestMapping(value = "/uploadToShipment", method= RequestMethod.POST)
 	public String uploadToShipment(@RequestBody UploadFbaDTO uploadFbaDTO){
 		log.warn("ExcelController.uploadToShipment");
@@ -279,6 +318,10 @@ public class ExcelController extends SimpleCommonController {
 
 	private Consumer<List<ExcelTransactionRowEO>> batchInsertTransactionRow(Integer excelId){
 		return excelTransactionRowEOList -> excelService.insertTransactionRow(excelId, excelTransactionRowEOList);
+	}
+
+	private Consumer<List<ExcelCarrierBillCainiaoRowEO>> batchInsertCarrierBillRow(Integer excelId){
+		return excelCarrierBillCainiaoRowEOList -> excelService.insertCarrierBillRow(excelId, excelCarrierBillCainiaoRowEOList);
 	}
 
 	public String convertTsvToXlsx(String tsvFileName){

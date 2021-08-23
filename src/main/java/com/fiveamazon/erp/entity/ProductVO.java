@@ -1,7 +1,7 @@
 package com.fiveamazon.erp.entity;
 
 import cn.hutool.json.JSONObject;
-import com.fiveamazon.erp.common.SimpleCommonEntity;
+import com.fiveamazon.erp.common.SimpleCommonEntityOld;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "view_product")
-public class ProductVO extends SimpleCommonEntity {
+public class ProductVO extends SimpleCommonEntityOld {
     String name;
     String sn;
     String color;
@@ -23,6 +23,7 @@ public class ProductVO extends SimpleCommonEntity {
     Integer skuCount;
     Integer inventoryQuantity;
 
+    @Override
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);
         toJson.put("snname", (StringUtils.isEmpty(getSn()) ? "" : getSn() + " ")

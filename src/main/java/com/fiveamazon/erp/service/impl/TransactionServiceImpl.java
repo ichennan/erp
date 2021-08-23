@@ -76,25 +76,6 @@ public class TransactionServiceImpl implements TransactionService {
                 if (null != searchDTO.getStoreId()) {
                     predicates.add(criteriaBuilder.equal(root.get("storeId"), searchDTO.getStoreId()));
                 }
-//
-//                if (StringUtils.isNotEmpty(searchDTO.getUpopTraceNumber())) {
-//                    predicates.add(criteriaBuilder.equal(root.get("upopTraceNumber"), searchDTO.getUpopTraceNumber()));
-//                }
-//                if (StringUtils.isNotEmpty(searchDTO.getUpopTraceTime())) {
-//                    predicates.add(criteriaBuilder.equal(root.get("upopTraceTime"), searchDTO.getUpopTraceTime()));
-//                }
-//                if (StringUtils.isNotEmpty(searchDTO.getEpsBillAccountNo())) {
-//                    predicates.add(criteriaBuilder.equal(root.get("epsBillAccountNo"), searchDTO.getEpsBillAccountNo()));
-//                }
-//                if (StringUtils.isNotEmpty(searchDTO.getEpsMerchantNo())) {
-//                    predicates.add(criteriaBuilder.equal(root.get("epsMerchantNo"), searchDTO.getEpsMerchantNo()));
-//                }
-//                if (StringUtils.isNotEmpty(searchDTO.getEpsMerchantName())) {
-//                    predicates.add(criteriaBuilder.equal(root.get("epsMerchantName"), searchDTO.getEpsMerchantName()));
-//                }
-//                if (StringUtils.isNotEmpty(searchDTO.getFeepayUserId()) && searchDTO.getFeepayUserId() - 0 != 0 ) {
-//                    predicates.add(criteriaBuilder.equal(root.get("feepayUserId"), searchDTO.getFeepayUserId()));
-//                }
                 if (StringUtils.isNotEmpty(searchDTO.getOrderId())) {
                     predicates.add(criteriaBuilder.equal(root.get("orderId"), searchDTO.getOrderId()));
                 }
@@ -123,13 +104,6 @@ public class TransactionServiceImpl implements TransactionService {
                 if (StringUtils.isNotEmpty(searchDTO.getTransactionTimeTo())) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("transactionTime"), DateUtil.parse(searchDTO.getTransactionTimeTo(), "yyyy-MM-dd HH:mm:ss")));
                 }
-//                if (StringUtils.isNotEmpty(searchDTO.getEpsResponseTimeFrom())) {
-//                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("epsResponseTime"), DateUtil.parse(searchDTO.getEpsResponseTimeFrom(), "yyyy-MM-dd HH:mm:ss")));
-//                }
-//                if (StringUtils.isNotEmpty(searchDTO.getEpsResponseTimeTo())) {
-//                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("epsResponseTime"), DateUtil.parse(searchDTO.getEpsResponseTimeTo(), "yyyy-MM-dd HH:mm:ss")));
-//                }
-//                //
                 if(StringUtils.isNotBlank(searchDTO.getSearch())){
                     String searchText = "%" + searchDTO.getSearch() + "%";
                     Predicate p1 = criteriaBuilder.like(root.get("orderId"), searchText);

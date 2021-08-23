@@ -3,6 +3,7 @@ package com.fiveamazon.erp.service;
 
 import com.fiveamazon.erp.entity.MonthPO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public interface MonthService {
 
     List<MonthPO> findAll();
 
-    void generate(Integer id);
+    void generate(Integer id, BigDecimal rate);
+
+    void autoCreate();
 
 }

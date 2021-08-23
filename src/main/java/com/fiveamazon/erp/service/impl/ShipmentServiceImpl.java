@@ -8,8 +8,15 @@ import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.common.StatusConstant;
 import com.fiveamazon.erp.dto.*;
 import com.fiveamazon.erp.entity.*;
-import com.fiveamazon.erp.repository.*;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillDetailPO;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillPO;
+import com.fiveamazon.erp.repository.ShipmentDetailRepository;
+import com.fiveamazon.erp.repository.ShipmentProductViewRepository;
+import com.fiveamazon.erp.repository.ShipmentRepository;
+import com.fiveamazon.erp.repository.ShipmentViewRepository;
+import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.ShipmentService;
+import com.fiveamazon.erp.util.JsonRemarkUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -41,6 +48,8 @@ public class ShipmentServiceImpl implements ShipmentService {
     private ShipmentDetailRepository theDetailRepository;
     @Autowired
     private ShipmentProductViewRepository theProductViewRepository;
+    @Autowired
+    private ExcelService excelService;
 
     @Override
     public ShipmentPO save(ShipmentPO item) {
@@ -87,6 +96,11 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public ShipmentPO getById(Integer id) {
         return theRepository.getById(id);
+    }
+
+    @Override
+    public ShipmentPO getByFbaNo(String fbaNo) {
+        return theRepository.getByFbaNo(fbaNo);
     }
 
     @Override
@@ -347,11 +361,14 @@ public class ShipmentServiceImpl implements ShipmentService {
             shipmentPO.setCreateUser(username);
             shipmentPO.setStoreId(overseaDetailPO.getStoreId());
             shipmentPO.setFbaNo(fbaNo);
-            shipmentPO.setCarrier("FBA自提");
-            shipmentPO.setRoute("FBA");
+            shipmentPO.setCarrier(SimpleConstant.FBA);
+            shipmentPO.setRoute(SimpleConstant.FBA);
             //已发货
             shipmentPO.setStatusDelivery("1");
-            shipmentPO.setRemark("create by overseaDetailId: " + overseaDetailPO.getId());
+            shipmentPO.setJsonRemark(JsonRemarkUtils.setJsonRemark(
+                    shipmentPO.getJsonRemark(),
+                    SimpleConstant.JSON_REMARK_CREATED_BY_OVERSEA_DETAIL,
+                    overseaDetailPO.getId().toString()));
             shipmentPO.setWeightRemark("" + weight);
             shipmentPO.setWeight(weight);
         }else{
@@ -359,7 +376,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             if(fbaNoCount <= 0){
                 throw new SimpleCommonException("该FBA单号不存在 ! 请点击创建FBA " + fbaNo);
             }
-            shipmentPO = theRepository.getByFbaNo(fbaNo);
+            shipmentPO = getByFbaNo(fbaNo);
             shipmentPO.setUpdateDate(today);
             shipmentPO.setUpdateUser(username);
             shipmentPO.setWeightRemark(shipmentPO.getWeightRemark() + "+" + weight);
@@ -379,7 +396,10 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipmentDetailPO.setSkuId(overseaDetailPO.getSkuId());
         shipmentDetailPO.setQuantity(overseaDetailPO.getQuantity());
         shipmentDetailPO.setWeight(weight);
-        shipmentDetailPO.setRemark("create by overseaDetailId: " + overseaDetailPO.getId());
+        shipmentDetailPO.setJsonRemark(JsonRemarkUtils.setJsonRemark(
+                shipmentDetailPO.getJsonRemark(),
+                SimpleConstant.JSON_REMARK_CREATED_BY_OVERSEA_DETAIL,
+                overseaDetailPO.getId().toString()));
         saveDetail(shipmentDetailPO);
         return shipmentPO;
     }
@@ -387,5 +407,29 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public List<ShipmentPO> findByDate(String dateFrom, String dateTo, Integer storeId) {
         return theRepository.findByDeliveryDateBetweenAndStoreIdOrderByStoreIdAscDeliveryDateAsc(dateFrom, dateTo, storeId);
+    }
+
+    @Override
+    public void updateCarrierBillByExcel(Integer excelId) {
+        ExcelCarrierBillPO excelPO = excelService.getCarrierBillByExcelId(excelId);
+        List<ExcelCarrierBillDetailPO> detailPOList = excelService.findCarrierBillDetailByExcelId(excelId);
+        for(ExcelCarrierBillDetailPO detailPO : detailPOList){
+            Integer shipmentId = detailPO.getRelatedShipmentId();
+            if(null == shipmentId || shipmentId == 0){
+                continue;
+            }
+            ShipmentPO shipmentPO = getById(shipmentId);
+            shipmentPO.setCarrier(excelPO.getCarrier());
+            shipmentPO.setAmount(new BigDecimal(detailPO.getAmount()));
+            shipmentPO.setChargeWeight(new BigDecimal(detailPO.getChargeWeight()));
+            shipmentPO.setRoute(detailPO.getRoute());
+            shipmentPO.setUnitPrice(new BigDecimal(detailPO.getUnitPrice()));
+            shipmentPO.setTrackingNumber(detailPO.getTrackingNumber());
+            shipmentPO.setJsonRemark(JsonRemarkUtils.setJsonRemark(
+                    shipmentPO.getJsonRemark(),
+                    SimpleConstant.JSON_REMARK_CHARGE_UPDATE_BY_CARRIER_BILL_EXCEL,
+                    detailPO.getId().toString()));
+            save(shipmentPO);
+        }
     }
 }

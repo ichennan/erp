@@ -1,7 +1,7 @@
 package com.fiveamazon.erp.entity;
 
 import cn.hutool.json.JSONObject;
-import com.fiveamazon.erp.common.SimpleCommonEntity;
+import com.fiveamazon.erp.common.SimpleCommonEntityOld;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "view_shipment")
-public class ShipmentViewPO extends SimpleCommonEntity {
+public class ShipmentViewPO extends SimpleCommonEntityOld {
     String deliveryDate;
     String carrier;
     String route;
@@ -30,6 +30,7 @@ public class ShipmentViewPO extends SimpleCommonEntity {
     //
     String productIdGroup;
 
+    @Override
     public JSONObject toJson(){
         return new JSONObject(this);
     }

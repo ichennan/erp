@@ -4,13 +4,19 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.entity.*;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillDetailPO;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillPO;
 import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
 import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
 import com.fiveamazon.erp.epo.*;
 import com.fiveamazon.erp.repository.*;
+import com.fiveamazon.erp.repository.excel.ExcelCarrierBillDetailRepository;
+import com.fiveamazon.erp.repository.excel.ExcelCarrierBillRepository;
 import com.fiveamazon.erp.repository.excel.ExcelTransactionDetailRepository;
 import com.fiveamazon.erp.repository.excel.ExcelTransactionRepository;
 import com.fiveamazon.erp.service.ExcelService;
+import com.fiveamazon.erp.service.OverseaService;
+import com.fiveamazon.erp.service.ShipmentService;
 import com.fiveamazon.erp.service.SkuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +50,19 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private ExcelTransactionDetailRepository excelTransactionDetailRepository;
     @Autowired
+    private ExcelCarrierBillRepository excelCarrierBillRepository;
+    @Autowired
+    private ExcelCarrierBillDetailRepository excelCarrierBillDetailRepository;
+    @Autowired
     private SkuService skuService;
+    @Autowired
+    private ShipmentService shipmentService;
+    @Autowired
+    private OverseaService overseaService;
+
+    //---------------------------------------------
+    //fileCategory = transaction
+    //---------------------------------------------
 
     @Override
     public void insertTransactionRow(Integer excelId, List<ExcelTransactionRowEO> excelTransactionRowEOList) {
@@ -52,7 +70,7 @@ public class ExcelServiceImpl implements ExcelService {
         ExcelTransactionPO  excelTransactionPO = excelTransactionRepository.getById(excelId);
         Date dateFrom = null == excelTransactionPO.getDateFrom() ? DateUtil.parse("20990101", "yyyyMMdd") : excelTransactionPO.getDateFrom();
         Date dateTo = null == excelTransactionPO.getDateTo() ? DateUtil.parse("19990101", "yyyyMMdd") : excelTransactionPO.getDateTo();
-        Integer storeId = null;
+        Integer storeId = excelTransactionPO.getStoreId();
         for(ExcelTransactionRowEO item : excelTransactionRowEOList){
             Date transactionTime;
             try{
@@ -88,6 +106,109 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
+    public Integer saveExcelTransaction(ExcelTransactionPO excelTransactionPO) {
+        log.info("ExcelServiceImpl.saveExcelTransaction: " + excelTransactionPO);
+        excelTransactionPO.setCreateDate(new Date());
+        excelTransactionRepository.save(excelTransactionPO);
+        return excelTransactionPO.getId();
+    }
+
+    @Override
+    public ExcelTransactionPO getTransactionByExcelId(Integer excelId) {
+        return excelTransactionRepository.getById(excelId);
+    }
+
+    @Override
+    public List<ExcelTransactionDetailPO> findTransactionDetailByExcelId(Integer excelId) {
+        return excelTransactionDetailRepository.findByExcelId(excelId);
+    }
+
+
+    //---------------------------------------------
+    //fileCategory = carrierBillCainiao
+    //---------------------------------------------
+
+    @Override
+    public void insertCarrierBillRow(Integer excelId, List<ExcelCarrierBillCainiaoRowEO> rowEOList) {
+        log.info("ExcelServiceImpl.insertCarrierBillRow");
+        ExcelCarrierBillPO excelCarrierBillPO = excelCarrierBillRepository.getById(excelId);
+        Date dateFrom = null == excelCarrierBillPO.getDateFrom() ? DateUtil.parse("20990101", "yyyyMMdd") : excelCarrierBillPO.getDateFrom();
+        Date dateTo = null == excelCarrierBillPO.getDateTo() ? DateUtil.parse("19990101", "yyyyMMdd") : excelCarrierBillPO.getDateTo();
+        for(ExcelCarrierBillCainiaoRowEO item : rowEOList){
+            Integer seqNo = 0;
+            try{
+                seqNo = Integer.valueOf(item.getSeqNo());
+            }catch(Exception e){
+                log.info("seqNo[{}], so break" + item.getSeqNo());
+            }
+            if(null == seqNo || seqNo == 0){
+                break;
+            }
+            Date billCreateDate;
+            try{
+                billCreateDate = DateUtil.parse(item.getBillCreateDate(), SimpleConstant.DATE_10);
+            }catch(Exception e){
+                log.error("billCreateDate DateTime Format Error: " + item.getBillCreateDate());
+                continue;
+            }
+            if(billCreateDate.before(dateFrom)){
+                dateFrom = billCreateDate;
+            }
+            if(billCreateDate.after(dateTo)){
+                dateTo = billCreateDate;
+            }
+            ExcelCarrierBillDetailPO detailPO = new ExcelCarrierBillDetailPO();
+            BeanUtils.copyProperties(item, detailPO);
+            detailPO.setExcelId(excelId);
+            detailPO.setBillNo(detailPO.getTrackingNumber());
+            setCarrierBillRelatedId(detailPO);
+            excelCarrierBillDetailRepository.save(detailPO);
+        }
+        excelCarrierBillPO.setDateFrom(dateFrom);
+        excelCarrierBillPO.setDateTo(dateTo);
+        excelCarrierBillRepository.save(excelCarrierBillPO);
+    }
+
+    private void setCarrierBillRelatedId(ExcelCarrierBillDetailPO detailPO){
+        String fbaNo = detailPO.getFbaNo();
+        String billNo = detailPO.getBillNo();
+        ShipmentPO shipmentPO = shipmentService.getByFbaNo(fbaNo);
+        if(null != shipmentPO){
+            detailPO.setRelatedShipmentId(shipmentPO.getId());
+            return;
+        }
+        if(StringUtils.isBlank(billNo)){
+            return;
+        }
+        OverseaPO overseaPO = overseaService.getByDeliveryNo(billNo);
+        if(null != overseaPO){
+            detailPO.setRelatedOverseaId(overseaPO.getId());
+        }
+    }
+
+    @Override
+    public Integer saveExcelCarrierBill(ExcelCarrierBillPO excelCarrierBillPO) {
+        log.info("ExcelServiceImpl.saveExcelCarrierBill: " + excelCarrierBillPO);
+        excelCarrierBillPO.setCreateDate(new Date());
+        excelCarrierBillRepository.save(excelCarrierBillPO);
+        return excelCarrierBillPO.getId();
+    }
+
+    @Override
+    public List<ExcelCarrierBillDetailPO> findCarrierBillDetailByExcelId(Integer excelId) {
+        return excelCarrierBillDetailRepository.findByExcelId(excelId);
+    }
+
+    @Override
+    public ExcelCarrierBillPO getCarrierBillByExcelId(Integer excelId) {
+        return excelCarrierBillRepository.getById(excelId);
+    }
+
+    //---------------------------------------------
+    //fileCategory = supplierDelivery
+    //---------------------------------------------
+
+    @Override
     public void insertExcelSupplierDeliveryOrder(Integer excelId, List<ExcelSupplierDeliveryOrderEO> excelSupplierDeliveryOrderEOList) {
         log.warn("ExcelServiceImpl.insertExcelSupplierDeliveryOrder");
         for(ExcelSupplierDeliveryOrderEO excelSupplierDeliveryOrderEO : excelSupplierDeliveryOrderEOList){
@@ -114,6 +235,36 @@ public class ExcelServiceImpl implements ExcelService {
             excelSupplierDeliveryOrderDetailRepository.save(excelSupplierDeliveryOrderDetailPO);
         }
     }
+
+    @Override
+    public Integer saveExcelSupplierDelivery(ExcelSupplierDeliveryPO excelSupplierDeliveryPO) {
+        log.info("ExcelServiceImpl.saveExcelSupplierDelivery");
+        excelSupplierDeliveryPO.setCreateDate(new Date());
+        excelSupplierDeliveryRepository.save(excelSupplierDeliveryPO);
+        return excelSupplierDeliveryPO.getId();
+    }
+
+    @Override
+    public List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId) {
+        return excelSupplierDeliveryOrderDetailRepository.findByExcelId(excelId);
+    }
+
+    @Override
+    public List<ExcelSupplierDeliveryOrderPO> findOrderByExcelId(Integer excelId) {
+        return excelSupplierDeliveryOrderRepository.findByExcelId(excelId);
+    }
+
+    @Override
+    public ExcelSupplierDeliveryOrderPO getExcelSupplierDeliveryOrderByExcelIdAndDingdanhao(Integer excelId, String dingdanghao) {
+        if(excelId == null || excelId == 0 || StringUtils.isBlank(dingdanghao)){
+            return null;
+        }
+        return excelSupplierDeliveryOrderRepository.getByExcelIdAndDingdanhao(excelId, dingdanghao);
+    }
+
+    //---------------------------------------------
+    //fileCategory = fba || fbaTsv
+    //---------------------------------------------
 
     @Override
     public void insertFbaPackList(Integer excelId, List<ExcelFbaRowEO> excelFbaRow) {
@@ -315,14 +466,6 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
-    public Integer saveExcelSupplierDelivery(ExcelSupplierDeliveryPO excelSupplierDeliveryPO) {
-        log.info("ExcelServiceImpl.saveExcelSupplierDelivery");
-        excelSupplierDeliveryPO.setCreateDate(new Date());
-        excelSupplierDeliveryRepository.save(excelSupplierDeliveryPO);
-        return excelSupplierDeliveryPO.getId();
-    }
-
-    @Override
     public Integer saveExcelFba(ExcelFbaPO excelFbaPO) {
         log.info("ExcelServiceImpl.saveExcelSupplierDelivery");
         excelFbaPO.setCreateDate(new Date());
@@ -331,31 +474,8 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
-    public Integer saveExcelTransaction(ExcelTransactionPO excelTransactionPO) {
-        log.info("ExcelServiceImpl.saveExcelTransaction: " + excelTransactionPO);
-        excelTransactionPO.setCreateDate(new Date());
-        excelTransactionRepository.save(excelTransactionPO);
-        return excelTransactionPO.getId();
-    }
-
-    @Override
-    public List<ExcelSupplierDeliveryOrderPO> findOrderByExcelId(Integer excelId) {
-        return excelSupplierDeliveryOrderRepository.findByExcelId(excelId);
-    }
-
-    @Override
-    public List<ExcelSupplierDeliveryOrderDetailPO> findOrderDetailByExcelId(Integer excelId) {
-        return excelSupplierDeliveryOrderDetailRepository.findByExcelId(excelId);
-    }
-
-    @Override
     public ExcelFbaPO getFbaByExcelId(Integer excelId) {
         return excelFbaRepository.getOne(excelId);
-    }
-
-    @Override
-    public ExcelTransactionPO getTransactionByExcelId(Integer excelId) {
-        return excelTransactionRepository.getById(excelId);
     }
 
     @Override
@@ -363,18 +483,9 @@ public class ExcelServiceImpl implements ExcelService {
         return excelFbaPackListRepository.findByExcelId(excelId);
     }
 
-    @Override
-    public List<ExcelTransactionDetailPO> findTransactionDetailByExcelId(Integer excelId) {
-        return excelTransactionDetailRepository.findByExcelId(excelId);
-    }
-
-    @Override
-    public ExcelSupplierDeliveryOrderPO getExcelSupplierDeliveryOrderByExcelIdAndDingdanhao(Integer excelId, String dingdanghao) {
-        if(excelId == null || excelId == 0 || StringUtils.isBlank(dingdanghao)){
-            return null;
-        }
-        return excelSupplierDeliveryOrderRepository.getByExcelIdAndDingdanhao(excelId, dingdanghao);
-    }
+    //---------------------------------------------
+    //not public function
+    //---------------------------------------------
 
     Integer getStoreId(String sku, String marketplace){
         if(StringUtils.isBlank(sku) || StringUtils.isBlank(marketplace)){

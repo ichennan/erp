@@ -7,6 +7,7 @@ var theadNames1st = ['订单号', '订单状态', '应收合计', '货品总数'
 var theadNames2nd = ['订单号', '序号', '产品', '编号', '品名','规格','数量','单价','金额','备注'];
 var theadNames3rd = ['店铺', 'sku', '产品', 'skuId', 'qty'];
 var theadNamesTransaction = ['Type', 'Count', 'Total'];
+var theadNamesCarrierBill = ['单号', '日期', 'FBA No.', '总费用', '线路', '单价', '重量', '运单号', '转单号'];
 $(document).ready(function(){
     $(window).on("hashchange",function () {
         var hash = location.hash ? location.hash : '';
@@ -46,7 +47,6 @@ $(document).ready(function(){
             $("#uploading_div").hide();
             console.log("upload errrrrrr:");
             console.log(e);
-            console.log("upload errrrrrr:");
             console.log(data);
         },
         done: function (e, data) {
@@ -70,6 +70,9 @@ $(document).ready(function(){
                     break;
                 case "MonthlyUnifiedTransaction":
                     showTransactionList();
+                    break;
+                case "CarrierBillCainiao":
+                    showCarrierBillList();
                     break;
             }
         },
@@ -126,6 +129,37 @@ function showFbaList(){
             });
             $contentForm.find("[pid=storeName]").val(parent.$.retrieveStoreName(rs.data["storeId"]));
             drawTable3rd(table3rd, rs.array, rs.data.boxCount);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $.showErrorModal(XMLHttpRequest.responseText);
+            console.log("error");
+        },
+        complete: function () {
+        }
+    });
+}
+
+function showCarrierBillList(){
+    console.log("showCarrierBillList()");
+    $("#tableBox").show();
+    $("#contentBox").show();
+    //
+    var tableCarrierBill = createTableCarrierBill($("#tableDivCarrierBill"));
+    var data = {};
+    data.excelId = excelId;
+    var ajaxUrl = 'findCarrierBillByExcelId'
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log(rs);
+            $contentForm.find("[pid]").each(function () {
+                var jpa = rs.data[$(this).attr("pid")];
+                $(this).val(jpa).trigger("change");
+            });
+            drawTableCarrierBill(tableCarrierBill, rs.array);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
@@ -211,6 +245,21 @@ function createTableTransaction(tableDiv){
     return listTable;
 }
 
+function createTableCarrierBill(tableDiv){
+    console.log("createTableCarrierBill()");
+    $("#listTableCarrierBill").remove();
+    $("#listTableCarrierBill_wrapper").remove();
+    var listTable = $("<table class='table table-bordered data-table' id='listTableCarrierBill'></table>");
+    var thead = $("<thead><tr></tr></thead>");
+    $.each(theadNamesCarrierBill, function (index, obj) {
+        thead.find("tr").append("<th>" + obj + "</th>");
+    })
+    var tbody = $("<tbody></tbody>");
+    listTable.append(thead).append(tbody);
+    tableDiv.append(listTable);
+    return listTable;
+}
+
 function createTable1st(tableDiv){
     console.log("createTable1st()");
     $("#listTable1st").remove();
@@ -288,6 +337,37 @@ function drawTableTransaction(table, rs){
             tdContent.text(obj_2);
             var td = $("<td></td>");
             td.attr("column", theadNames2nd[index_2]);
+            td.append(tdContent);
+            tr.append(td);
+        })
+        tbody.append(tr);
+    });
+}
+
+function drawTableCarrierBill(table, array){
+    console.log("drawTableCarrierBill()");
+    console.log(array);
+    var tbody = table.find("tbody");
+    $.each(array, function (index, obj) {
+        var tr = $("<tr></tr>");
+        tr.attr("objJson", $.jsonToString(obj));
+        if(obj.relatedShipmentId){
+            obj.related = "匹配FBA";
+            tr.addClass("shipmentRow");
+        }else if(obj.relatedOverseaId){
+            obj.related = "匹配海外仓";
+            tr.addClass("overseaRow");
+        }else {
+            obj.related = "无法匹配";
+            tr.addClass("errorRow");
+        }
+        var tds = [obj.billNo, obj.billCreateDate, obj.fbaNo, obj.amount, obj.route, obj.unitPrice, obj.chargeWeight, obj.trackingNumber, obj.transferTrackingNumber1];
+        $.each(tds, function (index_2, obj_2) {
+            obj_2 = obj_2 ? obj_2 : "";
+            var tdContent = $("<span></span>");
+            tdContent.text(obj_2);
+            var td = $("<td></td>");
+            td.attr("column", theadNamesCarrierBill[index_2]);
             td.append(tdContent);
             tr.append(td);
         })
@@ -426,7 +506,11 @@ function upload(){
         case "MonthlyUnifiedTransaction":
             uploadToTransaction();
             break;
+        case "CarrierBillCainiao":
+            uploadToCarrierBill();
+            break;
         default:
+            $("#uploading_div").hide();
             alert("请选择正确文件类型");
             return;
             break;
@@ -562,6 +646,44 @@ function uploadToTransaction(){
         },
         complete: function () {
             console.log("uploadToTransaction.complete");
+        }
+    });
+}
+
+function uploadToCarrierBill(){
+    console.log("uploadToCarrierBill()");
+    var isError = false;
+    var data = {};
+    data.excelId = excelId;
+    console.log(data);
+    if($("#tableDivCarrierBill").find("tbody tr.errorRow").length){
+        $.showErrorModal("请在Excel处理了无法匹配的数据(红色)后再上传");
+        return;
+    }
+    if(isError){
+        $.showErrorModal("Error");
+        return;
+    }
+    var ajaxUrl = 'uploadToCarrierBill';
+    $.ajax({
+        type: "POST",
+        url: ajaxCtx + ajaxUrl,
+        data: data,
+        dataType: "json",
+        // contentType: "application/json",
+        success: function (rs) {
+            console.log("uploadToCarrierBill.success");
+            console.log(rs);
+            $.showToastr();
+            resetAll();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("uploadToCarrierBill.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("uploadToCarrierBill.complete");
         }
     });
 }

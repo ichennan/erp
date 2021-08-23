@@ -203,5 +203,21 @@ public class SkuServiceImpl implements SkuService {
         return rs;
     }
 
-
+    @Override
+    public JSONObject findAllByStoreId(Integer storeId) {
+        JSONObject skuAllJson = new JSONObject();
+        List<SkuInfoPO> skuInfoPOList = skuInfoRepository.findByStoreId(storeId);
+        for(SkuInfoPO skuInfoPO : skuInfoPOList){
+            String sku = skuInfoPO.getSku();
+            JSONArray array;
+            if(skuAllJson.containsKey(sku)){
+                array = skuAllJson.getJSONArray(sku);
+            }else{
+                array = new JSONArray();
+                skuAllJson.put(sku, array);
+            }
+            array.add(skuInfoPO.toJson());
+        }
+        return skuAllJson;
+    }
 }

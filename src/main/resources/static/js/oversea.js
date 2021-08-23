@@ -465,6 +465,7 @@ function createItemForm() {
     itemArray[++i] = {"label": "付款日期", "pid": "paymentDate", "inputType": "text"};
     itemArray[++i] = {"label": "签收日期", "pid": "signedDate", "inputType": "text"};
     itemArray[++i] = {"label": "备注", "pid": "remark", "inputType": "text"};
+    itemArray[++i] = {"label": "系统备注", "pid": "jsonRemark", "readonly":true, "inputType": "text"};
     $.drawContentForm($itemForm, itemArray);
 }
 function createDetailForm() {

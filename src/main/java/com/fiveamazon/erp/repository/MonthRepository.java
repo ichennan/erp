@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MonthRepository extends JpaRepository<MonthPO, Integer> {
     MonthPO getById(Integer id);
+
+    MonthPO getByMonthAndStoreId(String month, Integer storeId);
 }

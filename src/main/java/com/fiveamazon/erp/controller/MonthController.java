@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -68,12 +69,23 @@ public class MonthController extends SimpleCommonController {
 	}
 
 	@RequestMapping(value = "/generate", method= RequestMethod.POST)
-	public String generate(@RequestParam("id")Integer id){
+	public String generate(@RequestParam("id")Integer id, @RequestParam("rate") BigDecimal rate){
 		log.info("MonthController.genereate(): " + id);
 		JSONObject rs = new JSONObject();
-		theService.generate(id);
+		theService.generate(id, rate);
 		JSONObject data = new JSONObject();
 		data.put("id", id);
+		rs.put("data", data);
+		rs.put("error", false);
+		return rs.toString();
+	}
+
+	@RequestMapping(value = "/autoCreate", method= RequestMethod.POST)
+	public String generate(){
+		log.info("MonthController.autoCreate()");
+		JSONObject rs = new JSONObject();
+		theService.autoCreate();
+		JSONObject data = new JSONObject();
 		rs.put("data", data);
 		rs.put("error", false);
 		return rs.toString();

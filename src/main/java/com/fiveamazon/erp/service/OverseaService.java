@@ -19,6 +19,8 @@ public interface OverseaService {
 
     OverseaPO getById(Integer id);
 
+    OverseaPO getByDeliveryNo(String deliveryNo);
+
     OverseaDetailPO getDetailById(Integer id);
 
     List<OverseaViewPO> findAll();
@@ -34,4 +36,6 @@ public interface OverseaService {
     void batchInsert(OverseaBatchInsertDTO dto);
 
     List<OverseaPO> findByDate(String dateFrom, String dateTo, Integer storeId);
+
+    void updateCarrierBillByExcel(Integer excelId);
 }

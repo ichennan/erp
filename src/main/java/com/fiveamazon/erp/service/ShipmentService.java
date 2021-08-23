@@ -15,6 +15,8 @@ public interface ShipmentService {
 
     ShipmentPO getById(Integer id);
 
+    ShipmentPO getByFbaNo(String fbaNo);
+
     ShipmentDetailPO getDetailById(Integer id);
 
     List<ShipmentViewPO> findAll();
@@ -38,4 +40,6 @@ public interface ShipmentService {
     Long countBySkuId(Integer skuId);
 
     List<ShipmentPO> findByDate(String dateFrom, String dateTo, Integer storeId);
+
+    void updateCarrierBillByExcel(Integer excelId);
 }
