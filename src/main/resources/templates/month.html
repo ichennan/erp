@@ -6,36 +6,174 @@
 <div class="wrapper">
     <div class="content-wrapper">
         <section class="content">
-
-            <div class="row" id="searchBox">
-                <div class="box box-info">
-                    <div class="box-header with-border">
-                        <div class="form-group">
+            <div class="row" id="tableBox">
+                <div class="col-md-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
                             <div class="col-xs-6">
                                 <select id="searchStoreId" class="select2">
                                     <option value="">店铺选择</option>
+                                    <option value="999">合计</option>
                                     <option value="111">庙美国</option>
-                                    <option value="112">庙加拿大</option>
-                                    <option value="121">庙欧洲</option>
                                     <option value="211">燕子美国</option>
-                                    <option value="221">燕子欧洲</option>
                                     <option value="311">聪美美国</option>
                                     <option value="411">拾子美国</option>
                                 </select>
                             </div>
+<!--                            <a href="#itemId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增</a>-->
+                            <button type="button" class="pull-right btn btn-danger" onclick="showChartBox()">-->查看图表</button>
+                            <button type="button" class="pull-right btn btn-success" onclick="showGenerateModal()">更新数据</button>
+                        </div>
+                        <div class="box-body font12" id="tableDiv">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row" id="tableBox">
-                <div class="col-md-12">
-                    <div class="box box-info">
-                        <div class="box-header with-border">
-<!--                            <a href="#itemId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增</a>-->
-                            <button type="button" class="pull-right btn btn-warning" onclick="autoCreate()">自动创建</button>
+            <div class="row" id="chartBox">
+                <div class="box-header with-border">
+                    <!-- form start -->
+                    <form id="chartForm" action="#" class="form-horizontal">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">起始月份 <span class="required ">*</span></label>
+                                <div class="col-xs-11">
+                                    <input class="form-control" pid="monthStart" placeholder="格式: 202107"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">终止月份 <span class="required ">*</span></label>
+                                <div class="col-xs-11">
+                                    <input class="form-control" pid="monthEnd" placeholder="格式: 202107"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">模式选择 <span class="required ">*</span></label>
+                                <div class="col-xs-11">
+                                    <span chartMode="singleStore" class="selectedSpan singleSelectedSpan chartModeSelectedSpan selected">单店铺</span>
+                                    <span chartMode="multipleStore" class="selectedSpan singleSelectedSpan chartModeSelectedSpan">多店铺</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">店铺选择 <span class="required ">*</span></label>
+                                <div class="col-xs-11">
+                                    <span storeId="111" class="selectedSpan singleSelectedSpan singleStore chartStoreSelectedSpan">庙美国</span>
+                                    <span storeId="211" class="selectedSpan singleSelectedSpan singleStore chartStoreSelectedSpan">燕子美国</span>
+                                    <span storeId="311" class="selectedSpan singleSelectedSpan singleStore chartStoreSelectedSpan">聪美美国</span>
+                                    <span storeId="411" class="selectedSpan singleSelectedSpan singleStore chartStoreSelectedSpan">拾子美国</span>
+                                    <span storeId="999" class="selectedSpan singleSelectedSpan singleStore chartStoreSelectedSpan">合计</span>
+                                    <span storeId="111" class="selectedSpan multipleSelectedSpan multipleStore chartStoreSelectedSpan">庙美国</span>
+                                    <span storeId="211" class="selectedSpan multipleSelectedSpan multipleStore chartStoreSelectedSpan">燕子美国</span>
+                                    <span storeId="311" class="selectedSpan multipleSelectedSpan multipleStore chartStoreSelectedSpan">聪美美国</span>
+                                    <span storeId="411" class="selectedSpan multipleSelectedSpan multipleStore chartStoreSelectedSpan">拾子美国</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">数据选择 <span class="required ">*</span></label>
+                                <div class="col-xs-11">
+                                    <div>
+                                        <span category="maoli" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">毛利</span>
+                                        <span category="liushui" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">流水</span>
+                                        <span category="amazonProductSalesAmountCNY" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">销售额</span>
+                                        <span category="fbaShipmentAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">FBA运费</span>
+                                        <span category="overseaShipmentAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">海外仓运费</span>
+                                        <span category="overseaWarehouseAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">海外仓费用</span>
+                                        <span category="amazonServiceFeeAmountCNY" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">广告费</span>
+                                        <br/>
+                                        <span category="amazonOrderQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">订单数</span>
+                                        <span category="amazonOrderQuantity100" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">订单数*100</span>
+                                        <span category="amazonRefundQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">退货数</span>
+                                        <span category="fbaProductQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">FBA数量</span>
+                                        <span category="overseaProductQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">海外仓数量</span>
+                                    </div>
+
+                                    <div>
+                                        <span category="maoli" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">毛利</span>
+                                        <span category="liushui" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">流水</span>
+                                        <span category="amazonProductSalesAmountCNY" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">销售额</span>
+                                        <span category="fbaShipmentAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">FBA运费</span>
+                                        <span category="overseaShipmentAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">海外仓运费</span>
+                                        <span category="overseaWarehouseAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">海外仓费用</span>
+                                        <span category="purchaseAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">采购费用</span>
+                                        <span category="amazonServiceFeeAmountCNY" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">广告费</span>
+                                        <br/>
+                                        <span category="amazonOrderQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单数</span>
+                                        <span category="amazonOrderQuantity100" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单数*100</span>
+                                        <span category="amazonRefundQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">退货数</span>
+                                        <span category="fbaProductQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">FBA数量</span>
+                                        <span category="overseaProductQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">海外仓数量</span>
+                                        <span category="purchaseQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">采购数量</span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="button" class="pull-right btn btn-danger" onclick="showTableBox()">-->查看数据</button>
+                                <button type="button" class="pull-right btn btn-warn" onclick="clearChart()">清空图表</button>
+                                <button type="button" class="pull-right btn btn-success" onclick="drawChart()">生成图表</button>
+                            </div>
                         </div>
-                        <div class="box-body font12" id="tableDiv">
+                    </form>
+                </div>
+                <div class="box box-info" id="chartDiv">
+                </div>
+            </div>
+
+            <div class="modal" id="generateModal">
+                <div class="modal-dialog">
+                    <div class="modal-body">
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">更新报表</h3>
+                                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">X</span></button>
+                            </div>
+                            <!-- form start -->
+                            <form id="generateForm" action="#" class="form-horizontal">
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        <label class="col-xs-3 control-label">年份 <span class="required ">*</span></label>
+                                        <div class="col-xs-9">
+                                            <input class="form-control" pid="year"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-3 control-label">起始月份 <span class="required ">*</span></label>
+                                        <div class="col-xs-9">
+                                            <input class="form-control" pid="monthStart"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-3 control-label">终止月份 <span class="required ">*</span></label>
+                                        <div class="col-xs-9">
+                                            <input class="form-control" pid="monthEnd"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-xs-3 control-label">店铺选择 <span class="required ">*</span></label>
+                                        <div class="col-xs-9">
+                                            <span storeId="111" class="selectedSpan multipleSelectedSpan generateStoreSelectedSpan">庙美国</span>
+                                            <span storeId="211" class="selectedSpan multipleSelectedSpan generateStoreSelectedSpan">燕子美国</span>
+                                            <span storeId="311" class="selectedSpan multipleSelectedSpan generateStoreSelectedSpan">聪美美国</span>
+                                            <span storeId="411" class="selectedSpan multipleSelectedSpan generateStoreSelectedSpan">拾子美国</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                                <div class="box-footer">
+                                    <div class="pull-right">
+                                        <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-success update" onclick="generate()">更新报表</button>
+                                        <button type="button" class="btn cancel" data-dismiss="modal">取消</button>
+                                        <button type="submit" class="hide"></button>
+                                    </div>
+                                </div>
+                                <!-- /.box-footer -->
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -57,9 +195,9 @@
                             <p>毛利=亚马逊金额-订单产品价值</p>
                             <p>流水=亚马逊金额-FBA运费-FBA产品价值-海外仓费用-海外仓运费-海外仓产品价值</p>
                             <div class="pull-right">
-                                <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="generate()">更新报表</button>
-                                <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="download()">下载报表</button>
-                                <button type="button" class="btn cancel" data-dismiss="modal">取消</button>
+<!--                                <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="generate()">更新报表</button>-->
+<!--                                <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="download()">下载报表</button>-->
+<!--                                <button type="button" class="btn cancel" data-dismiss="modal">取消</button>-->
                                 <button type="submit" class="hide"></button>
                             </div>
                         </div>
@@ -89,7 +227,9 @@
     </div>
 </div>
 <div th:replace="common/common_js :: js"></div>
+<script type="text/javascript" th:src="@{/webjars/highcharts/highcharts.js}"></script>
 <script type="text/javascript" th:src="@{'/js/common_fn.js?v=' + ${version}}"></script>
+<script type="text/javascript" th:src="@{'/js/month_chart.js?v=' + ${version}}"></script>
 </body>
 </html>
 

@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,8 @@ public class MonthServiceImpl implements MonthService {
     @Autowired
     TransactionService transactionService;
     @Autowired
+    SmartService smartService;
+    @Autowired
     SkuService skuService;
     @Value("${simple.folder.file.report}")
     private String reportFileFolder;
@@ -60,12 +63,13 @@ public class MonthServiceImpl implements MonthService {
     }
 
     @Override
-    public List<MonthPO> findAll() {
-        return theRepository.findAll();
+    public List<MonthPO> findAll(Sort sort) {
+        return theRepository.findAll(sort);
     }
 
     @Override
-    public void generate(Integer id, BigDecimal rate) {
+    public void generate(Integer id) {
+        log.info("MonthServiceImpl.generate id: " + id);
         //
         String filename = reportFileFolder + "test.xlsx";
         WriteCellStyle headWriteCellStyle = new WriteCellStyle();
@@ -87,6 +91,7 @@ public class MonthServiceImpl implements MonthService {
         //
         MonthPO monthPO = getById(id);
         String month = monthPO.getMonth();
+        BigDecimal rate = smartService.getRate(month);
         String dateFrom = month + "01";
         Date dateFromDate = DateUtil.parse(dateFrom, SimpleConstant.DATE_8);
         Date dateToDate = DateUtil.endOfMonth(dateFromDate);
@@ -107,6 +112,7 @@ public class MonthServiceImpl implements MonthService {
         sumFee(monthPO, rate, excelWriter, productAllJson);
         log.error("monthPO: " + monthPO.toString());
         save(monthPO);
+        updateParentStore(monthPO);
         excelWriter.finish();
     }
 
@@ -306,6 +312,7 @@ public class MonthServiceImpl implements MonthService {
         BigDecimal amazonTransferAmount = new BigDecimal(0);
         Integer amazonTransferQuantity = 0;
         //
+        BigDecimal amazonProductSalesAmount = new BigDecimal(0);
         BigDecimal amazonOrderProductAmount = new BigDecimal(0);
         BigDecimal amazonRefundProductAmount = new BigDecimal(0);
         //
@@ -313,6 +320,7 @@ public class MonthServiceImpl implements MonthService {
         for(TransactionPO item : list){
             String type = item.getType() == null ? "" : item.getType();
             BigDecimal total = item.getTotal();
+            BigDecimal productSales = item.getProductSales();
             Integer quantity = item.getQuantity() == 0 ? 1 : item.getQuantity();
             String sku = item.getSku();
             switch (type){
@@ -337,11 +345,13 @@ public class MonthServiceImpl implements MonthService {
                     BeanUtils.copyProperties(item, downloadDTO);
                     downloadDTOList.add(downloadDTO);
                     //
+                    amazonProductSalesAmount = amazonProductSalesAmount.add(productSales);
                     amazonOrderAmount = amazonOrderAmount.add(total);
                     amazonOrderQuantity += quantity;
                     amazonOrderProductAmount = amazonOrderProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson));
                     break;
                 case SimpleConstant.AMAZON_TYPE_Refund:
+                    amazonProductSalesAmount = amazonProductSalesAmount.add(productSales);
                     amazonRefundAmount = amazonRefundAmount.add(total);
                     amazonRefundQuantity += quantity;
                     amazonRefundProductAmount = amazonRefundProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson));
@@ -406,6 +416,7 @@ public class MonthServiceImpl implements MonthService {
         monthPO.setAmazonTransferQuantity(amazonTransferQuantity);
         monthPO.setAmazonOrderProductAmount(amazonOrderProductAmount);
         monthPO.setAmazonRefundProductAmount(amazonRefundProductAmount);
+        monthPO.setAmazonProductSalesAmount(amazonProductSalesAmount);
         log.info("-------------------------------------");
         log.info("Amazon Amount: " + amazonAmount);
         log.info("Amazon Quantity: " + amazonQuantity);
@@ -428,12 +439,18 @@ public class MonthServiceImpl implements MonthService {
         BigDecimal overseaShipmentAmount = monthPO.getOverseaShipmentAmount();
         BigDecimal overseaProductAmount = monthPO.getOverseaProductAmount();
         BigDecimal overseaWarehouseAmount = monthPO.getOverseaWarehouseAmount();
+        BigDecimal amazonOrderAmount = monthPO.getAmazonOrderAmount();
         BigDecimal amazonAmount = monthPO.getAmazonAmount();
         BigDecimal amazonTransferAmount = monthPO.getAmazonTransferAmount();
         BigDecimal amazonOrderProductAmount = monthPO.getAmazonOrderProductAmount();
+        BigDecimal amazonProductSalesAmount = monthPO.getAmazonProductSalesAmount();
+        BigDecimal amazonServiceFeeAmount = monthPO.getAmazonServiceFeeAmount();
         //
         BigDecimal amazonAmountCNY =  amazonAmount.multiply(rate);
+        BigDecimal amazonOrderAmountCNY =  amazonOrderAmount.multiply(rate);
         BigDecimal amazonAmountTransferCNY =  amazonTransferAmount.multiply(rate);
+        BigDecimal amazonProductSalesAmountCNY =  amazonProductSalesAmount.multiply(rate);
+        BigDecimal amazonServiceFeeAmountCNY =  amazonServiceFeeAmount.multiply(rate);
         BigDecimal maoli = amazonAmountCNY.subtract(amazonOrderProductAmount);
         BigDecimal liushui = amazonAmountCNY
                 .subtract(fbaShipmentAmount)
@@ -443,8 +460,11 @@ public class MonthServiceImpl implements MonthService {
                 .subtract(overseaWarehouseAmount)
                 ;
         monthPO.setRate(rate);
+        monthPO.setAmazonOrderAmountCNY(amazonOrderAmountCNY);
         monthPO.setAmazonAmountCNY(amazonAmountCNY);
         monthPO.setAmazonTransferAmountCNY(amazonAmountTransferCNY);
+        monthPO.setAmazonProductSalesAmountCNY(amazonProductSalesAmountCNY);
+        monthPO.setAmazonServiceFeeAmountCNY(amazonServiceFeeAmountCNY);
         monthPO.setMaoli(maoli);
         monthPO.setLiushui(liushui);
         log.info("-------------------------------------");
@@ -461,19 +481,19 @@ public class MonthServiceImpl implements MonthService {
         }
         JSONArray skuArray = skuAllJson.getJSONArray(sku);
         if(null == skuArray || skuArray.size() < 1){
-            log.error("SKU Not Found: " + sku);
+            log.error("SKU Not Found: [{}]", sku);
             return amazonProductAmount;
         }
         for(JSONObject skuJson : skuArray.jsonIter()){
             Integer productId = skuJson.getInt("productId");
             JSONObject productJson = productAllJson.getJSONObject("id" + productId);
             if(null == productJson){
-                log.error("Product Not Found: " + productId);
+                log.error("Product Not Found: [{}]", productId);
                 continue;
             }
             BigDecimal purchasePrice = productJson.getBigDecimal("purchasePrice");
             if(purchasePrice.compareTo(new BigDecimal(0)) == 0){
-                log.error("Purchase Price is 0: []", productId);
+                log.error("Purchase Price is 0: [{}]", productId);
                 continue;
             }
             amazonProductAmount = amazonProductAmount.add(purchasePrice.multiply(new BigDecimal(quantity)));
@@ -482,7 +502,172 @@ public class MonthServiceImpl implements MonthService {
         return amazonProductAmount;
     }
 
-    @Override
+    void updateParentStore(MonthPO monthPO){
+        String month = monthPO.getMonth();
+        List<MonthPO> list = theRepository.findByMonth(month);
+        MonthPO parentMonthPO = theRepository.getByMonthAndStoreId(month, SimpleConstant.parentStoreId);
+        if(null == parentMonthPO){
+            parentMonthPO = new MonthPO();
+            parentMonthPO.setMonth(month);
+            parentMonthPO.setStoreId(SimpleConstant.parentStoreId);
+        }
+        parentMonthPO.setRate(monthPO.getRate());
+        BigDecimal purchaseAmount = monthPO.getPurchaseAmount();
+        Integer purchaseProductQuantity = monthPO.getPurchaseProductQuantity();
+        Integer purchaseCount = monthPO.getPurchaseCount();
+        //
+        // BigDecimal purchaseAmount = new BigDecimal(0);
+        BigDecimal fbaShipmentAmount = new BigDecimal(0);
+        BigDecimal fbaProductAmount = new BigDecimal(0);
+        BigDecimal overseaWarehouseAmount = new BigDecimal(0);
+        BigDecimal overseaShipmentAmount = new BigDecimal(0);
+        BigDecimal overseaProductAmount = new BigDecimal(0);
+        BigDecimal amazonAdjustmentAmount = new BigDecimal(0);
+        BigDecimal amazonFbaCustomerReturnFeeAmount = new BigDecimal(0);
+        BigDecimal amazonFbaInventoryFeeAmount = new BigDecimal(0);
+        BigDecimal amazonFeeAdjustmentAmount = new BigDecimal(0);
+        BigDecimal amazonOrderAmount = new BigDecimal(0);
+        BigDecimal amazonOthersAmount = new BigDecimal(0);
+        BigDecimal amazonRefundRetrochargeAmount = new BigDecimal(0);
+        BigDecimal amazonRefundAmount = new BigDecimal(0);
+        BigDecimal amazonServiceFeeAmount = new BigDecimal(0);
+        BigDecimal amazonAmount = new BigDecimal(0);
+        BigDecimal amazonTransferAmount = new BigDecimal(0);
+        BigDecimal amazonOrderProductAmount = new BigDecimal(0);
+        BigDecimal amazonRefundProductAmount = new BigDecimal(0);
+        BigDecimal amazonProductSalesAmount = new BigDecimal(0);
+        BigDecimal maoli = new BigDecimal(0);
+        BigDecimal liushui = new BigDecimal(0);
+        BigDecimal amazonProductSalesAmountCNY = new BigDecimal(0);
+        BigDecimal amazonOrderAmountCNY = new BigDecimal(0);
+        BigDecimal amazonAmountCNY = new BigDecimal(0);
+        BigDecimal amazonTransferAmountCNY = new BigDecimal(0);
+        BigDecimal amazonServiceFeeAmountCNY = new BigDecimal(0);
+        //
+        Integer overseaProductQuantity = 0;
+        // Integer purchaseProductQuantity = 0;
+        // Integer purchaseCount = 0;
+        Integer fbaProductQuantity = 0;
+        Integer fbaCount = 0;
+        Integer overseaCount = 0;
+        Integer amazonAdjustmentQuantity = 0;
+        Integer amazonFbaCustomerReturnFeeQuantity = 0;
+        Integer amazonFbaInventoryFeeQuantity = 0;
+        Integer amazonFeeAdjustmentQuantity = 0;
+        Integer amazonOrderQuantity = 0;
+        Integer amazonOthersQuantity = 0;
+        Integer amazonRefundQuantity = 0;
+        Integer amazonRefundRetrochargeQuantity = 0;
+        Integer amazonServiceFeeQuantity = 0;
+        Integer amazonQuantity = 0;
+        Integer amazonTransferQuantity = 0;
+
+        for(MonthPO item : list){
+            Integer storeId = item.getStoreId();
+            if(SimpleConstant.parentStoreId.equals(storeId)){
+                continue;
+            }
+            // purchaseAmount = item.getPurchaseAmount().add(purchaseAmount);
+            fbaShipmentAmount = item.getFbaShipmentAmount().add(fbaShipmentAmount);
+            fbaProductAmount = item.getFbaProductAmount().add(fbaProductAmount);
+            overseaWarehouseAmount = item.getOverseaWarehouseAmount().add(overseaWarehouseAmount);
+            overseaShipmentAmount = item.getOverseaShipmentAmount().add(overseaShipmentAmount);
+            overseaProductAmount = item.getOverseaProductAmount().add(overseaProductAmount);
+            amazonAdjustmentAmount = item.getAmazonAdjustmentAmount().add(amazonAdjustmentAmount);
+            amazonFbaCustomerReturnFeeAmount = item.getAmazonFbaCustomerReturnFeeAmount().add(amazonFbaCustomerReturnFeeAmount);
+            amazonFbaInventoryFeeAmount = item.getAmazonFbaInventoryFeeAmount().add(amazonFbaInventoryFeeAmount);
+            amazonFeeAdjustmentAmount = item.getAmazonFeeAdjustmentAmount().add(amazonFeeAdjustmentAmount);
+            amazonOrderAmount = item.getAmazonOrderAmount().add(amazonOrderAmount);
+            amazonOthersAmount = item.getAmazonOthersAmount().add(amazonOthersAmount);
+            amazonRefundRetrochargeAmount = item.getAmazonRefundRetrochargeAmount().add(amazonRefundRetrochargeAmount);
+            amazonRefundAmount = item.getAmazonRefundAmount().add(amazonRefundAmount);
+            amazonServiceFeeAmount = item.getAmazonServiceFeeAmount().add(amazonServiceFeeAmount);
+            amazonAmount = item.getAmazonAmount().add(amazonAmount);
+            amazonTransferAmount = item.getAmazonTransferAmount().add(amazonTransferAmount);
+            amazonOrderProductAmount = item.getAmazonOrderProductAmount().add(amazonOrderProductAmount);
+            amazonRefundProductAmount = item.getAmazonRefundProductAmount().add(amazonRefundProductAmount);
+            amazonProductSalesAmount = item.getAmazonProductSalesAmount().add(amazonProductSalesAmount);
+            amazonProductSalesAmountCNY = item.getAmazonProductSalesAmountCNY().add(amazonProductSalesAmountCNY);
+            amazonOrderAmountCNY = item.getAmazonOrderAmountCNY().add(amazonOrderAmountCNY);
+            amazonAmountCNY = item.getAmazonAmountCNY().add(amazonAmountCNY);
+            amazonTransferAmountCNY = item.getAmazonTransferAmountCNY().add(amazonTransferAmountCNY);
+            amazonServiceFeeAmountCNY = item.getAmazonServiceFeeAmountCNY().add(amazonServiceFeeAmountCNY);
+            maoli = item.getMaoli().add(maoli);
+            // liushui = item.getLiushui().add(liushui);
+            //
+            overseaProductQuantity += item.getOverseaProductQuantity();
+            // purchaseProductQuantity += item.getPurchaseProductQuantity();
+            // purchaseCount += item.getPurchaseCount();
+            fbaProductQuantity += item.getFbaProductQuantity();
+            fbaCount += item.getFbaCount();
+            overseaCount += item.getOverseaCount();
+            amazonAdjustmentQuantity += item.getAmazonAdjustmentQuantity();
+            amazonFbaCustomerReturnFeeQuantity += item.getAmazonFbaCustomerReturnFeeQuantity();
+            amazonFbaInventoryFeeQuantity += item.getAmazonFbaInventoryFeeQuantity();
+            amazonFeeAdjustmentQuantity += item.getAmazonFeeAdjustmentQuantity();
+            amazonOrderQuantity += item.getAmazonOrderQuantity();
+            amazonOthersQuantity += item.getAmazonOthersQuantity();
+            amazonRefundQuantity += item.getAmazonRefundQuantity();
+            amazonRefundRetrochargeQuantity += item.getAmazonRefundRetrochargeQuantity();
+            amazonServiceFeeQuantity += item.getAmazonServiceFeeQuantity();
+            amazonQuantity += item.getAmazonQuantity();
+            amazonTransferQuantity += item.getAmazonTransferQuantity();
+        }
+        parentMonthPO.setPurchaseAmount(purchaseAmount);
+        parentMonthPO.setFbaShipmentAmount(fbaShipmentAmount);
+        parentMonthPO.setFbaProductAmount(fbaProductAmount);
+        parentMonthPO.setOverseaWarehouseAmount(overseaWarehouseAmount);
+        parentMonthPO.setOverseaShipmentAmount(overseaShipmentAmount);
+        parentMonthPO.setOverseaProductAmount(overseaProductAmount);
+        parentMonthPO.setAmazonAdjustmentAmount(amazonAdjustmentAmount);
+        parentMonthPO.setAmazonFbaCustomerReturnFeeAmount(amazonFbaCustomerReturnFeeAmount);
+        parentMonthPO.setAmazonFbaInventoryFeeAmount(amazonFbaInventoryFeeAmount);
+        parentMonthPO.setAmazonFeeAdjustmentAmount(amazonFeeAdjustmentAmount);
+        parentMonthPO.setAmazonOrderAmount(amazonOrderAmount);
+        parentMonthPO.setAmazonOthersAmount(amazonOthersAmount);
+        parentMonthPO.setAmazonRefundRetrochargeAmount(amazonRefundRetrochargeAmount);
+        parentMonthPO.setAmazonRefundAmount(amazonRefundAmount);
+        parentMonthPO.setAmazonServiceFeeAmount(amazonServiceFeeAmount);
+        parentMonthPO.setAmazonAmount(amazonAmount);
+        parentMonthPO.setAmazonTransferAmount(amazonTransferAmount);
+        parentMonthPO.setAmazonOrderProductAmount(amazonOrderProductAmount);
+        parentMonthPO.setAmazonRefundProductAmount(amazonRefundProductAmount);
+        parentMonthPO.setAmazonProductSalesAmount(amazonProductSalesAmount);
+        parentMonthPO.setAmazonProductSalesAmountCNY(amazonProductSalesAmountCNY);
+        parentMonthPO.setAmazonOrderAmountCNY(amazonOrderAmountCNY);
+        parentMonthPO.setAmazonAmountCNY(amazonAmountCNY);
+        parentMonthPO.setAmazonTransferAmountCNY(amazonTransferAmountCNY);
+        parentMonthPO.setAmazonServiceFeeAmountCNY(amazonServiceFeeAmountCNY);
+        parentMonthPO.setMaoli(maoli);
+        liushui = amazonAmountCNY
+                .subtract(fbaShipmentAmount)
+                .subtract(overseaShipmentAmount)
+                .subtract(overseaWarehouseAmount)
+                .subtract(purchaseAmount)
+        ;
+        parentMonthPO.setLiushui(liushui);
+        //
+        parentMonthPO.setOverseaProductQuantity(overseaProductQuantity);
+        parentMonthPO.setPurchaseProductQuantity(purchaseProductQuantity);
+        parentMonthPO.setPurchaseCount(purchaseCount);
+        parentMonthPO.setFbaProductQuantity(fbaProductQuantity);
+        parentMonthPO.setFbaCount(fbaCount);
+        parentMonthPO.setOverseaCount(overseaCount);
+        parentMonthPO.setAmazonAdjustmentQuantity(amazonAdjustmentQuantity);
+        parentMonthPO.setAmazonFbaCustomerReturnFeeQuantity(amazonFbaCustomerReturnFeeQuantity);
+        parentMonthPO.setAmazonFbaInventoryFeeQuantity(amazonFbaInventoryFeeQuantity);
+        parentMonthPO.setAmazonFeeAdjustmentQuantity(amazonFeeAdjustmentQuantity);
+        parentMonthPO.setAmazonOrderQuantity(amazonOrderQuantity);
+        parentMonthPO.setAmazonOthersQuantity(amazonOthersQuantity);
+        parentMonthPO.setAmazonRefundQuantity(amazonRefundQuantity);
+        parentMonthPO.setAmazonRefundRetrochargeQuantity(amazonRefundRetrochargeQuantity);
+        parentMonthPO.setAmazonServiceFeeQuantity(amazonServiceFeeQuantity);
+        parentMonthPO.setAmazonQuantity(amazonQuantity);
+        parentMonthPO.setAmazonTransferQuantity(amazonTransferQuantity);
+        //
+        save(parentMonthPO);
+    }
+
     public void autoCreate() {
         Date today = new Date();
         Integer year = DateUtil.year(today);
@@ -500,6 +685,27 @@ public class MonthServiceImpl implements MonthService {
                     monthPO.setStoreId(storePO.getId());
                     save(monthPO);
                 }
+            }
+        }
+    }
+
+    @Override
+    public void generate(Integer year, Integer monthStart, Integer monthEnd, List<Integer> storeIdList) {
+        log.info("generate [{}] [{}] [{}] [{}]", year, monthStart, monthEnd, storeIdList);
+        Integer generateMonthStart = year * 100 + monthStart;
+        Integer generateMonthEnd = year * 100 + monthEnd;
+        for(int theMonth = generateMonthStart; theMonth <= generateMonthEnd; theMonth++){
+            for(Integer storeId : storeIdList){
+                log.info("generate [{}] [{}]", theMonth, storeId);
+                StorePO storePO = productService.getStoreById(storeId);
+                MonthPO monthPO = theRepository.getByMonthAndStoreId(String.valueOf(theMonth), storePO.getId());
+                if(null == monthPO){
+                    monthPO = new MonthPO();
+                    monthPO.setMonth(String.valueOf(theMonth));
+                    monthPO.setStoreId(storePO.getId());
+                    save(monthPO);
+                }
+                generate(monthPO.getId());
             }
         }
     }

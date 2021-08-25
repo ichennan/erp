@@ -6,6 +6,7 @@ var $detailListContentForm = $("#detailListContentForm");
 var originalBoxDetailListString;
 var ajaxCtx = 'shipment/';
 var tableType = "";
+var parentJs = parent;
 // var autoSaveAlertTimer;
 $(document).ready(function(){
     parent.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
@@ -158,7 +159,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['id','发货日期','FBA No.','货代', '线路','箱/重/价','店铺','采购产品'];
+    var theadNames = ['id','店铺','发货日期','FBA No.','货代', '线路','运费','FBA产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -177,8 +178,9 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var storeName = parent.$.retrieveStoreName(obj.storeId);
-                var tds = [obj.id, obj.deliveryDate, obj.fbaNo, obj.carrier, obj.route, toNumber(obj.boxCount) + "/" + toNumber(obj.weight) + "/" + toNumber(obj.unitPrice), storeName, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
+                obj.storeName = parentJs.$.retrieveStoreName(obj.storeId);
+                obj.charge = "[" + toNumber(obj.boxCount) + "][" + toNumber(obj.chargeWeight) + "][" + toNumber(obj.unitPrice) + "]= " + toNumber(obj.amount) + "";
+                var tds = [obj.id, obj.storeName, obj.deliveryDate, obj.fbaNo, obj.carrier, obj.route, obj.charge, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");
@@ -197,6 +199,11 @@ function showList(){
                     tr.addClass("statusSigned");
                 }else{
                     tr.addClass("statusSignedNo");
+                }
+                if(obj.amount > 0){
+                    tr.find("[columnName='运费']").addClass("statusAmount");
+                }else{
+                    tr.find("[columnName='运费']").addClass("statusAmountNo");
                 }
                 tbody.append(tr);
             });

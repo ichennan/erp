@@ -6,6 +6,7 @@ var $detailForm = $("#detailForm");
 var $fbaForm = $("#fbaForm");
 var ajaxCtx = 'oversea/';
 var parentJs = parent;
+var theadNames = ['id', '店铺', '发货日期', '海外仓', '发货编号', '运费', '发货产品'];
 $(document).ready(function(){
     createItemForm();
     createDetailForm();
@@ -256,7 +257,6 @@ function createListTableHead(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['id', '店铺', '发货日期', '海外仓', '发货编号', '箱数', '发货产品'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -271,16 +271,23 @@ function createListTableBody(table, rs){
     console.log("createListTableBody");
     $.each(rs.array, function (index, obj) {
         var tr = $("<tr></tr>");
-        var storeName = parentJs.$.retrieveStoreName(obj.storeId);
-        var tds = [obj.id, storeName, obj.deliveryDate, obj.warehouseName, obj.deliveryNo, obj.boxCount, parentJs.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
+        obj.storeName = parentJs.$.retrieveStoreName(obj.storeId);
+        obj.charge = "[" + toNumber(obj.boxCount) + "][" + toNumber(obj.chargeWeight) + "][" + toNumber(obj.unitPrice) + "]= " + toNumber(obj.amount) + "";
+        var tds = [obj.id, obj.storeName, obj.deliveryDate, obj.warehouseName, obj.deliveryNo, obj.charge, parentJs.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
+            td.attr("columnName", theadNames[index_2]);
             tr.append(td);
         })
         tr.click(function () {
             toItem(obj.id);
         });
+        if(obj.amount > 0){
+            tr.find("[columnName='运费']").addClass("statusAmount");
+        }else{
+            tr.find("[columnName='运费']").addClass("statusAmountNo");
+        }
         table.find("tbody").append(tr);
     });
 }

@@ -1,6 +1,7 @@
 ;
 var itemId = 0;
 var detailId = 0;
+var $generateForm = $("#generateForm");
 var $itemForm = $("#itemForm");
 var $itemForm2 = $("#itemForm2");
 var $itemForm3 = $("#itemForm3");
@@ -9,6 +10,23 @@ var $fbaForm = $("#fbaForm");
 var ajaxCtx = 'month/';
 var parentJs = parent;
 var refreshList = true;
+$.category = {
+    "maoli":"毛利",
+    "liushui":"流水",
+    "amazonOrderQuantity":"订单数",
+    "amazonOrderQuantity100":"订单数*100",
+    "amazonRefundQuantity":"退货数",
+    "amazonProductSalesAmountCNY":"销售额",
+    "amazonServiceFeeAmountCNY":"广告费",
+    "fbaProductQuantity":"FBA数量",
+    "fbaShipmentAmount":"FBA运费",
+    "overseaProductQuantity":"海外仓数量",
+    "overseaShipmentAmount":"海外仓运费",
+    "overseaWarehouseAmount":"海外仓费用",
+    "purchaseQuantity":"采购数量",
+    "purchaseAmount":"采购费用"
+}
+$.findListRs;
 $(document).ready(function(){
     createItemForm();
     createItemForm2();
@@ -38,6 +56,17 @@ $(document).ready(function(){
         timepicker:false,
         format:'Y-m-d'
     });
+
+    $(".multipleSelectedSpan").click(function(){
+        var $that = $(this);
+        $that.toggleClass("selected");
+    })
+
+    $(".singleSelectedSpan").click(function(){
+        var $that = $(this);
+        $that.siblings(".singleSelectedSpan").removeClass("selected");
+        $that.addClass("selected");
+    })
 
     $("#searchStoreId").select2({
         placeholder:'请选择',
@@ -89,6 +118,8 @@ function showList(){
     $("#tableBox").show();
     $("#itemBox").hide();
     $("#detailBox").hide();
+    $('#generateModal').modal('hide');
+    $('#chartModal').modal('hide');
     // $("span.searchSignedStatus.defaultSelected").trigger("click");
     //
 
@@ -107,6 +138,7 @@ function showList(){
         dataType: "json",
         success: function (rs) {
             console.log(rs);
+            $.findListRs = rs;
             createListTableBody(table, rs);
             createDataTable(table, {"order": 1});
             refreshList = true;
@@ -186,7 +218,7 @@ function createListTableHead(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['店铺', '月份', '采购', 'fba货物', '海外仓货物','订单数','订单金额','货物成本','结余','转账','毛利','流水'];
+    var theadNames = ['店铺', '月份', '采购', 'fba货物', '海外仓货物','订单数','销售额','货物成本','结余','转账','毛利','流水'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -202,7 +234,13 @@ function createListTableBody(table, rs){
     $.each(rs.array, function (index, obj) {
         var tr = $("<tr></tr>");
         var storeName = parentJs.$.retrieveStoreName(obj.storeId);
-        var tds = [storeName, obj.month, obj.purchaseAmount, obj.fbaProductAmount, obj.overseaProductAmount, obj.amazonOrderQuantity, obj.amazonOrderAmount, obj.amazonOrderProductAmount, obj.amazonAmount, obj.amazonTransferAmount, obj.maoli, obj.liushui ];
+        if(obj.storeId == 999){
+            obj.displayPurchaseAmount = obj.purchaseAmount;
+        }
+        obj.displayFba = obj.fbaProductAmount + "/" + obj.fbaShipmentAmount;
+        obj.displayOversea = obj.overseaProductAmount + "/" + obj.overseaShipmentAmount + "/" + obj.overseaWarehouseAmount;
+
+        var tds = [storeName, obj.month, obj.displayPurchaseAmount, obj.displayFba, obj.displayOversea, obj.amazonOrderQuantity, obj.amazonProductSalesAmountCNY, obj.amazonOrderProductAmount, obj.amazonAmountCNY, obj.amazonTransferAmountCNY, obj.maoli, obj.liushui ];
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
@@ -256,11 +294,12 @@ function createItemForm() {
     itemArray[++i] = {"label": "海外仓费用", "pid": "overseaWarehouseAmount", "inputType": "text", "readonly": true};
     itemArray[++i] = {"label": "海外仓运费", "pid": "overseaShipmentAmount", "inputType": "text", "readonly": true};
     itemArray[++i] = {"label": "海外仓产品价值", "pid": "overseaProductAmount", "inputType": "text", "readonly": true};
-    itemArray[++i] = {"label": "亚马逊付款", "pid": "amazonAmount", "inputType": "text", "readonly": true};
-    itemArray[++i] = {"label": "亚马逊转账", "pid": "amazonTransferAmount", "inputType": "text", "readonly": true};
+    itemArray[++i] = {"label": "亚马逊销售额(USD)", "pid": "amazonOrderAmount", "inputType": "text", "readonly": true};
+    itemArray[++i] = {"label": "亚马逊结余(USD)", "pid": "amazonAmount", "inputType": "text", "readonly": true};
+    itemArray[++i] = {"label": "亚马逊转账(USD)", "pid": "amazonTransferAmount", "inputType": "text", "readonly": true};
     itemArray[++i] = {"label": "毛利", "pid": "maoli", "inputType": "text", "readonly": true};
     itemArray[++i] = {"label": "流水", "pid": "liushui", "inputType": "text", "readonly": true};
-    itemArray[++i] = {"label": "汇率", "pid": "rate", "inputType": "text", "required": true};
+    itemArray[++i] = {"label": "汇率", "pid": "rate", "inputType": "text", "readonly": true};
     $.drawContentForm($itemForm, itemArray);
 }
 
@@ -321,8 +360,15 @@ function createItemForm3() {
 function generate(){
     console.log("generate()");
     var data = {};
-    data.id = itemId;
-    data.rate = $itemForm.find("[pid=rate]").val();
+    $generateForm.find("[pid]").each(function () {
+        data[$(this).attr("pid")] = $(this).val();
+    });
+    var storeIds = "";
+    $generateForm.find(".generateStoreSelectedSpan.selected").each(function () {
+        var $that = $(this);
+        storeIds = storeIds + "," +$that.attr("storeId");
+    });
+    data.storeIds = storeIds;
     console.log(data);
     var ajaxUrl = 'generate';
     $.ajax({
@@ -376,6 +422,16 @@ function autoCreate(){
     });
 }
 
+function showGenerateModal(){
+    $("#generateForm").find("[pid]").val("");
+    $(".generateStoreSelectedSpan").removeClass("storeSelected");
+    $('#generateModal').modal('show');
+}
+
+function showTableBox(){
+    $("#tableBox").show();
+    $("#chartBox").hide();
+}
 //
 
 function toNumber(x){

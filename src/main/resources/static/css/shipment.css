@@ -70,19 +70,12 @@
     color: #00CED1;
 }
 
-.statusDelivery{
-}
-
-.statusDeliveryNo{
-    color: red;
-}
-
-.statusSigned{
-    color: #aaa
-}
-
-.statusSignedNo{
-}
+tr.statusDelivery{}
+tr.statusDeliveryNo{color: red;}
+tr.statusSigned{color: #aaa}
+tr.statusSignedNo{}
+td.statusAmount{min-width:140px}
+td.statusAmountNo{background-color: red;min-width:140px}
 
 /*****/
 .spanOption{width:80px; display:inline-block; background: #ccc; padding:5px; text-align:center; margin-right:10px; cursor:pointer; color: #999 }

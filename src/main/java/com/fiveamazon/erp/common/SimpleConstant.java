@@ -41,6 +41,8 @@ public class SimpleConstant {
 	public static final String PLAN = "Plan";
 	public static final String FBA = "FBA";
 
+	public static final Integer parentStoreId = 999;
+
 
 
 }

@@ -2,8 +2,8 @@ package com.fiveamazon.erp.service;
 
 
 import com.fiveamazon.erp.entity.MonthPO;
+import org.springframework.data.domain.Sort;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -15,10 +15,10 @@ public interface MonthService {
 
     MonthPO save(MonthPO item);
 
-    List<MonthPO> findAll();
+    List<MonthPO> findAll(Sort sort);
 
-    void generate(Integer id, BigDecimal rate);
+    void generate(Integer id);
 
-    void autoCreate();
+    void generate(Integer year, Integer monthStart, Integer monthEnd, List<Integer> storeIdList);
 
 }

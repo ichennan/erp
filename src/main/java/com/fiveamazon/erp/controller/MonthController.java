@@ -7,13 +7,14 @@ import com.fiveamazon.erp.entity.MonthPO;
 import com.fiveamazon.erp.service.MonthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +40,8 @@ public class MonthController extends SimpleCommonController {
 	public String findList(){
 		JSONObject rs = new JSONObject();
 		JSONArray array = new JSONArray();
-		List<MonthPO> list = theService.findAll();
+		Sort sort = Sort.by("storeId");
+		List<MonthPO> list = theService.findAll(sort);
 		for(MonthPO item: list){
 			array.put(item.toJson());
 		}
@@ -69,27 +71,38 @@ public class MonthController extends SimpleCommonController {
 	}
 
 	@RequestMapping(value = "/generate", method= RequestMethod.POST)
-	public String generate(@RequestParam("id")Integer id, @RequestParam("rate") BigDecimal rate){
-		log.info("MonthController.genereate(): " + id);
+	public String generate(@RequestParam("year")Integer year
+			, @RequestParam("monthStart")Integer monthStart
+			, @RequestParam("monthEnd")Integer monthEnd
+			, @RequestParam("storeIds")String storeIds){
+		log.info("MonthController.genereate(): [{}] [{}] [{}] [{}]", year, monthStart, monthEnd, storeIds);
 		JSONObject rs = new JSONObject();
-		theService.generate(id, rate);
+		String[] storeIdStrList = storeIds.split(",");
+		List<Integer> storeIdList = new ArrayList<>();
+		for(String storeIdStr : storeIdStrList){
+			try{
+				Integer storeId = Integer.valueOf(storeIdStr);
+				storeIdList.add(storeId);
+			}catch (Exception e){
+			}
+		}
+		theService.generate(year, monthStart, monthEnd, storeIdList);
 		JSONObject data = new JSONObject();
-		data.put("id", id);
 		rs.put("data", data);
 		rs.put("error", false);
 		return rs.toString();
 	}
 
-	@RequestMapping(value = "/autoCreate", method= RequestMethod.POST)
-	public String generate(){
-		log.info("MonthController.autoCreate()");
-		JSONObject rs = new JSONObject();
-		theService.autoCreate();
-		JSONObject data = new JSONObject();
-		rs.put("data", data);
-		rs.put("error", false);
-		return rs.toString();
-	}
+//	@RequestMapping(value = "/autoCreate", method= RequestMethod.POST)
+//	public String generate(){
+//		log.info("MonthController.autoCreate()");
+//		JSONObject rs = new JSONObject();
+//		theService.autoCreate();
+//		JSONObject data = new JSONObject();
+//		rs.put("data", data);
+//		rs.put("error", false);
+//		return rs.toString();
+//	}
 
 //	@RequestMapping(value = "/saveItem", method= RequestMethod.POST)
 //	public String saveItem(@RequestBody OverseaDTO dto){
