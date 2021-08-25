@@ -130,7 +130,7 @@ $(function () {
             id: "9100",
             text: "月度报表",
             roles: "ROLE_Excel",
-            icon: "fa fa-dollar",
+            icon: "fa fa-bar-chart",
             url: "month",
             targetType: "iframe-tab"
         }

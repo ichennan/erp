@@ -49,7 +49,6 @@ $(document).ready(function(){
     parentJs.$.refreshStoresSelect($itemForm.find("[pid=storeId]"));
     //
     parentJs.$.refreshSkusSelect($detailForm.find("[pid=skuId]"));
-    // parentJs.$.refreshSkusSelect($fbaForm.find("[pid=skuId]"));
 
     $(".datetimepicker").datetimepicker({
         todayButton: true,
@@ -80,31 +79,7 @@ $(document).ready(function(){
         $("#tableDiv").find(".theadSearch").find("th:nth-child(1)").find("input").val(storeName).trigger("change");
     })
 
-    // $("span.spanOption.searchSignedStatus").click(function () {
-    //     var $this = $(this);
-    //     $("span.searchSignedStatus").removeClass("selected");
-    //     $this.addClass("selected");
-    //     var searchSignedStatus = $this.attr("searchSignedStatus");
-    //     console.log("searchSignedStatus: " + searchSignedStatus);
-    //
-    //     $("#listTable tbody").find("tr").each(function () {
-    //         var $this = $(this);
-    //         $this.show();
-    //         var signedDate = $this.find("td[columnName = 签收日期]").text();
-    //         console.log("signedDate: " + signedDate);
-    //         if(signedDate && (searchSignedStatus == "OnTheWay")){
-    //             console.log("hide1");
-    //             $this.hide();
-    //         }
-    //         if(!signedDate && (searchSignedStatus == "Signed")){
-    //             console.log("hide2");
-    //             $this.hide();
-    //         }
-    //     })
-    //
-    // })
-    //
-    // resetSearch();
+    $("#chartBox").hide();
 });
 
 function toItem(id){
@@ -120,8 +95,6 @@ function showList(){
     $("#detailBox").hide();
     $('#generateModal').modal('hide');
     $('#chartModal').modal('hide');
-    // $("span.searchSignedStatus.defaultSelected").trigger("click");
-    //
 
     if(!refreshList){
         console.log("refreshList: false");

@@ -215,7 +215,7 @@ function showList(){
                 "bSort": true,
                 "language": $.dataTablesLanguage,
                 "pageLength": 1000000,
-                "order": [[ 1, "desc" ]],
+                "order": [[ 2, "desc" ]],
             });
 
             theadSearch.find('input').css("width", "100%");
