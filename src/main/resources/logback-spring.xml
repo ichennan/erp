@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="ture" scanPeriod="60 seconds" debug="false">
-	<springProperty scope="context" name="logback.logdir" source="logging.logpath"/>
-	<property name="logback.appname" value="erp"/>
+	<springProperty scope="content" name="logback.logdir" source="logging.file.path" defaultValue="/applog/erp" />
+	<springProperty scope="content" name="logback.appname" source="logging.file.name" defaultValue="erp" />
 	<contextName>erp</contextName>
+
+	<springProfile name="prod,test">
+		<!--		available when spring.profiles.active = prod or test-->
+	</springProfile>
 	
     <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	    <!--如果只是想要 Info 级别的日志，只是过滤 info 还是会输出 Error 日志，因为 Error 的级别高，

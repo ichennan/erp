@@ -230,7 +230,7 @@ public class ExcelController extends SimpleCommonController {
 				excelId = excelService.saveExcelTransaction(excelTransactionPO);
 				tempExcelName = convertCsvToXlsx(uploadFileName);
 				//
-				AnalysisEventListener<ExcelTransactionRowEO> listenerExcelTransactionEO = CommonExcelUtils.getListener(this.batchInsertTransactionRow(excelId), 100);
+				AnalysisEventListener<ExcelTransactionRowEO> listenerExcelTransactionEO = CommonExcelUtils.getListener(this.batchInsertTransactionRow(excelId), 1000);
 				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelTransactionRowEO.class, listenerExcelTransactionEO).sheet(0).headRowNumber(8).doRead();
 				rs.put("excelId", excelId);
 				break;

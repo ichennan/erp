@@ -1,5 +1,7 @@
 logging:
-  logpath: /Users/nan/applog/erp
+  file:
+    path: /Users/nan/applog/erp
+    name: erp
 server:
   port: 10086
 spring:
