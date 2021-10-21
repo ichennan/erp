@@ -8,7 +8,7 @@ from
         (select group_concat(concat(`tbl_shipment_detail`.`product_id`, '|', `tbl_shipment_detail`.`quantity`) separator ',')
             AS `product_id_group`,
             `tbl_shipment_detail`.`shipment_id` AS `shipment_id`
-        from `tbl_shipment_detail`
+        from `tbl_shipment_detail` where box != 'Plan'
         group by `tbl_shipment_detail`.`shipment_id`
     ) as `t`
     on (`p`.`id` = `t`.`shipment_id`)

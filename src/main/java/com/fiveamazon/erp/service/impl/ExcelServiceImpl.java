@@ -423,7 +423,7 @@ public class ExcelServiceImpl implements ExcelService {
                 excelFbaPO.setPlanId(column01);
             }else if(row - 3 == 0){
                 excelFbaPO.setShipTo(column01);
-            }else if(row >= 8){
+            }else if(row >= 7){
                 ExcelFbaPackListPO excelFbaPackListPO = new ExcelFbaPackListPO();
                 excelFbaPackListPO.setMerchantSku(excelFbatsvRowEO.getColumn00());
                 excelFbaPackListPO.setAsin(excelFbatsvRowEO.getColumn02());
