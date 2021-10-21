@@ -14,37 +14,45 @@ $(function () {
 
     App.fixIframeCotent();
     var menus = [
+        // {
+        //     id: "9010",
+        //     text: "管理页面",
+        //     // roles: "ROLE_Mgt_UserManagement_Read, ROLE_Mgt_UserManagement_Write, ROLE_Mgt_GroupManagement_Read, ROLE_Mgt_GroupManagement_Write, ROLE_Mgt_KeyConfig_Read, ROLE_Mgt_KeyConfig_Write",
+        //     icon: "fa fa-th-list",
+        //     children: [
+        //         {
+        //             id: "901010",
+        //             text: "用户配置",
+        //             // roles: "ROLE_Mgt_UserManagement_Read, ROLE_Mgt_UserManagement_Write",
+        //             icon: "fa fa-user",
+        //             url: "userManagement",
+        //             targetType: "iframe-tab"
+        //         },
+        //         {
+        //             id: "901020",
+        //             text: "用户组配置",
+        //             // roles: "ROLE_Mgt_GroupManagement_Read, ROLE_Mgt_GroupManagement_Write",
+        //             icon: "fa fa-umbrella",
+        //             url: "groupManagement",
+        //             targetType: "iframe-tab"
+        //         },
+        //         {
+        //             id: "901030",
+        //             text: "操作日志",
+        //             // roles: "ROLE_Mgt_KeyConfig_Read, ROLE_Mgt_KeyConfig_Write",
+        //             icon: "fa fa-cloud",
+        //             url: "accesslog",
+        //             targetType: "iframe-tab"
+        //         },
+        //     ]
+        // },
         {
             id: "9010",
-            text: "管理页面",
-            // roles: "ROLE_Mgt_UserManagement_Read, ROLE_Mgt_UserManagement_Write, ROLE_Mgt_GroupManagement_Read, ROLE_Mgt_GroupManagement_Write, ROLE_Mgt_KeyConfig_Read, ROLE_Mgt_KeyConfig_Write",
-            icon: "fa fa-th-list",
-            children: [
-                {
-                    id: "901010",
-                    text: "用户配置",
-                    // roles: "ROLE_Mgt_UserManagement_Read, ROLE_Mgt_UserManagement_Write",
-                    icon: "fa fa-user",
-                    url: "userManagement",
-                    targetType: "iframe-tab"
-                },
-                {
-                    id: "901020",
-                    text: "用户组配置",
-                    // roles: "ROLE_Mgt_GroupManagement_Read, ROLE_Mgt_GroupManagement_Write",
-                    icon: "fa fa-umbrella",
-                    url: "groupManagement",
-                    targetType: "iframe-tab"
-                },
-                {
-                    id: "901030",
-                    text: "操作日志",
-                    // roles: "ROLE_Mgt_KeyConfig_Read, ROLE_Mgt_KeyConfig_Write",
-                    icon: "fa fa-cloud",
-                    url: "accesslog",
-                    targetType: "iframe-tab"
-                },
-            ]
+            text: "参数配置",
+            roles: "ROLE_Product",
+            icon: "fa fa-cogs",
+            url: "paramConfig",
+            targetType: "iframe-tab"
         },
         {
             id: "9020",
@@ -309,4 +317,36 @@ $.retrieveStoreName = function(storeId){
     }
     var storeName = $.cacheStores["id" + storeId] ? $.cacheStores["id" + storeId].name + " " : "";
     return storeName;
+}
+
+$.setSelectByParamConfig = function(paramCategory, $select){
+    $select.addClass("select2");
+    var data = {};
+    data.paramCategory = paramCategory;
+    var ajaxUrl = 'findListByParamCategory';
+    $.ajax({
+        type: "POST",
+        url: "paramConfig/" + ajaxUrl,
+        data: data,
+        dataType: "json",
+        success: function (rs) {
+            console.log("findListByParamCategory.success");
+            console.log(rs);
+            $select.empty().append("<option value=''>---select---</option>");
+            $.each(rs.array, function(idx, obj){
+                var option = $("<option></option>");
+                option.text(obj);
+                option.val(obj);
+                $select.append(option);
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            console.log("findListByParamCategory.error");
+            console.log(XMLHttpRequest);
+            $.showErrorModal(XMLHttpRequest.responseText);
+        },
+        complete: function () {
+            console.log("findListByParamCategory.complete");
+        }
+    });
 }
