@@ -7,13 +7,16 @@ var $detailListContentForm = $("#detailListContentForm");
 var ajaxCtx = 'purchase/';
 var ajaxCtx_product = 'product/';
 var tableType = "";
+var parentJs = parent;
 $(document).ready(function(){
-    parent.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
+    parentJs.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
+    parentJs.$.setSelectByParamConfig("供应商", $("[pid=supplier]"));
+    parentJs.$.setSelectByParamConfig("供应商", $("[sid=supplier]"));
 
-    console.log("parent.$.cacheProducts");
+    console.log("parentJs.$.cacheProducts");
     var $searchProductIdSelect = $("[sid=productId]");
     var searchProductIdSelectData = [];
-    $.each(parent.$.cacheProducts, function(productId, productObj){
+    $.each(parentJs.$.cacheProducts, function(productId, productObj){
         var optionObj = {};
         optionObj.id = productObj.id;
         optionObj.text = productObj.snname;
@@ -62,7 +65,6 @@ $(document).ready(function(){
         $("[sid=dateFrom]").val(moment(dateFromMoment).format("YYYY-MM-DD")).trigger("change");
     })
 
-    setAutoCompleteSuppliers();
     resetSearch();
 
     $(window).on("hashchange",function () {
@@ -83,33 +85,6 @@ $(document).ready(function(){
         }
     }).trigger("hashchange");
 });
-
-function setAutoCompleteSuppliers(){
-    var data = {};
-    var ajaxUrl = 'findAutoCompleteSupplier';
-    $.ajax({
-        type: "POST",
-        url: ajaxCtx + ajaxUrl,
-        data: data,
-        dataType: "json",
-        success: function (rs) {
-            console.log("findAutoCompleteSupplier.success");
-            console.log(rs);
-            $(".autoCompleteSuppliers").autocomplete({
-                minLength: 0,
-                source: rs.array
-            });
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            console.log("findAutoCompleteSupplier.error");
-            console.log(XMLHttpRequest);
-            $.showErrorModal(XMLHttpRequest.responseText);
-        },
-        complete: function () {
-            console.log("findAutoCompleteSupplier.complete");
-        }
-    });
-}
 
 function resetSearch(){
     $("[sid=dateTo]").val(moment().format("YYYY-MM-DD")).trigger("change");
@@ -169,14 +144,14 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.id, obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.amount, obj.supplier, parent.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
+                var tds = [obj.id, obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.amount, obj.supplier, parentJs.$.showProductNameGroupByProductIdGroupWithQuantity(obj.productIdGroup)];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");
                     td.attr("columnName", theadNames[index_2]);
                     tr.append(td);
                 })
-                // tr.attr("title", parent.$.showProductNameGroupByProductIdGroup(obj.productIdGroup));
+                // tr.attr("title", parentJs.$.showProductNameGroupByProductIdGroup(obj.productIdGroup));
                 tr.click(function () {
                     toDetail(obj.id);
                 });
@@ -350,7 +325,7 @@ function showDetailList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [parent.$.cacheProducts["id" + obj.productId].snname, obj.bookQuantity, obj.receivedQuantity, obj.unitPrice];
+                var tds = [parentJs.$.cacheProducts["id" + obj.productId].snname, obj.bookQuantity, obj.receivedQuantity, obj.unitPrice];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");
@@ -496,7 +471,7 @@ function getPurchasePrice() {
     console.log("getPurchasePrice()");
     var productId = $detailListContentForm.find("[pid=productId]").val();
     if(productId){
-        $detailListContentForm.find("[pid=unitPrice]").val(null2zero(parent.$.cacheProducts["id" + productId].purchasePrice));
+        $detailListContentForm.find("[pid=unitPrice]").val(null2zero(parentJs.$.cacheProducts["id" + productId].purchasePrice));
     }
 }
 
@@ -577,7 +552,7 @@ function showListProducts(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.supplier, parent.$.cacheProducts["id" + obj.productId].snname, obj.receivedQuantity, obj.unitPrice];
+                var tds = [obj.excelDate, obj.deliveryDate, obj.receivedDate, obj.supplier, parentJs.$.cacheProducts["id" + obj.productId].snname, obj.receivedQuantity, obj.unitPrice];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     var td = $("<td>" + obj_2 + "</td>");

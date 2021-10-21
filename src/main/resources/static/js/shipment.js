@@ -10,6 +10,8 @@ var parentJs = parent;
 // var autoSaveAlertTimer;
 $(document).ready(function(){
     parent.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
+    parentJs.$.setSelectByParamConfig("货代", $("[pid=carrier]"));
+    parentJs.$.setSelectByParamConfig("线路", $("[pid=route]"));
     console.log("parent.$.cacheProducts");
     var $searchProductIdSelect = $("[sid=productId]");
     var searchProductIdSelectData = [];
@@ -204,6 +206,10 @@ function showList(){
                     tr.find("[columnName='运费']").addClass("statusAmount");
                 }else{
                     tr.find("[columnName='运费']").addClass("statusAmountNo");
+                }
+                if(obj.carrier == "FBA"){
+                    tr.find("[columnName='货代']").addClass("carrierFBA");
+                    tr.find("[columnName='线路']").addClass("carrierFBA");
                 }
                 tbody.append(tr);
             });

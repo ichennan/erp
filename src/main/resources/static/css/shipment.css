@@ -76,6 +76,7 @@ tr.statusSigned{color: #aaa}
 tr.statusSignedNo{}
 td.statusAmount{min-width:140px}
 td.statusAmountNo{background-color: red;min-width:140px}
+td.carrierFBA{background-color: #888888}
 
 /*****/
 .spanOption{width:80px; display:inline-block; background: #ccc; padding:5px; text-align:center; margin-right:10px; cursor:pointer; color: #999 }
