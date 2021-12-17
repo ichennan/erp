@@ -320,6 +320,7 @@ function createDetailTableBody(table, rs){
         //
         var fbaIconTd = $("<td>" + "" + "</td>");
         fbaIconTd.append("<i class='fa fa-amazon'></i>");
+        fbaIconTd.append(obj.fbaNo);
         fbaIconTd.click(function(){
             showFba(obj);
             return false;
