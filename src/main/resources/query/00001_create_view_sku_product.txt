@@ -1,0 +1,7 @@
+create or replace view view_sku_product as(
+SELECT
+if(s.combine_count > 1, concat(s.sku, '组合', s.combine_id, '/', s.combine_count), s.sku) as sku_desc,
+s.*, p.name, p.sn, p.color, p.size, p.purchase_price, p.subject
+from tbl_sku_info as s
+left join tbl_product p
+on s.product_id = p.id)

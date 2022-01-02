@@ -17,6 +17,7 @@ select p.*
        , ifnull(inb.inbound_product_quantity, 0) as inbound_quantity
        , ifnull(outb.outbound_product_quantity, 0) as outbound_quantity
        , (ifnull(inb.inbound_product_quantity, 0) - ifnull(outb.outbound_product_quantity, 0)) as stock_quantity
+       , ifnull(tivv.max_date_received, '') as latest_date_received
 from tbl_product p
 
 left join
@@ -30,6 +31,14 @@ left join
 where is_delete is null or is_delete <> 1
 group by product_id) as outb
 on p.id = outb.product_id
+
+left join
+(select max(date_received) as max_date_received, product_id from
+(select ti.date_received, tid.product_id, tid.product_quantity from tbl_inbound_detail tid
+left join tbl_inbound ti
+on tid.inbound_id = ti.id) as tiv
+group by product_id) as tivv
+on p.id = tivv.product_id
 );
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -88,6 +97,16 @@ from
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+create or replace view view_sku_product as(
+SELECT
+if(s.combine_count > 1, concat(s.sku, '组合', s.combine_id, '/', s.combine_count), s.sku) as sku_desc,
+s.*, p.name, p.sn, p.color, p.size, p.purchase_price, p.subject
+from tbl_sku_info as s
+left join tbl_product p
+on s.product_id = p.id)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 create or replace view view_stocktaking as
 
 select `p`.*,
@@ -125,6 +144,53 @@ on tsd.shipment_id = ts.id
 left join tbl_sku_info tsi
 on tsd.sku_id = tsi.id
 where tsd.box != 'Plan'
+);
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+create or replace view view_sku_stock as(
+select sp.*
+       , ifnull(inb.inbound_product_quantity, 0) as inbound_quantity
+       , ifnull(outb.outbound_product_quantity, 0) as outbound_quantity
+       , (ifnull(inb.inbound_product_quantity, 0) - ifnull(outb.outbound_product_quantity, 0)) as stock_quantity
+       , ifnull(outb_sku.outbound_product_quantity, 0) as outbound_sku_quantity
+       , ifnull(tivv.max_date_received, '') as latest_date_received
+       , ifnull(tovv.max_date_sent, '') as latest_date_sent
+from view_sku_product sp
+
+left join
+(select product_id, sum(product_quantity) as inbound_product_quantity from tbl_inbound_detail
+where is_delete is null or is_delete <> 1
+group by product_id) as inb
+on sp.product_id = inb.product_id
+
+left join
+(select product_id, sum(product_quantity) as outbound_product_quantity from tbl_outbound_detail
+where is_delete is null or is_delete <> 1
+group by product_id) as outb
+on sp.product_id = outb.product_id
+
+left join
+(select sum(product_quantity) as outbound_product_quantity, sku_id from tbl_outbound_detail
+where is_delete is null or is_delete <> 1
+group by sku_id) as outb_sku
+on sp.id = outb_sku.sku_id
+
+left join
+(select max(date_received) as max_date_received, product_id from
+(select ti.date_received, tid.product_id, tid.product_quantity from tbl_inbound_detail tid
+left join tbl_inbound ti
+on tid.inbound_id = ti.id) as tiv
+group by product_id) as tivv
+on sp.product_id = tivv.product_id
+
+left join
+(select max(date_sent) as max_date_sent, sku_id from
+(select too.date_sent, tod.product_quantity, tod.sku_id from tbl_outbound_detail tod
+left join tbl_outbound too
+on tod.outbound_id = too.id) as tiv
+group by sku_id) as tovv
+on sp.id = tovv.sku_id
 );
 
 ;;;;;;;;;;;;;;;;;;;;;;;;

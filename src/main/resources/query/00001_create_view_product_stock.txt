@@ -1,0 +1,28 @@
+create or replace view view_product_stock as(
+select p.*
+       , ifnull(inb.inbound_product_quantity, 0) as inbound_quantity
+       , ifnull(outb.outbound_product_quantity, 0) as outbound_quantity
+       , (ifnull(inb.inbound_product_quantity, 0) - ifnull(outb.outbound_product_quantity, 0)) as stock_quantity
+       , ifnull(tivv.max_date_received, '') as latest_date_received
+from tbl_product p
+
+left join
+(select product_id, sum(product_quantity) as inbound_product_quantity from tbl_inbound_detail
+where is_delete is null or is_delete <> 1
+group by product_id) as inb
+on p.id = inb.product_id
+
+left join
+(select product_id, sum(product_quantity) as outbound_product_quantity from tbl_outbound_detail
+where is_delete is null or is_delete <> 1
+group by product_id) as outb
+on p.id = outb.product_id
+
+left join
+(select max(date_received) as max_date_received, product_id from
+(select ti.date_received, tid.product_id, tid.product_quantity from tbl_inbound_detail tid
+left join tbl_inbound ti
+on tid.inbound_id = ti.id) as tiv
+group by product_id) as tivv
+on p.id = tivv.product_id
+);
