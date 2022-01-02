@@ -5,7 +5,7 @@ var ajaxCtx = 'excel/';
 var excelId = 0;
 var theadNames1st = ['订单号', '订单状态', '应收合计', '货品总数', '实际结算','处理时间','发货时间','物流方式','货运单号','货运单批次'];
 var theadNames2nd = ['订单号', '序号', '产品', '编号', '品名','规格','数量','单价','金额','备注'];
-var theadNames3rd = ['店铺', 'sku', '产品', 'skuId', 'qty'];
+var theadNamesFba = ['店铺', 'sku', '产品', 'skuId', 'qty'];
 var theadNamesTransaction = ['Type', 'Count', 'Total'];
 var theadNamesCarrierBill = ['单号', '日期', 'FBA No.', '总费用', '线路', '单价', '重量', '运单号', '转单号'];
 $(document).ready(function(){
@@ -26,15 +26,15 @@ $(document).ready(function(){
     $('#fileCategorySelect').change(function () {
         $("#uploading_div").hide();
         $("table").remove();
-        $this = $(this);
+        var $that = $(this);
         console.log("fileCategorySelect change");
-        var fileCategory = $this.val();
-        $("[fileCategory]").hide();
-        if(fileCategory){
-            if("fbatsv" == fileCategory){
-                fileCategory = "fba";
-            }
-            $("[fileCategory=" + fileCategory + "]").show();
+        var fileCategory = $that.val();
+        var fileSubject = getFileSubject(fileCategory);
+        $("[fileSubject]").hide();
+        $("[fileSubject] table").remove();
+        $("#contentBox").hide();
+        if(fileSubject){
+            $("[fileSubject=" + fileSubject + "]").show();
         }
     }).trigger("change");
 
@@ -48,6 +48,7 @@ $(document).ready(function(){
             console.log("upload errrrrrr:");
             console.log(e);
             console.log(data);
+            $.showErrorModal(data.jqXHR.responseText);
         },
         done: function (e, data) {
             console.log("fileUpload done");
@@ -58,11 +59,9 @@ $(document).ready(function(){
                 excelId = data.result.excelId;
                 fileCategory = data.result.fileCategory;
             }
-            switch (fileCategory) {
-                case "fba":
-                    showFbaList();
-                    break;
-                case "fbatsv":
+            var fileSubject = getFileSubject(fileCategory);
+            switch (fileSubject) {
+                case "FBA":
                     showFbaList();
                     break;
                 case "supplierDelivery":
@@ -83,25 +82,24 @@ $(document).ready(function(){
             if(!fileCategory){
                 $.showErrorModal("请选择上传文件类型");
                 goUpload = false;
-                data.fileCategory = uploadFileData;
             }
 
-            if (!(/\.(xls|xlsx|tsv|csv)$/i).test(uploadFile.name)) {
+            if (goUpload && !(/\.(xls|xlsx|tsv|csv)$/i).test(uploadFile.name)) {
                 $.showErrorModal("Only excel files (xls, xlsx) files allowed");
                 goUpload = false;
             }
-            if (uploadFile.size > 21000000) { // 10mb
+            if (goUpload && uploadFile.size > 21000000) { // 10mb
                 $.showErrorModal("Please upload a smaller excel, max size is 10 MB");
                 goUpload = false;
             }
-            if (goUpload == true) {
+            if (goUpload) {
                 var uploadFileData = {};
                 uploadFileData.fileCategory = fileCategory;
                 data.formData = {'uploadFileData': JSON.stringify(uploadFileData)};
                 data.submit();
                 console.log("excel uploaded: " + uploadFile.name);
+                $("#uploading_div").show();
             }
-            $("#uploading_div").show();
         }
     });
 
@@ -112,7 +110,7 @@ function showFbaList(){
     $("#tableBox").show();
     $("#contentBox").show();
     //
-    var table3rd = createTable3rd($("#tableDiv3rd"));
+    var tableFba = createTableFba($("#tableDivFba"));
     var data = {};
     data.excelId = excelId;
     var ajaxUrl = 'findFbaByExcelId'
@@ -128,7 +126,7 @@ function showFbaList(){
                 $(this).val(jpa).trigger("change");
             });
             $contentForm.find("[pid=storeName]").val(parent.$.retrieveStoreName(rs.data["storeId"]));
-            drawTable3rd(table3rd, rs.array, rs.data.boxCount);
+            drawTableFba(tableFba, rs.array, rs.data.boxCount);
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
@@ -142,7 +140,7 @@ function showFbaList(){
 function showCarrierBillList(){
     console.log("showCarrierBillList()");
     $("#tableBox").show();
-    $("#contentBox").show();
+    $("#contentBox").hide();
     //
     var tableCarrierBill = createTableCarrierBill($("#tableDivCarrierBill"));
     var data = {};
@@ -290,13 +288,13 @@ function createTable2nd(tableDiv){
     return listTable;
 }
 
-function createTable3rd(tableDiv){
-    console.log("createTable3rd()");
-    $("#listTable3rd").remove();
-    $("#listTable3rd_wrapper").remove();
-    var listTable = $("<table class='table table-bordered data-table' id='listTable3rd'></table>");
+function createTableFba(tableDiv){
+    console.log("createTableFba()");
+    $("#listTableFba").remove();
+    $("#listTableFba_wrapper").remove();
+    var listTable = $("<table class='table table-bordered data-table' id='listTableFba'></table>");
     var thead = $("<thead><tr></tr></thead>");
-    $.each(theadNames3rd, function (index, obj) {
+    $.each(theadNamesFba, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
     })
     var tbody = $("<tbody></tbody>");
@@ -426,8 +424,8 @@ function drawTable2nd(table, array){
     });
 }
 
-function drawTable3rd(table, array, boxCount){
-    console.log("drawTable3rd()");
+function drawTableFba(table, array, boxCount){
+    console.log("drawTableFba()");
     var tbody = table.find("tbody");
     var thead = table.find("thead");
     for(var i = 1; i <= boxCount; i++){
@@ -491,13 +489,11 @@ function saveDetail(action){
 }
 
 function upload(){
-    var fileCategory = $("#fileCategorySelect").val();
+    var fileCategory = $('#fileCategorySelect').val();
+    var fileSubject = getFileSubject(fileCategory);
     console.log("upload: " + fileCategory);
-    switch (fileCategory) {
-        case "fba":
-            uploadToShipment();
-            break;
-        case "fbatsv":
+    switch (fileSubject) {
+        case "FBA":
             uploadToShipment();
             break;
         case "supplierDelivery":
@@ -577,7 +573,7 @@ function uploadToShipment(){
         data[$(this).attr("pid")] = $(this).val();
     });
     var array = [];
-    $("#tableDiv3rd").find("tbody tr").each(function(){
+    $("#tableDivFba").find("tbody tr").each(function(){
         var $this = $(this);
         var obj = $.stringToJson($this.attr("objJson"));
         if(!obj.productId){
@@ -697,4 +693,11 @@ function validateForm(contentForm) {
     //     contentForm.find("[type='submit']").trigger("click");
     //     return false;
     // }
+}
+
+function getFileSubject(fileCategory){
+    if(fileCategory && (fileCategory.indexOf("FBA") >= 0)){
+        return "FBA";
+    }
+    return fileCategory;
 }

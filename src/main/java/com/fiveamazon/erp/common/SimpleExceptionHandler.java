@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,5 +55,11 @@ public class SimpleExceptionHandler {
         result.put("errorType", "未知异常");
         result.put("errorMessage", throwable.getMessage());
         return result;
+    }
+
+
+    public boolean isAjax(HttpServletRequest request) {
+        return (request.getHeader("X-Requested-With") != null &&
+                "XMLHttpRequest".equals(request.getHeader("X-Requested-With").toString()));
     }
 }

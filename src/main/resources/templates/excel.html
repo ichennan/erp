@@ -17,8 +17,9 @@
                                     <div class="col-md-4">
                                         <select class="form-control" id="fileCategorySelect">
                                             <option value="">上传文件类型</option>
-                                            <option value="fba">FBA发货表Excel</option>
-                                            <option value="fbatsv">FBA发货表Tsv</option>
+                                            <option value="FBA-EXCEL">FBA-Excel</option>
+                                            <option value="FBA-CSV">FBA-CSV文件</option>
+                                            <option value="FBA-TSV">FBA-TSV文件</option>
                                             <option value="supplierDelivery">芳姐发货表</option>
                                             <option value="MonthlyUnifiedTransaction">月度交易明细表</option>
                                             <option value="CarrierBillCainiao">菜鸟账单</option>
@@ -40,46 +41,40 @@
             </div>
 
             <div class="row" id="tableBox">
-                <div class="col-md-12" fileCategory="supplierDelivery">
+                <div class="col-md-12" fileSubject="supplierDelivery">
                     <div class="box box-info">
                         <div class="box-body" id="tableDiv1st">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12" fileCategory="supplierDelivery">
+                <div class="col-md-12" fileSubject="supplierDelivery">
                     <div class="box box-info">
                         <div class="box-body" id="tableDiv2nd">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12" fileCategory="fba">
+                <div class="col-md-12" fileSubject="FBA">
                     <div class="box box-info">
-                        <div class="box-body" id="tableDiv3rd">
+                        <div class="box-body" id="tableDivFba">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12" fileCategory="MonthlyUnifiedTransaction">
+                <div class="col-md-12" fileSubject="MonthlyUnifiedTransaction">
                     <div class="box box-info">
                         <div class="box-body" id="tableDivTransaction">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12" fileCategory="CarrierBillCainiao">
+                <div class="col-md-12" fileSubject="CarrierBillCainiao">
                     <div class="box box-info">
                         <div class="box-body" id="tableDivCarrierBill">
                         </div>
                     </div>
                 </div>
-                <!--<div class="col-md-12" fileCategory="fbatsv">-->
-                    <!--<div class="box box-info">-->
-                        <!--<div class="box-body" id="tableDivFbatsv">-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
             </div>
 
             <div class="row" id="contentBox">
-                <div class="col-xs-12" fileCategory="fba">
+                <div class="col-xs-12" fileSubject="FBA">
                     <div class="box box-info">
                         <div class="box-header with-border">
                             <h3 class="box-title">详情</h3>

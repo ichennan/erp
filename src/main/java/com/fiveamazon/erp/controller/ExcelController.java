@@ -205,7 +205,7 @@ public class ExcelController extends SimpleCommonController {
 		String tempExcelName;
 		//
 		switch (fileCategory){
-			case "fba":
+			case "FBA-EXCEL":
 				ExcelFbaPO excelFbaPO = new ExcelFbaPO();
 				excelFbaPO.setFileName(originalFileName);
 				excelId = excelService.saveExcelFba(excelFbaPO);
@@ -214,11 +214,21 @@ public class ExcelController extends SimpleCommonController {
 				EasyExcel.read(uploadFileFolder + uploadFileName, ExcelFbaRowEO.class, listenerExcelFbaRowEO).sheet(0).headRowNumber(0).doRead();
 				rs.put("excelId", excelId);
 				break;
-			case "fbatsv":
+			case "FBA-CSV":
+				ExcelFbaPO excelFbaPO4csv = new ExcelFbaPO();
+				excelFbaPO4csv.setFileName(originalFileName);
+				excelId = excelService.saveExcelFba(excelFbaPO4csv);
+				tempExcelName = convertToXlsx(LoadFormat.CSV, uploadFileName);
+				//
+				AnalysisEventListener<ExcelFbaCsvRowEO> listenerExcelFbaCsvEO = CommonExcelUtils.getListener(this.batchInsertExcelFbaCsvPackList(excelId), 100);
+				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelFbaCsvRowEO.class, listenerExcelFbaCsvEO).sheet(0).headRowNumber(0).doRead();
+				rs.put("excelId", excelId);
+				break;
+			case "FBA-TSV":
 				ExcelFbaPO excelFbaPO4tsv = new ExcelFbaPO();
 				excelFbaPO4tsv.setFileName(originalFileName);
 				excelId = excelService.saveExcelFba(excelFbaPO4tsv);
-				tempExcelName = convertTsvToXlsx(uploadFileName);
+				tempExcelName = convertToXlsx(LoadFormat.TSV, uploadFileName);
 				//
 				AnalysisEventListener<ExcelFbatsvRowEO> listenerExcelFbatsvEO = CommonExcelUtils.getListener(this.batchInsertExcelFbatsvPackList(excelId), 100);
 				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelFbatsvRowEO.class, listenerExcelFbatsvEO).sheet(0).headRowNumber(0).doRead();
@@ -228,7 +238,7 @@ public class ExcelController extends SimpleCommonController {
 				ExcelTransactionPO excelTransactionPO = new ExcelTransactionPO();
 				excelTransactionPO.setFileName(originalFileName);
 				excelId = excelService.saveExcelTransaction(excelTransactionPO);
-				tempExcelName = convertCsvToXlsx(uploadFileName);
+				tempExcelName = convertToXlsx(LoadFormat.CSV, uploadFileName);
 				//
 				AnalysisEventListener<ExcelTransactionRowEO> listenerExcelTransactionEO = CommonExcelUtils.getListener(this.batchInsertTransactionRow(excelId), 1000);
 				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelTransactionRowEO.class, listenerExcelTransactionEO).sheet(0).headRowNumber(8).doRead();
@@ -248,7 +258,7 @@ public class ExcelController extends SimpleCommonController {
 				ExcelSupplierDeliveryPO excelSupplierDeliveryPO = new ExcelSupplierDeliveryPO();
 				excelSupplierDeliveryPO.setFileName(originalFileName);
 				excelId = excelService.saveExcelSupplierDelivery(excelSupplierDeliveryPO);
-				convertTsvToXlsx(uploadFileName);
+				convertToXlsx(LoadFormat.CSV, uploadFileName);
 				//
 				AnalysisEventListener<ExcelSupplierDeliveryOrderEO> listenerExcelSupplierDeliveryOrderEO = CommonExcelUtils.getListener(this.batchInsertExcelSupplierDeliveryOrder(excelId), 100);
 				EasyExcel.read(uploadFileFolder + uploadFileName, ExcelSupplierDeliveryOrderEO.class, listenerExcelSupplierDeliveryOrderEO).sheet(0).doRead();
@@ -257,6 +267,8 @@ public class ExcelController extends SimpleCommonController {
 				EasyExcel.read(uploadFileFolder + uploadFileName, ExcelSupplierDeliveryOrderDetailEO.class, listenerExcelSupplierDeliveryOrderDetailEO).sheet(1).doRead();
 				rs.put("excelId", excelId);
 				break;
+			default:
+				throw new SimpleCommonException("fileCategory Error: " + fileCategory);
 		}
 		return rs.toString();
 	}
@@ -316,6 +328,10 @@ public class ExcelController extends SimpleCommonController {
 		return fbatsvPackListEoList -> excelService.insertFbatsvPackList(excelId, fbatsvPackListEoList);
 	}
 
+	private Consumer<List<ExcelFbaCsvRowEO>> batchInsertExcelFbaCsvPackList(Integer excelId){
+		return fbaCsvPackListEoList -> excelService.insertFbaCsvPackList(excelId, fbaCsvPackListEoList);
+	}
+
 	private Consumer<List<ExcelTransactionRowEO>> batchInsertTransactionRow(Integer excelId){
 		return excelTransactionRowEOList -> excelService.insertTransactionRow(excelId, excelTransactionRowEOList);
 	}
@@ -324,8 +340,10 @@ public class ExcelController extends SimpleCommonController {
 		return excelCarrierBillCainiaoRowEOList -> excelService.insertCarrierBillRow(excelId, excelCarrierBillCainiaoRowEOList);
 	}
 
-	public String convertTsvToXlsx(String tsvFileName){
-		LoadOptions opts = new LoadOptions(LoadFormat.TSV);
+	public String convertToXlsx(Integer fileFormat, String tsvFileName){
+		// .csv = LoadFormat.CSV
+		// .tsv = LoadFormat.TSV
+		LoadOptions opts = new LoadOptions(fileFormat);
 		String timeStamp = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
 		String tempExcelName = "temp-" + timeStamp + "-" + tsvFileName + ".xlsx";
 		try{
@@ -334,21 +352,7 @@ public class ExcelController extends SimpleCommonController {
 			return tempExcelName;
 		}catch (Exception e){
 			log.error(e.getMessage());
-			throw new SimpleCommonException("tsv转换xlsx失败");
-		}
-	}
-
-	public String convertCsvToXlsx(String tsvFileName){
-		LoadOptions opts = new LoadOptions(LoadFormat.CSV);
-		String timeStamp = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
-		String tempExcelName = "temp-" + timeStamp + "-" + tsvFileName + ".xlsx";
-		try{
-			com.aspose.cells.Workbook wb = new Workbook(uploadFileFolder + tsvFileName, opts);
-			wb.save(uploadFileFolder + tempExcelName, SaveFormat.XLSX);
-			return tempExcelName;
-		}catch (Exception e){
-			log.error(e.getMessage());
-			throw new SimpleCommonException("csv转换xlsx失败");
+			throw new SimpleCommonException("转换xlsx失败");
 		}
 	}
 

@@ -34,6 +34,7 @@ public interface ExcelService {
     //
     void insertFbaPackList(Integer excelId, List<ExcelFbaRowEO> excelFbaRow);
     void insertFbatsvPackList(Integer excelId, List<ExcelFbatsvRowEO> excelFbatsvRow);
+    void insertFbaCsvPackList(Integer excelId, List<ExcelFbaCsvRowEO> excelFbaCsvRow);
     Integer saveExcelFba(ExcelFbaPO excelFbaPO);
     ExcelFbaPO getFbaByExcelId(Integer excelId);
     List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId);

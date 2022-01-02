@@ -18,6 +18,7 @@ import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.OverseaService;
 import com.fiveamazon.erp.service.ShipmentService;
 import com.fiveamazon.erp.service.SkuService;
+import com.fiveamazon.erp.util.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -263,7 +264,7 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     //---------------------------------------------
-    //fileCategory = fba || fbaTsv
+    //fileCategory = fba || fbaTsv || FBA-CSV
     //---------------------------------------------
 
     @Override
@@ -439,6 +440,114 @@ public class ExcelServiceImpl implements ExcelService {
         excelFbaPO.setBoxCount(1);
         excelFbaPO.setWeightRemark(weightRemark);
         excelFbaPO.setWeight(sumWeight);
+        excelFbaRepository.save(excelFbaPO);
+        Integer storeId = null;
+        for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
+            log.info("merchantSKU: " + excelFbaPackListPO.getMerchantSku());
+            String sku = excelFbaPackListPO.getMerchantSku();
+            excelFbaPackListPO.setExcelId(excelId);
+            List<SkuInfoPO> skuInfoPOList = skuService.findBySku(sku);
+            if(skuInfoPOList == null || skuInfoPOList.size() == 0){
+                log.info("merchantSKU not found");
+                excelFbaPackListRepository.save(excelFbaPackListPO);
+                continue;
+            }
+            for(SkuInfoPO skuInfoPO : skuInfoPOList){
+                log.info("merchantSKU found skuId: " + skuInfoPO.getId());
+                ExcelFbaPackListPO skuExcelFbaPackListPO = new ExcelFbaPackListPO();
+                BeanUtils.copyProperties(excelFbaPackListPO, skuExcelFbaPackListPO);
+                skuExcelFbaPackListPO.setProductId(skuInfoPO.getProductId());
+                skuExcelFbaPackListPO.setStoreId(skuInfoPO.getStoreId());
+                skuExcelFbaPackListPO.setSkuId(skuInfoPO.getId());
+                storeId = skuInfoPO.getStoreId();
+                excelFbaPackListRepository.save(skuExcelFbaPackListPO);
+            }
+        }
+        excelFbaPO.setStoreId(storeId);
+    }
+
+    @Override
+    public void insertFbaCsvPackList(Integer excelId, List<ExcelFbaCsvRowEO> excelFbaCsvRow) {
+        log.warn("ExcelServiceImpl.insertFbaPackList");
+        int row = 0;
+        int boxCount = 0;
+        int skuCount = 0;
+        ExcelFbaPO excelFbaPO = excelFbaRepository.getOne(excelId);
+        List<ExcelFbaPackListPO> excelFbaPackListPOList = new ArrayList<ExcelFbaPackListPO>();
+        Boolean isDetail = false;
+        String weightRemark = "";
+        BigDecimal sumWeight = new BigDecimal(0);
+        for(ExcelFbaCsvRowEO rowEO : excelFbaCsvRow){
+            log.warn("row " + row + " : " + new JSONObject(rowEO).toString());
+            String column00 = rowEO.getColumn00();
+            String column01 = rowEO.getColumn01();
+            if(row == 1){
+                log.warn("-----------------------1 [{}]", column01);
+                excelFbaPO.setShipmentId(column01);
+            }else if(row == 2){
+                log.info("2 [{}]", column01);
+                excelFbaPO.setFbaName(column01);
+            }else if(row == 3){
+                log.warn("-----------------------3 [{}]", column01);
+                excelFbaPO.setShipTo(column01);
+            }else if(row == 4){
+                log.warn("-----------------------4 [{}]", column01);
+                boxCount = CommonUtils.str2Int(column01, true);
+                excelFbaPO.setBoxCount(boxCount);
+            }else if(row == 5){
+                log.warn("-----------------------5 [{}]", column01);
+                skuCount = CommonUtils.str2Int(column01, true);
+            }else if(row >= 9){
+                log.warn(">=9 [{}] [{}]", row, column01);
+                if(row < (skuCount + 9)){
+                    log.warn("-----------------------sku [{}]", column01);
+
+                    ExcelFbaPackListPO excelFbaPackListPO = new ExcelFbaPackListPO();
+                    excelFbaPackListPO.setMerchantSku(rowEO.getColumn00());
+                    excelFbaPackListPO.setAsin(rowEO.getColumn02());
+                    excelFbaPackListPO.setFnsku(rowEO.getColumn03());
+                    excelFbaPackListPO.setBoxedQty(rowEO.getColumn08());
+
+                    excelFbaPackListPO.setBox01Qty(rowEO.getColumn09());
+                    excelFbaPackListPO.setBox02Qty(rowEO.getColumn10());
+                    excelFbaPackListPO.setBox03Qty(rowEO.getColumn11());
+                    excelFbaPackListPO.setBox04Qty(rowEO.getColumn12());
+                    excelFbaPackListPO.setBox05Qty(rowEO.getColumn13());
+                    excelFbaPackListPO.setBox06Qty(rowEO.getColumn14());
+                    excelFbaPackListPO.setBox07Qty(rowEO.getColumn15());
+                    excelFbaPackListPO.setBox08Qty(rowEO.getColumn16());
+                    excelFbaPackListPO.setBox09Qty(rowEO.getColumn17());
+                    excelFbaPackListPO.setBox10Qty(rowEO.getColumn18());
+                    excelFbaPackListPO.setBox11Qty(rowEO.getColumn19());
+                    excelFbaPackListPO.setBox12Qty(rowEO.getColumn20());
+                    excelFbaPackListPO.setBox13Qty(rowEO.getColumn21());
+                    excelFbaPackListPO.setBox14Qty(rowEO.getColumn22());
+                    excelFbaPackListPO.setBox15Qty(rowEO.getColumn23());
+                    excelFbaPackListPO.setBox16Qty(rowEO.getColumn24());
+                    excelFbaPackListPO.setBox17Qty(rowEO.getColumn25());
+                    excelFbaPackListPO.setBox18Qty(rowEO.getColumn26());
+                    excelFbaPackListPO.setBox19Qty(rowEO.getColumn27());
+                    excelFbaPackListPO.setBox20Qty(rowEO.getColumn28());
+                    excelFbaPackListPO.setBox21Qty(rowEO.getColumn29());
+                    excelFbaPackListPO.setBox22Qty(rowEO.getColumn30());
+                    excelFbaPackListPO.setBox23Qty(rowEO.getColumn31());
+                    excelFbaPackListPO.setBox24Qty(rowEO.getColumn32());
+                    excelFbaPackListPO.setBox25Qty(rowEO.getColumn33());
+                    excelFbaPackListPO.setBox26Qty(rowEO.getColumn34());
+                    excelFbaPackListPO.setBox27Qty(rowEO.getColumn35());
+                    excelFbaPackListPO.setBox28Qty(rowEO.getColumn36());
+                    excelFbaPackListPO.setBox29Qty(rowEO.getColumn37());
+                    excelFbaPackListPO.setBox30Qty(rowEO.getColumn38());
+
+                    excelFbaPackListPOList.add(excelFbaPackListPO);
+                }else if(row >= (skuCount + 9 + 2) && row < (skuCount + 9 + 2 + 4)){
+                    log.warn("-----------------------value [{}]", rowEO.getColumn09());
+                }
+            }else {
+//                log.info("else [{}] [{}]", row, column01);
+            }
+            row++;
+        }
         excelFbaRepository.save(excelFbaPO);
         Integer storeId = null;
         for(ExcelFbaPackListPO excelFbaPackListPO : excelFbaPackListPOList){
