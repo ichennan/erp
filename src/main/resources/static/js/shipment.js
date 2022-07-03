@@ -7,6 +7,7 @@ var originalBoxDetailListString;
 var ajaxCtx = 'shipment/';
 var tableType = "";
 var parentJs = parent;
+var refreshList = true;
 // var autoSaveAlertTimer;
 $(document).ready(function(){
     parent.$.refreshProductsSelect($detailListContentForm.find("[pid=productId]"));
@@ -110,6 +111,11 @@ $(document).ready(function(){
             }
         }
     }).trigger("hashchange");
+
+    // $(".backToList").click(function(){
+    //     location.hash = "#";
+    //     $(window).trigger('hashchange');
+    // })
 });
 
 function resetSearch(){
@@ -155,6 +161,11 @@ function showList(){
     $("#contentBox").hide();
     $("#detailListBox").hide();
     $("span.searchSignedStatus.defaultSelected").trigger("click");
+    if(!refreshList){
+        console.log("Not Refresh List");
+        return;
+    }
+    console.log("Refresh List");
     //
     $("#listTable").remove();
     $("#listTable_wrapper").remove();
@@ -235,6 +246,7 @@ function showList(){
                         .draw();
                 } );
             } );
+            refreshList = false;
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
@@ -340,6 +352,7 @@ function saveDetail(action){
             $.showErrorModal(XMLHttpRequest.responseText);
         },
         complete: function () {
+            refreshList = true;
             console.log("saveDetail.complete");
         }
     });
@@ -565,6 +578,7 @@ function createDetailListTableBody(preTr, obj){
     actionTd.append(deleteProductIcon);
     //
     tr.append(boxTd, weightTd, productTd, quantityTd, actionTd);
+    tr.attr("id", obj.id);
     tr.droppable({
         activeClass: "droppable-active",
         hoverClass: "droppable-hover",
@@ -758,6 +772,7 @@ function getBoxDetailList(){
         if(boxFather){
             box = $boxInput.val();
         }
+        boxDetail.id = $this.attr("id");
         boxDetail.box = box;
         var $weightInput = $this.find('td[tidKey=weight]').find("input");
         boxDetail.weight = boxFather ? $weightInput.val() : 0;

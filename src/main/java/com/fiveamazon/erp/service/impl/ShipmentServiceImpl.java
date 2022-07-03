@@ -127,12 +127,17 @@ public class ShipmentServiceImpl implements ShipmentService {
             shipmentPO.setUpdateDate(new Date());
             shipmentPO.setUpdateUser(shipmentDTO.getUsername());
             //if excel, the detail can't be updated, because it will delete sku
-            if(null == excelId || excelId == 0){
+            Boolean createNotByExcel = (null == excelId || excelId == 0);
+            if(createNotByExcel){
                 theDetailRepository.deleteByShipmentIdEqualsAndBoxNotLike(shipmentId, "Plan");
-                for(ShipmentDetailDTO shipmentDetailDTO: shipmentDTO.getShipmentDetailList()){
-                    shipmentDetailDTO.setUsername(shipmentDTO.getUsername());
-                    saveDetail(shipmentDetailDTO);
+            }
+            //if excel, update row/box only, not delete/add
+            for(ShipmentDetailDTO shipmentDetailDTO: shipmentDTO.getShipmentDetailList()){
+                if(createNotByExcel){
+                    shipmentDetailDTO.setId(null);
                 }
+                //shipmentDetailDTO.setUsername(shipmentDTO.getUsername());
+                saveDetail(shipmentDetailDTO);
             }
         }
 
@@ -153,13 +158,15 @@ public class ShipmentServiceImpl implements ShipmentService {
         Integer shipmentDetailId = shipmentDetailDTO.getId();
         ShipmentDetailPO shipmentDetailPO;
         if(shipmentDetailId == null || shipmentDetailId == 0){
+            log.info("create");
             shipmentDetailPO = new ShipmentDetailPO();
             shipmentDetailPO.setCreateDate(new Date());
             shipmentDetailPO.setCreateUser(shipmentDetailDTO.getUsername());
         }else{
+            log.info("update");
             shipmentDetailPO = getDetailById(shipmentDetailId);
-            shipmentDetailPO.setUpdateDate(new Date());
-            shipmentDetailPO.setUpdateUser(shipmentDetailDTO.getUsername());
+//            shipmentDetailPO.setUpdateDate(new Date());
+//            shipmentDetailPO.setUpdateUser(shipmentDetailDTO.getUsername());
         }
         BeanUtils.copyProperties(shipmentDetailDTO, shipmentDetailPO, "id");
         return saveDetail(shipmentDetailPO);
