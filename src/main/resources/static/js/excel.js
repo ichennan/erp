@@ -572,6 +572,10 @@ function uploadToShipment(){
     $contentForm.find("[pid]").each(function () {
         data[$(this).attr("pid")] = $(this).val();
     });
+    if(!data.deliveryDate){
+        $.showErrorModal("请输入发货日期");
+        return;
+    }
     var array = [];
     $("#tableDivFba").find("tbody tr").each(function(){
         var $this = $(this);
