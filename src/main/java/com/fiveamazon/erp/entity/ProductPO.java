@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "tbl_product")
 public class ProductPO extends SimpleCommonEntity {
+    String subject;
     String name;
     String sn;
     String color;
@@ -21,6 +22,7 @@ public class ProductPO extends SimpleCommonEntity {
     BigDecimal purchasePrice;
     String store;
 
+    @Override
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);
         toJson.put("snname", (StringUtils.isEmpty(getSn()) ? "" : getSn() + " ")

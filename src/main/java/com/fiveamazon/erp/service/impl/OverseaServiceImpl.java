@@ -59,6 +59,9 @@ public class OverseaServiceImpl implements OverseaService {
         if(null == item.getAmount()){
             item.setAmount(new BigDecimal(0));
         }
+        if(null == item.getWarehouseAmount()){
+            item.setWarehouseAmount(new BigDecimal(0));
+        }
         if(null == item.getUnitPrice()){
             item.setUnitPrice(new BigDecimal(0));
         }
