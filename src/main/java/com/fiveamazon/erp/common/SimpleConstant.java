@@ -18,6 +18,7 @@ public class SimpleConstant {
 	public static final String FILE_CATEGORY_MonthlyUnifiedTransaction = "MonthlyUnifiedTransaction";
 	public static final String FILE_CATEGORY_supplierDelivery = "supplierDelivery";
 	public static final String FILE_CATEGORY_CarrierBillCainiao = "CarrierBillCainiao";
+	public static final String FILE_CATEGORY_AZWS = "azws";
 
 	public static final String CARRIER_Cainiao = "菜鸟运通";
 

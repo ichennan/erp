@@ -4,16 +4,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.entity.*;
-import com.fiveamazon.erp.entity.excel.ExcelCarrierBillDetailPO;
-import com.fiveamazon.erp.entity.excel.ExcelCarrierBillPO;
-import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
-import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
+import com.fiveamazon.erp.entity.excel.*;
 import com.fiveamazon.erp.epo.*;
 import com.fiveamazon.erp.repository.*;
-import com.fiveamazon.erp.repository.excel.ExcelCarrierBillDetailRepository;
-import com.fiveamazon.erp.repository.excel.ExcelCarrierBillRepository;
-import com.fiveamazon.erp.repository.excel.ExcelTransactionDetailRepository;
-import com.fiveamazon.erp.repository.excel.ExcelTransactionRepository;
+import com.fiveamazon.erp.repository.excel.*;
 import com.fiveamazon.erp.service.ExcelService;
 import com.fiveamazon.erp.service.OverseaService;
 import com.fiveamazon.erp.service.ShipmentService;
@@ -51,6 +45,8 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private ExcelTransactionDetailRepository excelTransactionDetailRepository;
     @Autowired
+    private ExcelAzwsRepository excelAzwsRepository;
+    @Autowired
     private ExcelCarrierBillRepository excelCarrierBillRepository;
     @Autowired
     private ExcelCarrierBillDetailRepository excelCarrierBillDetailRepository;
@@ -60,6 +56,42 @@ public class ExcelServiceImpl implements ExcelService {
     private ShipmentService shipmentService;
     @Autowired
     private OverseaService overseaService;
+
+
+
+    //---------------------------------------------
+    //fileCategory = azws
+    //---------------------------------------------
+
+    @Override
+    public void insertAzwsRow(List<ExcelAzwsRowEO> excelAzwsRowEOList) {
+        log.info("ExcelServiceImpl.insertAzwsRow [{}]");
+        Date today = new Date();
+        String dateAzws = DateUtil.format(today, SimpleConstant.DATE_8);
+        Integer storeId = null;
+        for(ExcelAzwsRowEO item : excelAzwsRowEOList){
+            log.info("item: [{}]", item.toString());
+            if(null == storeId){
+                log.info("storeId is null 1st");
+                String sku = item.getSku();
+                storeId = getStoreId(sku);
+                log.info("getStoreId [{}]", storeId);
+                if(null != storeId){
+                    log.info("storeId is null 2nd");
+                    excelAzwsRepository.deleteByStoreId(storeId);
+                }else{
+                    log.info("storeId is not null 2nd");
+                    continue;
+                }
+            }
+            log.info("storeId is not null 1st [{}]", storeId);
+            ExcelAzwsPO excelAzwsPO = new ExcelAzwsPO();
+            BeanUtils.copyProperties(item, excelAzwsPO);
+            excelAzwsPO.setStoreId(storeId);
+            excelAzwsPO.setDateAzws(dateAzws);
+            excelAzwsRepository.save(excelAzwsPO);
+        }
+    }
 
     //---------------------------------------------
     //fileCategory = transaction
@@ -605,8 +637,18 @@ public class ExcelServiceImpl implements ExcelService {
         for(SkuInfoPO skuInfoPO : skuInfoPOList){
             storeId = skuInfoPO.getStoreId();
         }
+        return storeId;
+    }
 
-
+    Integer getStoreId(String sku){
+        if(StringUtils.isBlank(sku)){
+            return null;
+        }
+        Integer storeId = null;
+        List<SkuInfoPO> skuInfoPOList =  skuService.findBySku(sku);
+        for(SkuInfoPO skuInfoPO : skuInfoPOList){
+            storeId = skuInfoPO.getStoreId();
+        }
         return storeId;
     }
 }

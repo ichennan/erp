@@ -38,4 +38,6 @@ public interface ExcelService {
     Integer saveExcelFba(ExcelFbaPO excelFbaPO);
     ExcelFbaPO getFbaByExcelId(Integer excelId);
     List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId);
+    //
+    void insertAzwsRow(List<ExcelAzwsRowEO> excelAzwsRowEOList);
 }

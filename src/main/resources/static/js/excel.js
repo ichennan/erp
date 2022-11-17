@@ -54,6 +54,10 @@ $(document).ready(function(){
             console.log("fileUpload done");
             $("#uploading_div").hide();
             console.log(data);
+            if(data && data.result && data.result.isCompleted){
+                $.showToastr("上传成功 !");
+                return;
+            }
             var fileCategory;
             if(data && data.result){
                 excelId = data.result.excelId;

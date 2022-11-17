@@ -15,10 +15,7 @@ import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.UploadFbaDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
-import com.fiveamazon.erp.entity.excel.ExcelCarrierBillDetailPO;
-import com.fiveamazon.erp.entity.excel.ExcelCarrierBillPO;
-import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
-import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
+import com.fiveamazon.erp.entity.excel.*;
 import com.fiveamazon.erp.epo.*;
 import com.fiveamazon.erp.service.*;
 import com.fiveamazon.erp.util.CommonExcelUtils;
@@ -267,6 +264,13 @@ public class ExcelController extends SimpleCommonController {
 				EasyExcel.read(uploadFileFolder + uploadFileName, ExcelSupplierDeliveryOrderDetailEO.class, listenerExcelSupplierDeliveryOrderDetailEO).sheet(1).doRead();
 				rs.put("excelId", excelId);
 				break;
+			case SimpleConstant.FILE_CATEGORY_AZWS:
+				tempExcelName = convertToXlsx(LoadFormat.CSV, uploadFileName);
+				//
+				AnalysisEventListener<ExcelAzwsRowEO> listenerExcelAzwsEO = CommonExcelUtils.getListener(this.batchInsertAzwsRow(), 1000);
+				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelAzwsRowEO.class, listenerExcelAzwsEO).sheet(0).doRead();
+				rs.put("isCompleted", true);
+				break;
 			default:
 				throw new SimpleCommonException("fileCategory Error: " + fileCategory);
 		}
@@ -338,6 +342,10 @@ public class ExcelController extends SimpleCommonController {
 
 	private Consumer<List<ExcelCarrierBillCainiaoRowEO>> batchInsertCarrierBillRow(Integer excelId){
 		return excelCarrierBillCainiaoRowEOList -> excelService.insertCarrierBillRow(excelId, excelCarrierBillCainiaoRowEOList);
+	}
+
+	private Consumer<List<ExcelAzwsRowEO>> batchInsertAzwsRow(){
+		return excelAzwsRowEOList -> excelService.insertAzwsRow(excelAzwsRowEOList);
 	}
 
 	public String convertToXlsx(Integer fileFormat, String tsvFileName){
