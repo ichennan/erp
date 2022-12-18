@@ -17,4 +17,5 @@ public class TransactionSearchDTO extends TransactionPO {
     String transactionTimeFrom;
     String transactionTimeTo;
     String description;
+    String sku;
 }

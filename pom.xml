@@ -20,7 +20,7 @@
         <version.easyexcel>2.2.6</version.easyexcel>
 
         <!--webjars version-->
-        <version.jquery>3.5.1</version.jquery>
+        <version.jquery>3.6.1</version.jquery>
         <version.jquery-ui>1.12.1</version.jquery-ui>
         <version.webjars-locator>0.40</version.webjars-locator>
         <version.bootstrap>3.3.7-1</version.bootstrap>
@@ -125,13 +125,6 @@
             <version>2.4.2</version>
         </dependency>
 
-        <!--itext7-->
-        <!--<dependency>-->
-            <!--<groupId>com.itextpdf</groupId>-->
-            <!--<artifactId>itext7-core</artifactId>-->
-            <!--<version>7.1.12</version>-->
-            <!--<type>pom</type>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
@@ -224,21 +217,6 @@
             <groupId>org.webjars</groupId>
             <artifactId>select2</artifactId>
             <version>${version.select2}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars.bowergithub.moment</groupId>
-            <artifactId>moment</artifactId>
-            <version>${version.moment}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars.bowergithub.eonasdan</groupId>
-            <artifactId>bootstrap-datetimepicker</artifactId>
-            <version>${version.datetimepicker}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars.bowergithub.dangrossman</groupId>
-            <artifactId>daterangepicker</artifactId>
-            <version>${version.bootstrap-daterangepicker}</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -353,6 +331,5 @@
             <url>https://repository.aspose.com/repo/</url>
         </repository>
     </repositories>
-
 
 </project>

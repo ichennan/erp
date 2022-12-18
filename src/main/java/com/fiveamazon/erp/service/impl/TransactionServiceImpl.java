@@ -79,6 +79,9 @@ public class TransactionServiceImpl implements TransactionService {
                 if (StringUtils.isNotEmpty(searchDTO.getOrderId())) {
                     predicates.add(criteriaBuilder.equal(root.get("orderId"), searchDTO.getOrderId()));
                 }
+                if (StringUtils.isNotEmpty(searchDTO.getSku())) {
+                    predicates.add(criteriaBuilder.equal(root.get("sku"), searchDTO.getSku()));
+                }
                 if (StringUtils.isNotEmpty(searchDTO.getDescription())) {
                     predicates.add(criteriaBuilder.like(root.get("description"), "%" + searchDTO.getDescription() + "%"));
                 }
