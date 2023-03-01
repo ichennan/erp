@@ -1,0 +1,12 @@
+tr.multipleSelectedItem{
+    background: #5faee3 !important;
+}
+#listTable tbody tr{
+    color: #aaa
+}
+#listTable tbody tr.noTrackingNo{
+    color: red;
+}
+#listTable tbody tr.noShipper{
+    color: #000;
+}

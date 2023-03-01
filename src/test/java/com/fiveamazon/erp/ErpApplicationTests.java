@@ -49,7 +49,8 @@ public class ErpApplicationTests {
     public void test(){
         List<MonthPO> monthPOList = new ArrayList<>();
         String month = "000000";
-        MonthPO monthPO = new MonthPO(month);
+        MonthPO monthPO = new MonthPO();
+        monthPO.setMonth(month);
         String dateFrom = "20210701";
         String dateTo = "20210730";
         monthPO.setDateFrom(dateFrom);
@@ -312,7 +313,7 @@ public class ErpApplicationTests {
             if(null != productPO){
                 BigDecimal purchaseAmount = productPO.getPurchasePrice();
                 if(purchaseAmount.compareTo(new BigDecimal(0)) == 0){
-                    log.error("Purchase Price is 0: []", item.getProductId());
+                    log.error("Purchase Price is 0: [{}]", item.getProductId());
                 }else{
                     amazonProductAmount = amazonProductAmount.add(productPO.getPurchasePrice().multiply(new BigDecimal(quantity)));
                 }

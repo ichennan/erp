@@ -79,6 +79,14 @@ $(function () {
             targetType: "iframe-tab"
         },
         {
+            id: "9041",
+            text: "FBA追踪号",
+            roles: "ROLE_Shipment",
+            icon: "fa fa-truck",
+            url: "fbaTracking",
+            targetType: "iframe-tab"
+        },
+        {
             id: "9045",
             text: "海外仓管理",
             roles: "ROLE_Shipment",

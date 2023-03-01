@@ -35,7 +35,7 @@ public class ShipmentDownloadDTO extends BaseRowModel{
 
     @ExcelProperty(value = "路线", index = 4)
     @ColumnWidth(20)
-    private String router;
+    private String route;
 
     @ExcelProperty(value = "运费单价", index = 5)
     @ColumnWidth(20)

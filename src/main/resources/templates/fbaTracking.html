@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<div th:replace="common/common_head :: head(${pageTitle})"></div>
+<body>
+<div class="wrapper">
+    <div class="content-wrapper">
+        <section class="content">
+
+            <div class="row" id="searchBox">
+                <div class="col-md-12">
+                    <!-- form start -->
+                    <form id="searchForm" action="#" class="form-horizontal" tableType="shipmentProductList">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <div class="col-xs-3">
+                                    <input class="form-control" sid="fbaNo" placeholder="FBA号" />
+                                </div>
+                                <div class="col-xs-3">
+                                    <input class="form-control" sid="boxCount" placeholder="箱数" />
+                                </div>
+                                <div class="col-xs-3">
+                                    <select class="form-control" sid="storeId" placeholder="店铺"></select>
+                                </div>
+                                <div class="col-xs-3">
+                                    <button type="button" class="btn btn-success create" onclick="batchCreate()">批量创建</button>
+                                    <button type="button" class="btn btn-success create" onclick="toItem(-1)">批量更新</button>
+                                    <button type="submit" class="hide"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row" id="tableBox">
+                <div class="col-md-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border hidden">
+<!--                            <a href="#itemId=0" class="pull-right"><i class="fa fa-plus-square"></i> 新增</a>-->
+<!--                            <button type="button" class="btn btn-success create" onclick="toItem(0)">更新</button>-->
+                        </div>
+                        <div class="box-body font12" id="tableDiv">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="itemBox">
+                <div class="col-sm-6 col-xs-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <a href="#" class=""><i class="fa fa-backward"></i> 返回</a>
+                        </div>
+                        <form id="itemForm" action="#" class="form-horizontal">
+                            <div class="box-body">
+                                <input type="hidden" pid="id"/>
+                            </div>
+                            <!-- /.box-body -->
+                            <div class="box-footer">
+                                <div class="pull-right">
+                                    <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-success update" onclick="batchUpdate()">更新</button>
+                                    <button type="submit" class="hide"></button>
+                                </div>
+                            </div>
+                            <!-- /.box-footer -->
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-xs-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border hidden">
+                            <h3 class="box-title">明细</h3>
+                            <span class="pull-right" onclick="showDetail(null)"><i class="fa fa-plus-square"></i> 新增</span>
+                        </div>
+                        <div class="box-body" id="detailTableDiv">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+</div>
+<div th:replace="common/common_js :: js"></div>
+<script type="text/javascript" th:src="@{'/js/common_fn.js?v=' + ${version}}"></script>
+</body>
+</html>
+
