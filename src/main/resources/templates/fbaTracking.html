@@ -59,7 +59,8 @@
                             <!-- /.box-body -->
                             <div class="box-footer">
                                 <div class="pull-right">
-                                    <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-success update" onclick="batchUpdate()">更新</button>
+                                    <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-success update" onclick="batchUpdate('update')">更新</button>
+                                    <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-success delete" onclick="batchUpdate('delete')">删除</button>
                                     <button type="submit" class="hide"></button>
                                 </div>
                             </div>

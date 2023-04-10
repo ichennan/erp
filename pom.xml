@@ -321,11 +321,6 @@
 
     <repositories>
         <repository>
-            <id>com.e-iceblue</id>
-            <name>e-iceblue</name>
-            <url>http://repo.e-iceblue.com/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>AsposeJavaAPI</id>
             <name>Aspose Java API</name>
             <url>https://repository.aspose.com/repo/</url>

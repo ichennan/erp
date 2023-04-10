@@ -78,8 +78,13 @@ public class FbaTrackingServiceImpl implements FbaTrackingService {
         log.info("FbaTrackingServiceImpl.update [{}]", dto);
         Date today = new Date();
         String trakcingNo = dto.getTrackingNo();
+        Boolean isDeleteAction = "delete".equals(dto.getAction());
         Integer i = 0;
         for(Integer id : dto.getIds()){
+            if(isDeleteAction){
+                theRepository.deleteById(id);
+                continue;
+            }
             FbaTrackingPO item = theRepository.getById(id);
             if(StringUtils.isBlank(trakcingNo)){
                 item.setRoute(dto.getRoute());

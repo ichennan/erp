@@ -341,13 +341,14 @@ function batchCreate(){
     });
 }
 
-function batchUpdate(){
+function batchUpdate(action){
     console.log("batchUpdate()");
     var data = {};
     $itemForm.find("[pid]").each(function () {
         data[$(this).attr("pid")] = $(this).val();
     });
     //
+    data.action = action;
     var ids = [];
     $.each($("#detailTableDiv").find("tbody tr"), function(index, obj){
         var $that = $(this);

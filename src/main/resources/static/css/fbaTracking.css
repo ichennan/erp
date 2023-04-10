@@ -5,8 +5,8 @@ tr.multipleSelectedItem{
     color: #aaa
 }
 #listTable tbody tr.noTrackingNo{
-    color: red;
+    color: seagreen;
 }
 #listTable tbody tr.noShipper{
-    color: #000;
+    color: orangered;
 }
