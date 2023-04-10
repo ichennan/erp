@@ -10,6 +10,7 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.fiveamazon.erp.common.SimpleConstant;
+import com.fiveamazon.erp.dto.ProductCostDTO;
 import com.fiveamazon.erp.dto.download.*;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.repository.MonthRepository;
@@ -311,10 +312,17 @@ public class MonthServiceImpl implements MonthService {
         Integer amazonQuantity = 0;
         BigDecimal amazonTransferAmount = new BigDecimal(0);
         Integer amazonTransferQuantity = 0;
-        //
+        BigDecimal amazonDealFeeAmount = new BigDecimal(0);
+        Integer amazonDealFeeQuantity = 0;
+        BigDecimal amazonCouponFeeAmount = new BigDecimal(0);
+        Integer amazonCouponFeeQuantity = 0;
         BigDecimal amazonProductSalesAmount = new BigDecimal(0);
-        BigDecimal amazonOrderProductAmount = new BigDecimal(0);
-        BigDecimal amazonRefundProductAmount = new BigDecimal(0);
+        Integer amazonProductSalesQuantity = 0;
+        //
+        BigDecimal amazonOrderProductPurchaseAmount = new BigDecimal(0);
+        BigDecimal amazonRefundProductPurchaseAmount = new BigDecimal(0);
+        BigDecimal amazonOrderProductFreightAmount = new BigDecimal(0);
+        BigDecimal amazonRefundProductFreightAmount = new BigDecimal(0);
         //
         List<TransactionPO> list = transactionService.findByDate(dateFrom, dateTo, storeId);
         for(TransactionPO item : list){
@@ -324,6 +332,10 @@ public class MonthServiceImpl implements MonthService {
             Integer quantity = item.getQuantity() == 0 ? 1 : item.getQuantity();
             String sku = item.getSku();
             switch (type){
+                case SimpleConstant.AMAZON_TYPE_Coupon_Fee_TERRY:
+                    amazonCouponFeeAmount = amazonCouponFeeAmount.add(total);
+                    amazonCouponFeeQuantity += quantity;
+                    break;
                 case SimpleConstant.AMAZON_TYPE_Adjustment:
                     amazonAdjustmentAmount = amazonAdjustmentAmount.add(total);
                     amazonAdjustmentQuantity += quantity;
@@ -348,13 +360,19 @@ public class MonthServiceImpl implements MonthService {
                     amazonProductSalesAmount = amazonProductSalesAmount.add(productSales);
                     amazonOrderAmount = amazonOrderAmount.add(total);
                     amazonOrderQuantity += quantity;
-                    amazonOrderProductAmount = amazonOrderProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson));
+                    amazonProductSalesQuantity = amazonProductSalesQuantity + quantity;
+                    ProductCostDTO orderProductCostDTO = calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson);
+                    amazonOrderProductPurchaseAmount = amazonOrderProductPurchaseAmount.add(orderProductCostDTO.getProductPurchaseAmount());
+                    amazonOrderProductFreightAmount = amazonOrderProductFreightAmount.add(orderProductCostDTO.getProductFreightAmount());
                     break;
                 case SimpleConstant.AMAZON_TYPE_Refund:
                     amazonProductSalesAmount = amazonProductSalesAmount.add(productSales);
                     amazonRefundAmount = amazonRefundAmount.add(total);
                     amazonRefundQuantity += quantity;
-                    amazonRefundProductAmount = amazonRefundProductAmount.add(calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson));
+                    amazonProductSalesQuantity = amazonProductSalesQuantity - quantity;
+                    ProductCostDTO refundProductCostDTO = calculateAmazonProductAmount(storeId, sku, quantity, productAllJson, skuAllJson);
+                    amazonRefundProductPurchaseAmount = amazonRefundProductPurchaseAmount.add(refundProductCostDTO.getProductPurchaseAmount());
+                    amazonRefundProductFreightAmount = amazonRefundProductFreightAmount.add(refundProductCostDTO.getProductFreightAmount());
                     break;
                 case SimpleConstant.AMAZON_TYPE_Refund_Retrocharge:
                     amazonRefundRetrochargeAmount = amazonRefundRetrochargeAmount.add(total);
@@ -368,13 +386,22 @@ public class MonthServiceImpl implements MonthService {
                     amazonTransferAmount = amazonTransferAmount.add(total);
                     amazonTransferQuantity += quantity;
                     break;
+                case SimpleConstant.AMAZON_TYPE_DEAL_FEE:
+                    amazonDealFeeAmount = amazonDealFeeAmount.add(total);
+                    amazonDealFeeQuantity += quantity;
+                    break;
                 default:
+                    log.info("===============type=================");
+                    log.info("type [{}] [{}]", type, total);
+                    log.info("===============type=================");
                     amazonOthersAmount = amazonOthersAmount.add(total);
                     amazonOthersQuantity += quantity;
                     break;
             }
         }
         amazonAmount = amazonAdjustmentAmount
+                .add(amazonDealFeeAmount)
+                .add(amazonCouponFeeAmount)
                 .add(amazonFbaCustomerReturnFeeAmount)
                 .add(amazonFbaInventoryFeeAmount)
                 .add(amazonFeeAdjustmentAmount)
@@ -384,6 +411,8 @@ public class MonthServiceImpl implements MonthService {
                 .add(amazonRefundRetrochargeAmount)
                 .add(amazonServiceFeeAmount);
         amazonQuantity = amazonAdjustmentQuantity
+                + (amazonDealFeeQuantity)
+                + (amazonCouponFeeQuantity)
                 + (amazonFbaCustomerReturnFeeQuantity)
                 + (amazonFbaInventoryFeeQuantity)
                 + (amazonFeeAdjustmentQuantity)
@@ -414,16 +443,27 @@ public class MonthServiceImpl implements MonthService {
         monthPO.setAmazonQuantity(amazonQuantity);
         monthPO.setAmazonTransferAmount(amazonTransferAmount);
         monthPO.setAmazonTransferQuantity(amazonTransferQuantity);
-        monthPO.setAmazonOrderProductAmount(amazonOrderProductAmount);
-        monthPO.setAmazonRefundProductAmount(amazonRefundProductAmount);
+        monthPO.setAmazonOrderProductPurchaseAmount(amazonOrderProductPurchaseAmount);
+        monthPO.setAmazonOrderProductFreightAmount(amazonOrderProductFreightAmount);
+        monthPO.setAmazonOrderProductAmount(amazonOrderProductPurchaseAmount.add(amazonOrderProductFreightAmount));
+        monthPO.setAmazonRefundProductPurchaseAmount(amazonRefundProductPurchaseAmount);
+        monthPO.setAmazonRefundProductFreightAmount(amazonRefundProductFreightAmount);
+        monthPO.setAmazonRefundProductAmount(amazonRefundProductPurchaseAmount.add(amazonRefundProductFreightAmount));
         monthPO.setAmazonProductSalesAmount(amazonProductSalesAmount);
+        monthPO.setAmazonProductSalesQuantity(amazonProductSalesQuantity);
+        monthPO.setAmazonCouponFeeAmount(amazonCouponFeeAmount);
+        monthPO.setAmazonCouponFeeQuantity(amazonCouponFeeQuantity);
+        monthPO.setAmazonDealFeeAmount(amazonDealFeeAmount);
+        monthPO.setAmazonDealFeeQuantity(amazonDealFeeQuantity);
         log.info("-------------------------------------");
-        log.info("Amazon Amount: " + amazonAmount);
-        log.info("Amazon Quantity: " + amazonQuantity);
-        log.info("Transfer Amount: " + amazonTransferAmount);
-        log.info("Transfer Quantity: " + amazonTransferQuantity);
-        log.info("Order Product Amount: " + amazonOrderProductAmount);
-        log.info("Refund Product Amount: " + amazonRefundProductAmount);
+        log.info("Amazon Amount [{}] [{}]", amazonAmount, amazonQuantity);
+        log.info("Transfer Amount [{}] [{}]",  amazonTransferQuantity, amazonTransferAmount);
+        log.info("Order Product Purchase Amount [{}] [{}]", amazonOrderQuantity, amazonOrderProductPurchaseAmount);
+        log.info("Order Product Freight Amount [{}] [{}]", amazonOrderQuantity, amazonOrderProductFreightAmount);
+        log.info("Refund Product Purchase Amount [{}] [{}]", amazonRefundQuantity, amazonRefundProductPurchaseAmount);
+        log.info("Refund Product Freight Amount [{}] [{}]", amazonRefundQuantity, amazonRefundProductFreightAmount);
+        log.info("Product Sales [{}] [{}]", amazonProductSalesQuantity, amazonProductSalesAmount);
+        log.info("Coupon Fee Amount [{}] [{}]", amazonCouponFeeQuantity, amazonCouponFeeAmount);
         log.info("-------------------------------------");
 
         WriteSheet writeSheet1 = EasyExcel.writerSheet("订单列表").head(OrderDownloadDTO.class).build();
@@ -434,16 +474,18 @@ public class MonthServiceImpl implements MonthService {
         log.info("-------------------------------------");
         log.info("SumFee");
         log.info("-------------------------------------");
-        BigDecimal fbaShipmentAmount = monthPO.getFbaShipmentAmount();
-        BigDecimal fbaProductAmount = monthPO.getFbaProductAmount();
-        BigDecimal overseaShipmentAmount = monthPO.getOverseaShipmentAmount();
-        BigDecimal overseaProductAmount = monthPO.getOverseaProductAmount();
-        BigDecimal overseaWarehouseAmount = monthPO.getOverseaWarehouseAmount();
+        // BigDecimal fbaShipmentAmount = monthPO.getFbaShipmentAmount();
+        // BigDecimal fbaProductAmount = monthPO.getFbaProductAmount();
+        // BigDecimal overseaShipmentAmount = monthPO.getOverseaShipmentAmount();
+        // BigDecimal overseaProductAmount = monthPO.getOverseaProductAmount();
+        // BigDecimal overseaWarehouseAmount = monthPO.getOverseaWarehouseAmount();
         BigDecimal amazonOrderAmount = monthPO.getAmazonOrderAmount();
+        BigDecimal amazonRefundAmount = monthPO.getAmazonRefundAmount();
+        BigDecimal amazonProductSalesAmount = monthPO.getAmazonProductSalesAmount();
         BigDecimal amazonAmount = monthPO.getAmazonAmount();
         BigDecimal amazonTransferAmount = monthPO.getAmazonTransferAmount();
         BigDecimal amazonOrderProductAmount = monthPO.getAmazonOrderProductAmount();
-        BigDecimal amazonProductSalesAmount = monthPO.getAmazonProductSalesAmount();
+        BigDecimal amazonRefundProductAmount = monthPO.getAmazonRefundProductAmount();
         BigDecimal amazonServiceFeeAmount = monthPO.getAmazonServiceFeeAmount();
         //
         BigDecimal amazonAmountCNY =  amazonAmount.multiply(rate);
@@ -451,14 +493,13 @@ public class MonthServiceImpl implements MonthService {
         BigDecimal amazonAmountTransferCNY =  amazonTransferAmount.multiply(rate);
         BigDecimal amazonProductSalesAmountCNY =  amazonProductSalesAmount.multiply(rate);
         BigDecimal amazonServiceFeeAmountCNY =  amazonServiceFeeAmount.multiply(rate);
-        BigDecimal maoli = amazonAmountCNY.subtract(amazonOrderProductAmount);
-        BigDecimal liushui = amazonAmountCNY
-                .subtract(fbaShipmentAmount)
-                .subtract(fbaProductAmount)
-                .subtract(overseaShipmentAmount)
-                .subtract(overseaProductAmount)
-                .subtract(overseaWarehouseAmount)
+        BigDecimal amazonOrderProductAmountUSD = amazonOrderProductAmount.divide(rate, 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal amazonRefundProductAmountUSD = amazonRefundProductAmount.divide(rate, 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal maoli = amazonAmount
+                .subtract(amazonOrderProductAmountUSD)
+                .add(amazonRefundProductAmountUSD.divide(new BigDecimal(2), 2, BigDecimal.ROUND_HALF_UP))
                 ;
+        BigDecimal liushui = amazonAmount;
         monthPO.setRate(rate);
         monthPO.setAmazonOrderAmountCNY(amazonOrderAmountCNY);
         monthPO.setAmazonAmountCNY(amazonAmountCNY);
@@ -468,21 +509,23 @@ public class MonthServiceImpl implements MonthService {
         monthPO.setMaoli(maoli);
         monthPO.setLiushui(liushui);
         log.info("-------------------------------------");
-        log.info("Amazon Amount CNY: " + amazonAmountCNY);
+        log.info("Amazon Amount: " + amazonAmount);
         log.info("Maoli: " + maoli);
         log.info("Liushui: " + liushui);
         log.info("-------------------------------------");
     }
 
-    private BigDecimal calculateAmazonProductAmount(Integer storeId, String sku, Integer quantity, JSONObject productAllJson, JSONObject skuAllJson){
-        BigDecimal amazonProductAmount = new BigDecimal(0);
+    private ProductCostDTO calculateAmazonProductAmount(Integer storeId, String sku, Integer quantity, JSONObject productAllJson, JSONObject skuAllJson){
+        ProductCostDTO dto = new ProductCostDTO();
+        BigDecimal productPurchaseAmount =  new BigDecimal(0);
+        BigDecimal productFreightAmount =  new BigDecimal(0);
         if((StringUtils.isBlank(sku)) || (null == quantity) || (quantity == 0)){
-            return amazonProductAmount;
+            return dto;
         }
         JSONArray skuArray = skuAllJson.getJSONArray(sku);
         if(null == skuArray || skuArray.size() < 1){
             log.error("SKU Not Found: [{}]", sku);
-            return amazonProductAmount;
+            return dto;
         }
         for(JSONObject skuJson : skuArray.jsonIter()){
             Integer productId = skuJson.getInt("productId");
@@ -492,17 +535,21 @@ public class MonthServiceImpl implements MonthService {
                 continue;
             }
             BigDecimal purchasePrice = productJson.getBigDecimal("purchasePrice");
-            if(purchasePrice.compareTo(new BigDecimal(0)) == 0){
-                log.error("Purchase Price is 0: [{}]", productId);
-                continue;
+            BigDecimal freightFee = new BigDecimal(15).multiply(productJson.getBigDecimal("weight")).setScale(2);
+            if(purchasePrice.add(freightFee).compareTo(new BigDecimal(99999)) > 0){
+                log.error("productId purchase price or weight error [{}]", productId);
             }
-            amazonProductAmount = amazonProductAmount.add(purchasePrice.multiply(new BigDecimal(quantity)));
+            productPurchaseAmount =  productPurchaseAmount.add(purchasePrice.multiply(new BigDecimal(quantity)));
+            productFreightAmount =  productFreightAmount.add(freightFee.multiply(new BigDecimal(quantity)));
         }
 //        log.info("amazonProductAmount: " + amazonProductAmount);
-        return amazonProductAmount;
+        dto.setProductPurchaseAmount(productPurchaseAmount);
+        dto.setProductFreightAmount(productFreightAmount);
+        return dto;
     }
 
     void updateParentStore(MonthPO monthPO){
+        log.info("updateParentStore");
         String month = monthPO.getMonth();
         List<MonthPO> list = theRepository.findByMonth(month);
         MonthPO parentMonthPO = theRepository.getByMonthAndStoreId(month, SimpleConstant.parentStoreId);
@@ -593,7 +640,7 @@ public class MonthServiceImpl implements MonthService {
             amazonTransferAmountCNY = item.getAmazonTransferAmountCNY().add(amazonTransferAmountCNY);
             amazonServiceFeeAmountCNY = item.getAmazonServiceFeeAmountCNY().add(amazonServiceFeeAmountCNY);
             maoli = item.getMaoli().add(maoli);
-            // liushui = item.getLiushui().add(liushui);
+            liushui = item.getLiushui().add(liushui);
             //
             overseaProductQuantity += item.getOverseaProductQuantity();
             // purchaseProductQuantity += item.getPurchaseProductQuantity();
@@ -639,12 +686,7 @@ public class MonthServiceImpl implements MonthService {
         parentMonthPO.setAmazonTransferAmountCNY(amazonTransferAmountCNY);
         parentMonthPO.setAmazonServiceFeeAmountCNY(amazonServiceFeeAmountCNY);
         parentMonthPO.setMaoli(maoli);
-        liushui = amazonAmountCNY
-                .subtract(fbaShipmentAmount)
-                .subtract(overseaShipmentAmount)
-                .subtract(overseaWarehouseAmount)
-                .subtract(purchaseAmount)
-        ;
+        // liushui = amazonAmount;
         parentMonthPO.setLiushui(liushui);
         //
         parentMonthPO.setOverseaProductQuantity(overseaProductQuantity);

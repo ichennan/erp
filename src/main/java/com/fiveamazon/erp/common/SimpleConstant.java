@@ -1,11 +1,15 @@
 package com.fiveamazon.erp.common;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**常量类
  */
 public class SimpleConstant {
+
+	public static final BigDecimal BIG_DECIMAL_0 = new BigDecimal(0);
+	public static final BigDecimal BIG_DECIMAL_MAX = new BigDecimal(999999);
 
 	public static final String DATE_17 = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATE_14 = "yyyyMMddHHmmss";
@@ -25,6 +29,7 @@ public class SimpleConstant {
 	public static final SimpleDateFormat TRANSACTION_TIME_DATE_FORMAT = new SimpleDateFormat("MMM d, yyyy h:m:s aa z", Locale.ENGLISH);
 
 	public static final String AMAZON_TYPE_ORDER = "Order";
+	public static final String AMAZON_TYPE_DEAL_FEE = "Deal Fee";
 	public static final String AMAZON_TYPE_FBA_Inventory_Fee = "FBA Inventory Fee";
 	public static final String AMAZON_TYPE_Refund_Retrocharge = "Refund_Retrocharge";
 	public static final String AMAZON_TYPE_Adjustment = "Adjustment";
@@ -35,6 +40,7 @@ public class SimpleConstant {
 	public static final String AMAZON_TYPE_Service_Fee = "Service Fee";
 	public static final String AMAZON_TYPE_Others = "Others";
 	public static final String AMAZON_TYPE_Transfer = "Transfer";
+	public static final String AMAZON_TYPE_Coupon_Fee_TERRY = "";
 
 	public static final String JSON_REMARK_CHARGE_UPDATE_BY_CARRIER_BILL_EXCEL = "chargeUpdatedByCarrierBillExcel";
 	public static final String JSON_REMARK_CREATED_BY_OVERSEA_DETAIL = "createdByOverseaDetail";

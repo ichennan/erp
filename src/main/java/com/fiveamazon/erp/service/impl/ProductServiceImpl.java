@@ -2,6 +2,7 @@ package com.fiveamazon.erp.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONObject;
+import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.ProductDTO;
 import com.fiveamazon.erp.entity.ProductPO;
 import com.fiveamazon.erp.entity.ProductVO;
@@ -67,7 +68,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductPO save(ProductPO productPO) {
         if(null == productPO.getPurchasePrice()){
-            productPO.setPurchasePrice(new BigDecimal(0));
+            productPO.setPurchasePrice(SimpleConstant.BIG_DECIMAL_MAX);
+        }
+        if(null == productPO.getWeight()){
+            productPO.setWeight(SimpleConstant.BIG_DECIMAL_MAX);
+        }
+        if(null == productPO.getPcsPerBox()){
+            productPO.setPcsPerBox(1);
         }
         if(StringUtils.isBlank(productPO.getSn())){
             productPO.setSn("");

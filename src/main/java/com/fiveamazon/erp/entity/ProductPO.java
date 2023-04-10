@@ -21,6 +21,8 @@ public class ProductPO extends SimpleCommonEntity {
     Integer enablePacketSeq;
     BigDecimal purchasePrice;
     String store;
+    BigDecimal weight;
+    Integer pcsPerBox;
 
     @Override
     public JSONObject toJson(){

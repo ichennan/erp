@@ -54,6 +54,14 @@ $(document).ready(function(){
     $("#productImage").click(function(){
         $('#file_upload_form').trigger("click");
     });
+
+    $('input[pid=pcsPerBox]', $contentForm).on('keyup change', function () {
+        var thatValue = $(this).val();
+        if(thatValue){
+            var supposedWeight = (20 / thatValue).toFixed(2);
+            $contentForm.find("input[pid=weight]").val(supposedWeight);
+        }
+    } );
 });
 
 function showList(){
@@ -66,7 +74,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['id', '编号', '名称', '采购价','备注','库存'];
+    var theadNames = ['id', '编号', '名称', '采购价', '每箱装/重量', '备注'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -85,7 +93,8 @@ function showList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [obj.id, obj.sn, obj.snname, obj.purchasePrice, obj.remark, obj.inventoryQuantity];
+                var pcsPerBoxAndWeight = obj.pcsPerBox + "/" + obj.weight;
+                var tds = [obj.id, obj.sn, obj.snname, obj.purchasePrice, pcsPerBoxAndWeight, obj.remark];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");

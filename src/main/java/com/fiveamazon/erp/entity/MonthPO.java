@@ -78,8 +78,20 @@ public class MonthPO extends SimpleCommonEntity {
     BigDecimal amazonServiceFeeAmount = new BigDecimal(0);
     BigDecimal amazonAmount = new BigDecimal(0);
     BigDecimal amazonTransferAmount = new BigDecimal(0);
+    BigDecimal amazonDealFeeAmount = new BigDecimal(0);
+    BigDecimal amazonCouponFeeAmount = new BigDecimal(0);
     BigDecimal amazonOrderProductAmount = new BigDecimal(0);
+    BigDecimal amazonOrderProductAmountUSD = new BigDecimal(0);
+    BigDecimal amazonOrderProductPurchaseAmount = new BigDecimal(0);
+    BigDecimal amazonOrderProductPurchaseAmountUSD = new BigDecimal(0);
+    BigDecimal amazonOrderProductFreightAmount = new BigDecimal(0);
+    BigDecimal amazonOrderProductFreightAmountUSD = new BigDecimal(0);
     BigDecimal amazonRefundProductAmount = new BigDecimal(0);
+    BigDecimal amazonRefundProductAmountUSD = new BigDecimal(0);
+    BigDecimal amazonRefundProductPurchaseAmount = new BigDecimal(0);
+    BigDecimal amazonRefundProductPurchaseAmountUSD = new BigDecimal(0);
+    BigDecimal amazonRefundProductFreightAmount = new BigDecimal(0);
+    BigDecimal amazonRefundProductFreightAmountUSD = new BigDecimal(0);
     BigDecimal amazonProductSalesAmount = new BigDecimal(0);
     BigDecimal amazonProductSalesAmountCNY = new BigDecimal(0);
     BigDecimal amazonOrderAmountCNY = new BigDecimal(0);
@@ -106,6 +118,11 @@ public class MonthPO extends SimpleCommonEntity {
     Integer amazonServiceFeeQuantity = 0;
     Integer amazonQuantity = 0;
     Integer amazonTransferQuantity = 0;
+    Integer amazonDealFeeQuantity = 0;
+    Integer amazonCouponFeeQuantity = 0;
+
+    //amazonSalesQuantity = amazonOrderQuantity - amazonRefundQuantity
+    Integer amazonProductSalesQuantity = 0;
 
     @Override
     public JSONObject toJson(){

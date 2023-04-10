@@ -84,11 +84,17 @@ function createChart(chartSearchData, rs) {
             }
             $.each(categoryObj, function(objKey, objValue) {
                 var yValue = obj[objKey];
-                if(objKey == "amazonServiceFeeAmountCNY"){
+                if(objKey == "amazonServiceFeeAmount"){
                     yValue = -1 * yValue;
                 }
                 if(objKey == "amazonOrderQuantity100"){
                     yValue = obj["amazonOrderQuantity"] * 100;
+                }
+                if(objKey == "amazonPerOrderAmount"){
+                    yValue = (obj["amazonOrderAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+                }
+                if(objKey == "amazonPerOrderSalesAmount"){
+                    yValue = (obj["amazonProductSalesAmount"] / (obj["amazonOrderQuantity"] - obj["amazonRefundQuantity"])).toFixed(2) * 1;
                 }
                 categoryObj[objKey][monthIndex] = yValue;
             });
@@ -97,7 +103,7 @@ function createChart(chartSearchData, rs) {
         var chartSeries = [];
         $.each(categoryObj, function(objKey, objValue) {
             var chartSeriesItem = {};
-            chartSeriesItem.type = "spline";
+            chartSeriesItem.type = "column";
             chartSeriesItem.name = $.category[objKey];
             chartSeriesItem.data = objValue;
             chartSeries.push(chartSeriesItem);
@@ -125,19 +131,26 @@ function createChart(chartSearchData, rs) {
                 return true;
             }
             var yValue = obj[category];
-            if(category == "amazonServiceFeeAmountCNY"){
+            if(category == "amazonServiceFeeAmount"){
                 yValue = -1 * yValue;
             }
             if(category == "amazonOrderQuantity100"){
                 yValue = obj["amazonOrderQuantity"] * 100;
             }
+            if(category == "amazonPerOrderAmount"){
+                yValue = (obj["amazonOrderAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+            }
+            if(category == "amazonPerOrderSalesAmount"){
+                yValue = (obj["amazonProductSalesAmount"] / (obj["amazonOrderQuantity"] - obj["amazonRefundQuantity"])).toFixed(2) * 1;
+            }
+
             storeObj["storeId" + storeId][monthIndex] = yValue;
         });
 
         var chartSeries = [];
         $.each(storeObj, function(objKey, objValue) {
             var chartSeriesItem = {};
-            chartSeriesItem.type = "spline";
+            chartSeriesItem.type = "column";
             chartSeriesItem.name = parentJs.$.retrieveStoreName(objKey.replace("storeId",""));
             chartSeriesItem.data = objValue;
             chartSeries.push(chartSeriesItem);

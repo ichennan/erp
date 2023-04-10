@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "view_product")
 public class ProductVO extends SimpleCommonEntityOld {
+    String subject;
     String name;
     String sn;
     String color;
@@ -22,6 +23,8 @@ public class ProductVO extends SimpleCommonEntityOld {
     String store;
     Integer skuCount;
     Integer inventoryQuantity;
+    BigDecimal weight;
+    Integer pcsPerBox;
 
     @Override
     public JSONObject toJson(){
