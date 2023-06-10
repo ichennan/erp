@@ -15,4 +15,6 @@ public class ProductDTO extends SimpleCommonDTO {
     Integer enabledPacketSeq;
     BigDecimal purchasePrice;
     String store;
+    BigDecimal weight;
+    Integer pcsPerBox;
 }
