@@ -106,12 +106,12 @@ public class OverseaServiceImpl implements OverseaService {
 
     @Override
     public List<OverseaViewPO> findAll() {
-        return theViewRepository.findAll();
+        return theViewRepository.findAllByDeliveryDateDesc();
     }
 
     @Override
     public List<OverseaDetailPO> findAllDetail(Integer overseaId) {
-        return theDetailRepository.findByOverseaIdOrderByBox(overseaId);
+        return theDetailRepository.findByOverseaIdOrderByFbaDateAscBoxDescriptionAscBoxAsc(overseaId);
     }
 
     @Override
@@ -184,7 +184,8 @@ public class OverseaServiceImpl implements OverseaService {
         item.setFbaNo(dto.getFbaNo());
         item.setFbaBox(dto.getFbaBox());
         item.setFbaDate(dto.getFbaDate());
-        shipmentService.saveByOverseaDetail(item, dto);
+        // Not create shipment from 20230611
+        // shipmentService.saveByOverseaDetail(item, dto);
         return saveDetail(item);
     }
 

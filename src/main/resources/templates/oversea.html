@@ -90,7 +90,18 @@
             </div>
 
             <div class="row" id="itemBox">
-                <div class="col-sm-6 col-xs-12">
+                <div class="col-sm-12 col-xs-12 createHidden">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">明细</h3>
+                            <span class="pull-right" onclick="showDetail(null)"><i class="fa fa-plus-square"></i> 新增</span>
+                        </div>
+                        <div class="box-body" id="detailTableDiv">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-xs-12">
                     <div class="box box-info">
                         <div class="box-header with-border">
                             <a href="#" class=""><i class="fa fa-backward"></i> 返回</a>
@@ -109,17 +120,6 @@
                             </div>
                             <!-- /.box-footer -->
                         </form>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xs-12 createHidden">
-                    <div class="box box-info">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">明细</h3>
-                            <span class="pull-right" onclick="showDetail(null)"><i class="fa fa-plus-square"></i> 新增</span>
-                        </div>
-                        <div class="box-body" id="detailTableDiv">
-                        </div>
                     </div>
                 </div>
 

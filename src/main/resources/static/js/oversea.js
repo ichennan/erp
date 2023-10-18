@@ -144,7 +144,7 @@ function showList(){
         success: function (rs) {
             console.log(rs);
             createListTableBody(table, rs);
-            createDataTable(table, {"order": 2});
+            // createDataTable(table, {"order": 2});
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             $.showErrorModal(XMLHttpRequest.responseText);
@@ -262,7 +262,8 @@ function createListTableHead(){
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
     })
     var tbody = $("<tbody></tbody>");
-    listTable.append(thead).append(theadSearch).append(tbody);
+    // listTable.append(thead).append(theadSearch).append(tbody);
+    listTable.append(thead).append(tbody);
     $("#tableDiv").append(listTable);
     return listTable;
 }
@@ -296,18 +297,21 @@ function createDetailTable(rs){
     console.log("createDetailTable()");
     var table = createDetailTableHead();
     createDetailTableBody(table, rs);
+    createDataTable(table, {"order": 2});
 }
 
 function createDetailTableHead(){
     $("#detailTableDiv").empty();
     var detailTable = $("<table class='table table-bordered data-table' id='detailTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
-    var theadNames = ['', '第几箱', '数量', 'SKU', '产品识别码'];
+    var theadNames = ['FBA日期', '发货日期', '第几箱', '数量', 'FNSKU', 'SKU', '产品'];
+    var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
+        theadSearch.find("tr").append("<th><input style='width:1px'></th>");
     })
     var tbody = $("<tbody></tbody>");
-    detailTable.append(thead).append(tbody);
+    detailTable.append(thead).append(theadSearch).append(tbody);
     $("#detailTableDiv").append(detailTable);
     return detailTable;
 }
@@ -316,11 +320,15 @@ function createDetailTableBody(table, rs){
     console.log("createDetailTableBody");
     $.each(rs.array, function (index, obj) {
         var tr = $("<tr></tr>");
-        var tds = [obj.box, obj.quantity, parentJs.$.cacheSkus["id" + obj.skuId].sku, obj.productDescription];
+        var tds = [obj.boxDescription, obj.box, obj.quantity
+            , parentJs.$.cacheSkus["id" + obj.skuId].sku
+            , parentJs.$.cacheSkus["id" + obj.skuId].fnsku
+            , parentJs.$.cacheProducts["id" + obj.productId].snname
+        ];
         //
         var fbaIconTd = $("<td>" + "" + "</td>");
         fbaIconTd.append("<i class='fa fa-amazon'></i>");
-        fbaIconTd.append(obj.fbaNo);
+        fbaIconTd.append(obj.fbaDate);
         fbaIconTd.click(function(){
             showFba(obj);
             return false;
@@ -421,7 +429,7 @@ function saveFba(action){
 
 function createDataTable(table, opt){
     console.log("createDataTable");
-    var order = (opt && opt.order) ? opt.order : 0;
+    // var order = (opt && opt.order) ? opt.order : 0;
     var tableId = table.attr("id");
     console.log("tableId: " + tableId);
     var datatable = table.DataTable({
@@ -431,7 +439,7 @@ function createDataTable(table, opt){
         "bSort": true,
         "language": $.dataTablesLanguage,
         "pageLength": 1000000,
-        "order": [[ order, "desc" ]],
+        // "order": [[ order, "desc" ]],
     });
     if(table.find('.theadSearch')){
         table.find('.theadSearch').find('input').css("width", "100%");
