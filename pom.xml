@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <version.hutool>4.5.2</version.hutool>
+        <version.hutool>5.8.21</version.hutool>
         <version.easyexcel>2.2.6</version.easyexcel>
 
         <!--webjars version-->
