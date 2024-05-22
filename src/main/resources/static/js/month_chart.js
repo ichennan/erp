@@ -84,18 +84,39 @@ function createChart(chartSearchData, rs) {
             }
             $.each(categoryObj, function(objKey, objValue) {
                 var yValue = obj[objKey];
-                if(objKey == "amazonServiceFeeAmount"){
-                    yValue = -1 * yValue;
-                }
-                if(objKey == "amazonOrderQuantity100"){
-                    yValue = obj["amazonOrderQuantity"] * 100;
-                }
-                if(objKey == "amazonPerOrderAmount"){
-                    yValue = (obj["amazonOrderAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
-                }
-                if(objKey == "amazonPerOrderSalesAmount"){
-                    yValue = (obj["amazonProductSalesAmount"] / (obj["amazonOrderQuantity"] - obj["amazonRefundQuantity"])).toFixed(2) * 1;
-                }
+                // if(objKey == "amazonServiceFeePercentage"){
+                //     yValue = 1 * (obj["amazonServiceFeeAmount"] / obj["amazonProductSalesAmount"] * 100).toFixed(2) * 1;
+                // }
+                // if(objKey == "amazonServiceFeeAmount"){
+                //     yValue = 1 * yValue;
+                // }
+                // if(objKey == "amazonFbaInventoryFeeAmount"){
+                //     yValue = 1 * yValue;
+                // }
+                // if(objKey == "amazonOrderQuantity100"){
+                //     yValue = obj["amazonOrderQuantity"] * 100;
+                // }
+                // if(objKey == "amazonPerOrderAmount"){
+                //     yValue = (obj["amazonOrderAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+                // }
+                // if(objKey == "amazonPerOrderServiceFee"){
+                //     yValue = 1 * (obj["amazonServiceFeeAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+                // }
+                // if(objKey == "amazonPerOrderFbaInventoryFee"){
+                //     yValue = 1 * (obj["amazonFbaInventoryFeeAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+                // }
+                // if(objKey == "amazonPerOrderIncome"){
+                //     yValue = (obj["liushui"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+                // }
+                // if(objKey == "amazonPerOrderOtherFee"){
+                //     yValue = (
+                //         (obj["amazonOrderAmount"] + obj["amazonServiceFeeAmount"] + obj["amazonFbaInventoryFeeAmount"] - obj["liushui"])
+                //         / obj["amazonOrderQuantity"]
+                //     ).toFixed(2) * 1;
+                // }
+                // if(objKey == "amazonPerOrderSalesAmount"){
+                //     yValue = (obj["amazonProductSalesAmount"] / (obj["amazonOrderQuantity"] - obj["amazonRefundQuantity"])).toFixed(2) * 1;
+                // }
                 categoryObj[objKey][monthIndex] = yValue;
             });
         });
@@ -131,18 +152,39 @@ function createChart(chartSearchData, rs) {
                 return true;
             }
             var yValue = obj[category];
-            if(category == "amazonServiceFeeAmount"){
-                yValue = -1 * yValue;
-            }
-            if(category == "amazonOrderQuantity100"){
-                yValue = obj["amazonOrderQuantity"] * 100;
-            }
-            if(category == "amazonPerOrderAmount"){
-                yValue = (obj["amazonOrderAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
-            }
-            if(category == "amazonPerOrderSalesAmount"){
-                yValue = (obj["amazonProductSalesAmount"] / (obj["amazonOrderQuantity"] - obj["amazonRefundQuantity"])).toFixed(2) * 1;
-            }
+            // if(category == "amazonServiceFeePercentage"){
+            //     yValue = 1 * (obj["amazonServiceFeeAmount"] / obj["amazonProductSalesAmount"] * 100).toFixed(2) * 1;
+            // }
+            // if(category == "amazonServiceFeeAmount"){
+            //     yValue = 1 * yValue;
+            // }
+            // if(category == "amazonFbaInventoryFeeAmount"){
+            //     yValue = 1 * yValue;
+            // }
+            // if(category == "amazonOrderQuantity100"){
+            //     yValue = obj["amazonOrderQuantity"] * 100;
+            // }
+            // if(category == "amazonPerOrderAmount"){
+            //     yValue = 1 * (obj["amazonOrderAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+            // }
+            // if(category == "amazonPerOrderServiceFee"){
+            //     yValue = 1 * (obj["amazonServiceFeeAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+            // }
+            // if(category == "amazonPerOrderFbaInventoryFee"){
+            //     yValue = 1 * (obj["amazonFbaInventoryFeeAmount"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+            // }
+            // if(category == "amazonPerOrderIncome"){
+            //     yValue = (obj["liushui"] / obj["amazonOrderQuantity"]).toFixed(2) * 1;
+            // }
+            // if(category == "amazonPerOrderOtherFee"){
+            //     yValue = (
+            //         (obj["amazonOrderAmount"] + obj["amazonServiceFeeAmount"] + obj["amazonFbaInventoryFeeAmount"] - obj["liushui"])
+            //         / obj["amazonOrderQuantity"]
+            //     ).toFixed(2) * 1;
+            // }
+            // if(category == "amazonPerOrderSalesAmount"){
+            //     yValue = (obj["amazonProductSalesAmount"] / (obj["amazonOrderQuantity"] - obj["amazonRefundQuantity"])).toFixed(2) * 1;
+            // }
 
             storeObj["storeId" + storeId][monthIndex] = yValue;
         });
@@ -151,7 +193,7 @@ function createChart(chartSearchData, rs) {
         $.each(storeObj, function(objKey, objValue) {
             var chartSeriesItem = {};
             chartSeriesItem.type = "column";
-            chartSeriesItem.name = parentJs.$.retrieveStoreName(objKey.replace("storeId",""));
+            chartSeriesItem.name = parentJs.$.retrieveStoreName(objKey.replace("storeId","")) + " (美元)";
             chartSeriesItem.data = objValue;
             chartSeries.push(chartSeriesItem);
         });

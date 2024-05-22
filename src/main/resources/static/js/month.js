@@ -11,24 +11,32 @@ var ajaxCtx = 'month/';
 var parentJs = parent;
 var refreshList = true;
 $.category = {
-    "maoli":"毛利",
-    "liushui":"流水",
-    "amazonOrderProductAmount":"进货价头程",
-    "amazonServiceFeeAmount":"广告费",
-    "amazonOrderAmount":"订单收入",
-    "amazonPerOrderAmount":"平均订单收入",
-    "amazonPerOrderSalesAmount":"平均订单销售额",
     "amazonOrderQuantity":"订单数",
-    "amazonOrderQuantity100":"订单数*100",
     "amazonRefundQuantity":"退货数",
     "amazonProductSalesAmount":"销售额",
-    "fbaProductQuantity":"FBA数量",
-    "fbaShipmentAmount":"FBA运费",
-    "overseaProductQuantity":"海外仓数量",
-    "overseaShipmentAmount":"海外仓运费",
-    "overseaWarehouseAmount":"海外仓费用",
-    "purchaseQuantity":"采购数量",
-    "purchaseAmount":"采购费用"
+    "amazonProductPaymentAmount":"订单回款",
+    "amazonServiceFeeAmount":"广告费",
+    "amazonDealFeeAmount":"秒杀费",
+    "amazonFbaInventoryFeeAmount":"仓储费",
+    "amazonAmount":"亚马逊回款",
+    "chengbenUSD":"采购运费",
+    "lirun":"利润",
+
+
+
+
+    // "maoli":"毛利",
+    // "liushui":"入账金额",
+    // "amazonOrderProductAmountUSD":"进货价头程",
+    // "amazonServiceFeePercentage":"广告费/销售额",
+    // "amazonOrderAmount":"订单收入",
+    // "amazonPerOrderAmount":"平均订单收入",
+    // "amazonPerOrderServiceFee":"平均订单广告费",
+    // "amazonPerOrderFbaInventoryFee":"平均订单仓储费",
+    // "amazonPerOrderOtherFee":"平均订单其它费用",
+    // "amazonPerOrderIncome":"平均订单真实收入",
+    // "amazonPerOrderSalesAmount":"平均订单销售额",
+    // "amazonOrderQuantity100":"订单数*100",
 }
 $.findListRs;
 $(document).ready(function(){
@@ -195,7 +203,7 @@ function createListTableHead(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['店铺', '月份', '采购', 'fba货物', '海外仓货物','订单数','销售额','货物成本','结余','转账','毛利','流水'];
+    var theadNames = ['店铺', '月份', '订单数', '退货数', '销售额', '订单回款', '广告秒杀', '仓储', '总回款', '采购运费', '利润'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
         theadSearch.find("tr").append("<th><input style='width:1px'></th>");
@@ -217,12 +225,15 @@ function createListTableBody(table, rs){
         obj.displayFba = obj.fbaProductAmount + "/" + obj.fbaShipmentAmount;
         obj.displayOversea = obj.overseaProductAmount + "/" + obj.overseaShipmentAmount + "/" + obj.overseaWarehouseAmount;
 
-        var tds = [storeName, obj.month, obj.displayPurchaseAmount, obj.displayFba, obj.displayOversea, obj.amazonOrderQuantity, obj.amazonProductSalesAmountCNY, obj.amazonOrderProductAmount, obj.amazonAmountCNY, obj.amazonTransferAmountCNY, obj.maoli, obj.liushui ];
+        var tds = [storeName, obj.month, obj.amazonOrderQuantity, obj.amazonRefundQuantity, obj.amazonProductSalesAmount, obj.amazonProductPaymentAmount, (obj.amazonServiceFeeAmount + obj.amazonDealFeeAmount).toFixed(2), obj.amazonFbaInventoryFeeAmount, obj.amazonAmount, obj.chengbenUSD, obj.lirun];
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
             tr.append(td);
         })
+        if(storeName.trim() == "合计"){
+            tr.addClass("heji");
+        }
         tr.click(function () {
             toItem(obj.id);
         });

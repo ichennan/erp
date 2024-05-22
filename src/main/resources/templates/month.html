@@ -77,45 +77,64 @@
                                 <label class="col-xs-1 control-label">数据选择 <span class="required ">*</span></label>
                                 <div class="col-xs-11">
                                     <div>
-                                        <span category="liushui" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">流水</span>
-                                        <span category="maoli" class="selectedSpanBig selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">毛利=流水-进货价头程+1/2退货进货价头程</span>
-                                        <span category="amazonProductSalesAmount" class="selectedSpanMedium selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">销售额=订单金额-退货金额</span>
 <!--                                        <span category="fbaShipmentAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">FBA运费</span>-->
 <!--                                        <span category="overseaShipmentAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">海外仓运费</span>-->
 <!--                                        <span category="overseaWarehouseAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">海外仓费用</span>-->
-                                        <span category="amazonServiceFeeAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">广告费</span>
-                                        <br/>
-                                        <span category="amazonOrderAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">订单收入</span>
                                         <span category="amazonOrderQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">订单数</span>
-                                        <span category="amazonPerOrderAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单收入</span>
-                                        <span category="amazonPerOrderSalesAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单销售额</span>
                                         <span category="amazonRefundQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">退货数</span>
-                                        <span category="amazonOrderQuantity100" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">订单数*100</span>
-                                        <span category="amazonOrderProductAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">进货价头程</span>
+                                        <span category="amazonProductSalesAmount" class="selectedSpanMedium selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">销售额</span>
+                                        <span category="amazonProductPaymentAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">订单回款</span>
+                                        <br/>
+                                        <span category="amazonServiceFeeAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">广告费</span>
+                                        <span category="amazonDealFeeAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">秒杀费</span>
+                                        <span category="amazonFbaInventoryFeeAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">仓储费</span>
+                                        <span category="amazonAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">亚马逊回款</span>
+                                        <span category="chengbenUSD" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">采购运费</span>
+                                        <span category="lirun" class="selectedSpanBig selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">利润</span>
+<!--                                        <br/>-->
+<!--                                        <span category="amazonServiceFeePercentage" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">广告费/销售额</span>-->
+<!--                                        <span category="amazonPerOrderSalesAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单销售额</span>-->
+<!--                                        <span category="amazonOrderQuantity100" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">订单数*100</span>-->
 <!--                                        <span category="fbaProductQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">FBA数量</span>-->
 <!--                                        <span category="overseaProductQuantity" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">海外仓数量</span>-->
+<!--                                        <br/>-->
+<!--                                        <span category="amazonPerOrderAmount" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单收入</span>-->
+<!--                                        <span category="amazonPerOrderServiceFee" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单广告费</span>-->
+<!--                                        <span category="amazonPerOrderFbaInventoryFee" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单仓储费</span>-->
+<!--                                        <span category="amazonPerOrderOtherFee" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单其它费用</span>-->
+<!--                                        <span category="amazonPerOrderIncome" class="selectedSpan singleSelectedSpan multipleStore chartCategorySelectedSpan">平均订单真实收入=入账金额/订单数</span>-->
                                     </div>
 
                                     <div>
-                                        <span category="liushui" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">流水</span>
-                                        <span category="maoli" class="selectedSpanBig selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">毛利=流水-进货价头程+1/2退货进货价头程</span>
-                                        <span category="amazonProductSalesAmount" class="selectedSpanMedium selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">销售额=订单金额-退货金额</span>
+
+                                        <span category="amazonOrderQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单数</span>
+                                        <span category="amazonRefundQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">退货数</span>
+                                        <span category="amazonProductSalesAmount" class="selectedSpanMedium selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">销售额</span>
+                                        <span category="amazonProductPaymentAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单回款</span>
+                                        <br/>
+                                        <span category="amazonServiceFeeAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">广告费</span>
+                                        <span category="amazonDealFeeAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">秒杀费</span>
+                                        <span category="amazonFbaInventoryFeeAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">仓储费</span>
+                                        <span category="amazonAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">亚马逊回款</span>
+                                        <span category="chengbenUSD" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">采购运费</span>
+                                        <span category="lirun" class="selectedSpanBig selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">利润</span>
 <!--                                        <span category="fbaShipmentAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">FBA运费</span>-->
 <!--                                        <span category="overseaShipmentAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">海外仓运费</span>-->
 <!--                                        <span category="overseaWarehouseAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">海外仓费用</span>-->
 <!--                                        <span category="purchaseAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">采购费用</span>-->
-                                        <span category="amazonServiceFeeAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">广告费</span>
-                                        <br/>
-                                        <span category="amazonOrderAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单收入</span>
-                                        <span category="amazonOrderQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单数</span>
-                                        <span category="amazonPerOrderAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单收入</span>
-                                        <span category="amazonPerOrderSalesAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单销售额</span>
-                                        <span category="amazonRefundQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">退货数</span>
-                                        <span category="amazonOrderQuantity100" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单数*100</span>
-                                        <span category="amazonOrderProductAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">进货价头程</span>
+<!--                                        <br/>-->
+<!--                                        <span category="amazonServiceFeePercentage" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">广告费/销售额</span>-->
+<!--                                        <span category="amazonPerOrderSalesAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单销售额</span>-->
+<!--                                        <span category="amazonOrderQuantity100" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">订单数*100</span>-->
 <!--                                        <span category="fbaProductQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">FBA数量</span>-->
 <!--                                        <span category="overseaProductQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">海外仓数量</span>-->
 <!--                                        <span category="purchaseQuantity" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">采购数量</span>-->
+<!--                                        <br/>-->
+<!--                                        <span category="amazonPerOrderAmount" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单收入</span>-->
+<!--                                        <span category="amazonPerOrderServiceFee" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单广告费</span>-->
+<!--                                        <span category="amazonPerOrderFbaInventoryFee" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单仓储费</span>-->
+<!--                                        <span category="amazonPerOrderIncome" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单真实收入=入账金额/订单数</span>-->
+<!--                                        <span category="amazonPerOrderOtherFee" class="selectedSpan multipleSelectedSpan singleStore chartCategorySelectedSpan">平均订单其它费用</span>-->
                                     </div>
 
                                 </div>
@@ -202,8 +221,6 @@
                         </form>
 
                         <div class="box-footer">
-                            <p>毛利=亚马逊金额-订单产品价值</p>
-                            <p>流水=亚马逊金额-FBA运费-FBA产品价值-海外仓费用-海外仓运费-海外仓产品价值</p>
                             <div class="pull-right">
 <!--                                <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="generate()">更新报表</button>-->
 <!--                                <button sec:authorize="hasAuthority('ROLE_Shipment_Edit')" type="button" class="btn btn-warning update" onclick="download()">下载报表</button>-->

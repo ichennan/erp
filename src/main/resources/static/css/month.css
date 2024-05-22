@@ -7,3 +7,5 @@ button.pull-right{margin-left: 30px;}
 #chartBox span.selectedSpan{width: 120px;}
 #chartBox span.selectedSpanBig{width: 400px;}
 #chartBox span.selectedSpanMedium{width: 200px;}
+
+tr.heji{background: cadetblue}
