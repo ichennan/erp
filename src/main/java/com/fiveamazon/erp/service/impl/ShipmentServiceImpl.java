@@ -132,12 +132,23 @@ public class ShipmentServiceImpl implements ShipmentService {
                 theDetailRepository.deleteByShipmentIdEqualsAndBoxNotLike(shipmentId, "Plan");
             }
             //if excel, update row/box only, not delete/add
+            List<Integer> shipmentDetailIds = new ArrayList<>();
+            List<ShipmentDetailPO> originalShipmentDetailList = theDetailRepository.findAllByShipmentIdOrderByBox(shipmentId);
             for(ShipmentDetailDTO shipmentDetailDTO: shipmentDTO.getShipmentDetailList()){
                 if(createNotByExcel){
                     shipmentDetailDTO.setId(null);
                 }
                 //shipmentDetailDTO.setUsername(shipmentDTO.getUsername());
-                saveDetail(shipmentDetailDTO);
+                ShipmentDetailPO shipmentDetailPO = saveDetail(shipmentDetailDTO);
+                if(null != shipmentDetailPO){
+                    shipmentDetailIds.add(shipmentDetailPO.getId());
+                }
+            }
+            for(ShipmentDetailPO sd : originalShipmentDetailList){
+                //delete the shipmentDetail if not exist in new shipmentDetailList
+                if(!shipmentDetailIds.contains(sd.getShipmentId())){
+                    theDetailRepository.delete(sd);
+                }
             }
         }
 
