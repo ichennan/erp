@@ -8,6 +8,8 @@ import java.util.Locale;
  */
 public class SimpleConstant {
 
+	public static final String BOX_PLAN = "Plan";
+
 	public static final BigDecimal BIG_DECIMAL_0 = new BigDecimal(0);
 	public static final BigDecimal BIG_DECIMAL_MAX = new BigDecimal(999999);
 
@@ -45,7 +47,6 @@ public class SimpleConstant {
 	public static final String JSON_REMARK_CHARGE_UPDATE_BY_CARRIER_BILL_EXCEL = "chargeUpdatedByCarrierBillExcel";
 	public static final String JSON_REMARK_CREATED_BY_OVERSEA_DETAIL = "createdByOverseaDetail";
 
-	public static final String PLAN = "Plan";
 	public static final String FBA = "FBA";
 
 	public static final Integer parentStoreId = 999;

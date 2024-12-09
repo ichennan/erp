@@ -793,14 +793,11 @@ function getBoxDetailList(){
 
 function abcType(abc) {
     if(abc === 0 || abc === "0"){
-        console.log("abcType: " + abc + ": 0");
         return 0;
     }
     if(abc === null || abc == undefined || $.trim(abc) === ""){
-        console.log("abcType: " + abc + ": -1");
         return -1;
     }
-    console.log("abcType: " + abc + ": 1");
     return 1;
 }
 

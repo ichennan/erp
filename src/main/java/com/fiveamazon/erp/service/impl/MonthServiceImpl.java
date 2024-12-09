@@ -186,7 +186,7 @@ public class MonthServiceImpl implements MonthService {
             List<ShipmentDetailPO> detailList = shipmentService.findAllDetail(id);
             String route = item.getRoute();
             for (ShipmentDetailPO detailItem : detailList) {
-                if (SimpleConstant.PLAN.equalsIgnoreCase(detailItem.getBox())) {
+                if (SimpleConstant.BOX_PLAN.equalsIgnoreCase(detailItem.getBox())) {
                     continue;
                 }
                 ShipmentDetailDownloadDTO detailDownloadDTO = new ShipmentDetailDownloadDTO();

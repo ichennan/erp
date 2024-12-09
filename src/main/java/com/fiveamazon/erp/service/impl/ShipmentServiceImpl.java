@@ -129,7 +129,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             //if excel, the detail can't be updated, because it will delete sku
             Boolean createNotByExcel = (null == excelId || excelId == 0);
             if(createNotByExcel){
-                theDetailRepository.deleteByShipmentIdEqualsAndBoxNotLike(shipmentId, "Plan");
+                theDetailRepository.deleteByShipmentIdEqualsAndBoxNotLike(shipmentId, SimpleConstant.BOX_PLAN);
             }
             //if excel, update row/box only, not delete/add
             List<Integer> shipmentDetailIds = new ArrayList<>();
@@ -144,10 +144,14 @@ public class ShipmentServiceImpl implements ShipmentService {
                     shipmentDetailIds.add(shipmentDetailPO.getId());
                 }
             }
+            log.info("shipmentDetailIds [{}]", shipmentDetailIds);
             for(ShipmentDetailPO sd : originalShipmentDetailList){
                 //delete the shipmentDetail if not exist in new shipmentDetailList
-                if(!shipmentDetailIds.contains(sd.getShipmentId())){
-                    theDetailRepository.delete(sd);
+                if(!shipmentDetailIds.contains(sd.getId())){
+                    if(!sd.getBox().equals(SimpleConstant.BOX_PLAN)){
+                        log.info("!!!-!!!-!!! ShipmentDetailPO deleted [{}]", sd);
+                        theDetailRepository.delete(sd);
+                    }
                 }
             }
         }
@@ -272,7 +276,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         //
         for(String planJsonKey : planJson.keySet()){
             JSONObject planSkuJson = planJson.getJSONObject(planJsonKey);
-            planSkuJson.put("box", "Plan");
+            planSkuJson.put("box", SimpleConstant.BOX_PLAN);
             createShipmentDetailByJson(planSkuJson);
         }
 
