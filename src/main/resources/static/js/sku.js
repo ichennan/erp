@@ -85,7 +85,7 @@ function showList(){
     var listTable = $("<table class='table table-bordered data-table' id='listTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
     var theadSearch = $("<thead class='theadSearch'><tr></tr></thead>");
-    var theadNames = ['','SKU', '产品', '店铺', 'FNSKU', 'ASIN'];
+    var theadNames = ['','SKU', '产品', '店铺', 'FNSKU', 'ASIN', '优先级'];
 
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
@@ -123,7 +123,7 @@ function showList(){
                 batchTd.append(batchInput);
                 tr.append(batchTd);
                 //
-                var tds = [obj.skuDesc, snname, storeName, obj.fnsku, obj.asin];
+                var tds = [obj.skuDesc, snname, storeName, obj.fnsku, obj.asin, obj.priority];
 
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";

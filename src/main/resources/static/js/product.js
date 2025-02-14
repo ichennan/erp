@@ -291,7 +291,7 @@ function showSkuList(){
     //
     var skuTable = $("<table class='table table-bordered data-table' id='skuTable'></table>");
     var thead = $("<thead><tr></tr></thead>");
-    var theadNames = ['店铺', 'SKU', 'FNSKU', 'ASIN'];
+    var theadNames = ['店铺', 'SKU', 'FNSKU', 'ASIN', '优先级'];
     $.each(theadNames, function (index, obj) {
         thead.find("tr").append("<th>" + obj + "</th>");
     })
@@ -310,7 +310,7 @@ function showSkuList(){
             console.log(rs);
             $.each(rs.array, function (index, obj) {
                 var tr = $("<tr></tr>");
-                var tds = [parent.$.retrieveStoreName(obj.storeId), obj.sku, obj.fnsku, obj.asin];
+                var tds = [parent.$.retrieveStoreName(obj.storeId), obj.sku, obj.fnsku, obj.asin, obj.priority];
                 $.each(tds, function (index_2, obj_2) {
                     obj_2 = obj_2 ? obj_2 : "";
                     tr.append("<td>" + obj_2 + "</td>");
