@@ -19,6 +19,7 @@ public class SkuInfoVO extends SimpleCommonEntityOld {
     String fnsku;
     String asin;
     Integer combineId;
+    Integer priority;
     String skuDesc;
     //
     Integer sumProductPurchaseQuantity;

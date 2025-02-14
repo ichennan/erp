@@ -20,6 +20,7 @@ public class SkuInfoPO extends SimpleCommonEntity {
     String fnsku;
     String asin;
     Integer combineId;
+    Integer priority;
 
     public JSONObject toJson(){
         JSONObject toJson = new JSONObject(this);

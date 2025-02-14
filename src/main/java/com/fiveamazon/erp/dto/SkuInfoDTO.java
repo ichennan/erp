@@ -14,4 +14,5 @@ public class SkuInfoDTO extends SimpleCommonDTO {
     String fnsku;
     Integer storeId;
     String asin;
+    Integer priority;
 }
