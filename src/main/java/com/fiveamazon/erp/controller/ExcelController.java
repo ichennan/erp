@@ -271,6 +271,13 @@ public class ExcelController extends SimpleCommonController {
 				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelAzwsRowEO.class, listenerExcelAzwsEO).sheet(0).doRead();
 				rs.put("isCompleted", true);
 				break;
+			case SimpleConstant.FILE_CATEGORY_AZPF:
+				tempExcelName = convertToXlsx(LoadFormat.CSV, uploadFileName);
+				//
+				AnalysisEventListener<ExcelAzpfRowEO> listenerExcelAzpfEO = CommonExcelUtils.getListener(this.batchInsertAzpfRow(), 1000);
+				EasyExcel.read(uploadFileFolder + tempExcelName, ExcelAzpfRowEO.class, listenerExcelAzpfEO).sheet(0).doRead();
+				rs.put("isCompleted", true);
+				break;
 			default:
 				throw new SimpleCommonException("fileCategory Error: " + fileCategory);
 		}
@@ -346,6 +353,10 @@ public class ExcelController extends SimpleCommonController {
 
 	private Consumer<List<ExcelAzwsRowEO>> batchInsertAzwsRow(){
 		return excelAzwsRowEOList -> excelService.insertAzwsRow(excelAzwsRowEOList);
+	}
+
+	private Consumer<List<ExcelAzpfRowEO>> batchInsertAzpfRow(){
+		return excelAzpfRowEOList -> excelService.insertAzpfRow(excelAzpfRowEOList);
 	}
 
 	public String convertToXlsx(Integer fileFormat, String tsvFileName){

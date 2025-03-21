@@ -40,4 +40,5 @@ public interface ExcelService {
     List<ExcelFbaPackListPO> findFbaPackListByExcelId(Integer excelId);
     //
     void insertAzwsRow(List<ExcelAzwsRowEO> excelAzwsRowEOList);
+    void insertAzpfRow(List<ExcelAzpfRowEO> excelAzpfRowEOList);
 }

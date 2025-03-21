@@ -47,6 +47,8 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private ExcelAzwsRepository excelAzwsRepository;
     @Autowired
+    private ExcelAzpfRepository excelAzpfRepository;
+    @Autowired
     private ExcelCarrierBillRepository excelCarrierBillRepository;
     @Autowired
     private ExcelCarrierBillDetailRepository excelCarrierBillDetailRepository;
@@ -58,6 +60,35 @@ public class ExcelServiceImpl implements ExcelService {
     private OverseaService overseaService;
 
 
+
+
+
+    //---------------------------------------------
+    //fileCategory = azpf
+    //---------------------------------------------
+
+    @Override
+    public void insertAzpfRow(List<ExcelAzpfRowEO> excelAzpfRowEOList) {
+        log.info("ExcelServiceImpl.insertAzpfRow [{}]");
+        Integer storeId = null;
+        for(ExcelAzpfRowEO row : excelAzpfRowEOList){
+            String sku = row.getSku();
+            if(null == storeId){
+                log.info("storeId is null 1st");
+                storeId = getStoreId(sku);
+                if(null == storeId){
+                    continue;
+                }
+            }
+            excelAzpfRepository.disableBySku(sku);
+            ExcelAzpfPO item = new ExcelAzpfPO();
+            BeanUtils.copyProperties(row, item);
+            item.setDateStart(CommonUtils.dateFormatChange(10, 8, row.getDateStart()));
+            item.setDateEnd(CommonUtils.dateFormatChange(10, 8, row.getDateEnd()));
+            item.setStoreId(storeId);
+            excelAzpfRepository.save(item);
+        }
+    }
 
     //---------------------------------------------
     //fileCategory = azws
