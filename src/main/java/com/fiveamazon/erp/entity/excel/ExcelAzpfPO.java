@@ -19,6 +19,7 @@ public class ExcelAzpfPO extends SimpleCommonEntity {
     String sku;
     Integer status;
     Integer storeId;
+    Integer isDelete;
     //
     BigDecimal azpfSalesPrice;
     Integer azpfSoldUnits;

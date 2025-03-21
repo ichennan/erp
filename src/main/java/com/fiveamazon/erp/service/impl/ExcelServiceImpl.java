@@ -83,6 +83,7 @@ public class ExcelServiceImpl implements ExcelService {
             item.setDateStart(CommonUtils.dateFormatChange(10, 8, row.getDateStart()));
             item.setDateEnd(CommonUtils.dateFormatChange(10, 8, row.getDateEnd()));
             item.setStoreId(storeId);
+            item.setStatus(0);
             excelAzpfRepository.save(item);
         }
     }
