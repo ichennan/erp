@@ -17,12 +17,12 @@ public class StocktakingDetailPO extends SimpleCommonEntity {
     Integer stocktakingQuantity;
     Integer adjustmentQuantity;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

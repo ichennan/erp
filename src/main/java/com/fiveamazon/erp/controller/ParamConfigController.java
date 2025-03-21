@@ -23,77 +23,77 @@ import java.util.List;
 @RequestMapping(value = "/paramConfig")
 @Slf4j
 public class ParamConfigController extends SimpleCommonController {
-	@Autowired
-	ParamConfigService theService;
+    @Autowired
+    ParamConfigService theService;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView showView() {
-		this.parameters.put("pageName", "paramConfig");
-		ModelAndView mv = new ModelAndView("paramConfig", parameters);
-		return mv;
-	}
+    @RequestMapping(method = RequestMethod.GET)
+    public ModelAndView showView() {
+        this.parameters.put("pageName", "paramConfig");
+        ModelAndView mv = new ModelAndView("paramConfig", parameters);
+        return mv;
+    }
 
-	@RequestMapping(value = "/findList", method= RequestMethod.POST)
-	public String findList(){
-		JSONObject rs = new JSONObject();
-		JSONArray array = new JSONArray();
-		List<ParamConfigPO> list = theService.findAll();
-		for(ParamConfigPO item: list){
-			array.put(item.toJson());
-		}
-		rs.put("array", array);
-		rs.put("error", false);
-		return rs.toString();
-	}
+    @RequestMapping(value = "/findList", method = RequestMethod.POST)
+    public String findList() {
+        JSONObject rs = new JSONObject();
+        JSONArray array = new JSONArray();
+        List<ParamConfigPO> list = theService.findAll();
+        for (ParamConfigPO item : list) {
+            array.put(item.toJson());
+        }
+        rs.put("array", array);
+        rs.put("error", false);
+        return rs.toString();
+    }
 
-	@RequestMapping(value = "/getItem", method= RequestMethod.POST)
-	public String getItem(@RequestParam("id")Integer id){
-		JSONObject rs = new JSONObject();
-		JSONArray array = new JSONArray();
-		ParamConfigPO item = theService.getById(id);
-		rs.put("data", item.toJson());
-		rs.put("error", false);
-		return rs.toString();
-	}
+    @RequestMapping(value = "/getItem", method = RequestMethod.POST)
+    public String getItem(@RequestParam("id") Integer id) {
+        JSONObject rs = new JSONObject();
+        JSONArray array = new JSONArray();
+        ParamConfigPO item = theService.getById(id);
+        rs.put("data", item.toJson());
+        rs.put("error", false);
+        return rs.toString();
+    }
 
-	@RequestMapping(value = "/saveItem", method= RequestMethod.POST)
-	public String saveItem(@RequestBody ParamConfigDTO dto){
-		dto.setUsername(getUsername());
-		JSONObject rs = new JSONObject();
-		ParamConfigPO item = theService.save(dto);
-		rs.put("data", item == null ? null : item.toJson());
-		rs.put("error", false);
-		return rs.toString();
-	}
+    @RequestMapping(value = "/saveItem", method = RequestMethod.POST)
+    public String saveItem(@RequestBody ParamConfigDTO dto) {
+        dto.setUsername(getUsername());
+        JSONObject rs = new JSONObject();
+        ParamConfigPO item = theService.save(dto);
+        rs.put("data", item == null ? null : item.toJson());
+        rs.put("error", false);
+        return rs.toString();
+    }
 
-	@RequestMapping(value = "/findListByParamCategory", method= RequestMethod.POST)
-	public String findListByParamCategory(@RequestParam("paramCategory")String paramCategory){
-		JSONObject rs = new JSONObject();
-		JSONArray array = new JSONArray();
-		List<String> list = theService.findListByCategory(paramCategory);
-		for(String item: list){
-			if(StringUtils.isNotEmpty(item)){
-				array.put(item);
-			}
-		}
-		rs.put("array", array);
-		rs.put("error", false);
-		return rs.toString();
-	}
+    @RequestMapping(value = "/findListByParamCategory", method = RequestMethod.POST)
+    public String findListByParamCategory(@RequestParam("paramCategory") String paramCategory) {
+        JSONObject rs = new JSONObject();
+        JSONArray array = new JSONArray();
+        List<String> list = theService.findListByCategory(paramCategory);
+        for (String item : list) {
+            if (StringUtils.isNotEmpty(item)) {
+                array.put(item);
+            }
+        }
+        rs.put("array", array);
+        rs.put("error", false);
+        return rs.toString();
+    }
 
-	@RequestMapping(value = "/findAutoCompleteParamCategory", method= RequestMethod.POST)
-	public String findAutoCompleteSupplier(){
-		JSONObject rs = new JSONObject();
-		JSONArray array = new JSONArray();
-		List<String> list = theService.findParamCategoryList();
-		for(String item: list){
-			if(StringUtils.isNotEmpty(item)){
-				array.put(item);
-			}
-		}
-		rs.put("array", array);
-		rs.put("error", false);
-		return rs.toString();
-	}
+    @RequestMapping(value = "/findAutoCompleteParamCategory", method = RequestMethod.POST)
+    public String findAutoCompleteSupplier() {
+        JSONObject rs = new JSONObject();
+        JSONArray array = new JSONArray();
+        List<String> list = theService.findParamCategoryList();
+        for (String item : list) {
+            if (StringUtils.isNotEmpty(item)) {
+                array.put(item);
+            }
+        }
+        rs.put("array", array);
+        rs.put("error", false);
+        return rs.toString();
+    }
 }
 

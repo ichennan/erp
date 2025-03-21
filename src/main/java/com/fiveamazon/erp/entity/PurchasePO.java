@@ -23,12 +23,12 @@ public class PurchasePO extends SimpleCommonEntity {
     String excelDingdan;
     String excelDate;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

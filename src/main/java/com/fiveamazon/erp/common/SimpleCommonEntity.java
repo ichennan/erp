@@ -16,7 +16,7 @@ import java.util.Date;
  */
 @MappedSuperclass
 @Data
-public class SimpleCommonEntity{
+public class SimpleCommonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
@@ -27,7 +27,7 @@ public class SimpleCommonEntity{
     String remark;
     String jsonRemark;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 }

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @ContentRowHeight(30)
-public class PurchaseDetailDownloadDTO extends BaseRowModel{
+public class PurchaseDetailDownloadDTO extends BaseRowModel {
 
     @ExcelProperty(value = "发货ID", index = 0)
     @ColumnWidth(15)

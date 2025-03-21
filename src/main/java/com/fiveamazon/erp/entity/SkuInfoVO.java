@@ -34,12 +34,12 @@ public class SkuInfoVO extends SimpleCommonEntityOld {
     Integer productInventoryQuantity;
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

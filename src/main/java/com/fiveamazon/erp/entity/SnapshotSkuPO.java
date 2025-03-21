@@ -1,7 +1,6 @@
 package com.fiveamazon.erp.entity;
 
 import cn.hutool.json.JSONObject;
-import com.fiveamazon.erp.common.SimpleCommonEntity;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -28,12 +27,12 @@ public class SnapshotSkuPO {
     Integer sumSkuShipmentOnthewayQuantity;
     Integer sumSkuShipmentArrivedQuantity;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

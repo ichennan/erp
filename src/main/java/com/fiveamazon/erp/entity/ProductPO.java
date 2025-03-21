@@ -25,7 +25,7 @@ public class ProductPO extends SimpleCommonEntity {
     Integer pcsPerBox;
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         toJson.put("snname", (StringUtils.isEmpty(getSn()) ? "" : getSn() + " ")
                 + getName()
@@ -35,7 +35,7 @@ public class ProductPO extends SimpleCommonEntity {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

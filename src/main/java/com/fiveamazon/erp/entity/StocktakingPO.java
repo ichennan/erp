@@ -14,12 +14,12 @@ public class StocktakingPO extends SimpleCommonEntity {
     String stocktakingDate;
     String stocktakingDescription;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

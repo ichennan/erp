@@ -21,12 +21,12 @@ public class ShipmentDetailPO extends SimpleCommonEntity {
     String sku;
     String jsonRemark;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

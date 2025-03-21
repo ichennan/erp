@@ -18,7 +18,7 @@ public class SimpleExceptionHandler {
     @ResponseBody
     @ExceptionHandler(DataAccessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, Object> dataAccessExceptionHandler(Throwable throwable){
+    public Map<String, Object> dataAccessExceptionHandler(Throwable throwable) {
         log.error("dataAccessExceptionHandler");
         log.error(throwable.getMessage(), throwable);
         Map<String, Object> result = new HashMap<>();
@@ -34,7 +34,7 @@ public class SimpleExceptionHandler {
     @ResponseBody
     @ExceptionHandler(SimpleCommonException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, Object> simpleCommonExceptionHandler(SimpleCommonException e){
+    public Map<String, Object> simpleCommonExceptionHandler(SimpleCommonException e) {
         log.error("simpleCommonExceptionHandler");
         log.error(e.getMessage());
         Map<String, Object> result = new HashMap<>();
@@ -47,7 +47,7 @@ public class SimpleExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, Object> exceptionHandler(Throwable throwable){
+    public Map<String, Object> exceptionHandler(Throwable throwable) {
         log.error("exceptionHandler");
         log.error(throwable.getMessage(), throwable);
         Map<String, Object> result = new HashMap<>();

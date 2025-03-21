@@ -15,11 +15,11 @@ public class CommonTable<T> {
     Long total;
     List rows;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject();
         JSONArray array = new JSONArray();
-        for(T t : (List<T>)rows){
-            JSONObject json = ((SimpleCommonEntity)t).toJson();
+        for (T t : (List<T>) rows) {
+            JSONObject json = ((SimpleCommonEntity) t).toJson();
             array.put(json);
         }
         toJson.put("total", total);

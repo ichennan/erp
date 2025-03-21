@@ -1,6 +1,7 @@
 package com.fiveamazon.erp.common;
 
 import lombok.Data;
+
 import javax.persistence.MappedSuperclass;
 
 /**

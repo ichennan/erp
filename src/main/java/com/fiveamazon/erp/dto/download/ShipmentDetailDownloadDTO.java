@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @ContentRowHeight(30)
-public class ShipmentDetailDownloadDTO extends BaseRowModel{
+public class ShipmentDetailDownloadDTO extends BaseRowModel {
 
     @ExcelProperty(value = "FBA ID", index = 0)
     @ColumnWidth(15)

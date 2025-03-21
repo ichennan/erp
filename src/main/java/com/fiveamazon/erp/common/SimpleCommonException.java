@@ -6,7 +6,7 @@ package com.fiveamazon.erp.common;
  */
 
 public class SimpleCommonException extends RuntimeException {
-	public SimpleCommonException(String message){
-		super(message);
-	}
+    public SimpleCommonException(String message) {
+        super(message);
+    }
 }

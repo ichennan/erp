@@ -22,40 +22,40 @@ import java.util.List;
 @Controller
 @Slf4j
 public class HomeController extends SimpleCommonController {
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String empty() {
-		return "redirect:/home";
-	}
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String empty() {
+        return "redirect:/home";
+    }
 
-	@RequestMapping(value = "/home", method = RequestMethod.GET)
-	public ModelAndView home() {
-		this.parameters.put("pageName", "home");
-		UserDetails userDetails;
-		try {
-			userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		} catch (Exception e) {
-			throw new SimpleCommonException("用户未登录");
-		}
-		List<String> userRoles = new ArrayList<>();
-		for(GrantedAuthority grantedAuthority : userDetails.getAuthorities()){
-			userRoles.add(grantedAuthority.getAuthority());
-		}
-		this.parameters.put("userRoles", userRoles);
-		ModelAndView mv = new ModelAndView("home", parameters);
-		return mv;
-	}
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    public ModelAndView home() {
+        this.parameters.put("pageName", "home");
+        UserDetails userDetails;
+        try {
+            userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e) {
+            throw new SimpleCommonException("用户未登录");
+        }
+        List<String> userRoles = new ArrayList<>();
+        for (GrantedAuthority grantedAuthority : userDetails.getAuthorities()) {
+            userRoles.add(grantedAuthority.getAuthority());
+        }
+        this.parameters.put("userRoles", userRoles);
+        ModelAndView mv = new ModelAndView("home", parameters);
+        return mv;
+    }
 
-	@RequestMapping(value = "/welcome", method = RequestMethod.GET)
-	public ModelAndView welcome() {
-		this.parameters.put("pageName", "welcome");
-		ModelAndView mv = new ModelAndView("welcome", parameters);
-		return mv;
-	}
+    @RequestMapping(value = "/welcome", method = RequestMethod.GET)
+    public ModelAndView welcome() {
+        this.parameters.put("pageName", "welcome");
+        ModelAndView mv = new ModelAndView("welcome", parameters);
+        return mv;
+    }
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public ModelAndView login() {
-		ModelAndView mv = new ModelAndView("login");
-		return mv;
-	}
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public ModelAndView login() {
+        ModelAndView mv = new ModelAndView("login");
+        return mv;
+    }
 }
 

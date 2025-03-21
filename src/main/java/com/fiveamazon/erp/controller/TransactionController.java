@@ -21,15 +21,15 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/transaction")
 @Slf4j
 public class TransactionController extends SimpleCommonController {
-	@Autowired
-	TransactionService theService;
+    @Autowired
+    TransactionService theService;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView showView() {
-		this.parameters.put("pageName", "transaction");
-		ModelAndView mv = new ModelAndView("transaction", parameters);
-		return mv;
-	}
+    @RequestMapping(method = RequestMethod.GET)
+    public ModelAndView showView() {
+        this.parameters.put("pageName", "transaction");
+        ModelAndView mv = new ModelAndView("transaction", parameters);
+        return mv;
+    }
 
 //	@RequestMapping(value = "/findList", method= RequestMethod.POST)
 //	public String findList(){
@@ -44,25 +44,25 @@ public class TransactionController extends SimpleCommonController {
 //		return rs.toString();
 //	}
 
-	@RequestMapping(value = "/search", method= RequestMethod.POST)
-	public String search(@RequestBody TransactionSearchDTO searchDTO){
-		log.info("TransactionController.search: " + new JSONObject(searchDTO).toString());
-		JSONObject rs = new JSONObject();
-		CommonTable commonTable = theService.search(searchDTO);
-		rs.putAll(commonTable.toJson());
-		rs.putOpt("error", false);
-		return rs.toString();
-	}
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    public String search(@RequestBody TransactionSearchDTO searchDTO) {
+        log.info("TransactionController.search: " + new JSONObject(searchDTO).toString());
+        JSONObject rs = new JSONObject();
+        CommonTable commonTable = theService.search(searchDTO);
+        rs.putAll(commonTable.toJson());
+        rs.putOpt("error", false);
+        return rs.toString();
+    }
 
-	@RequestMapping(value = "/getItem", method= RequestMethod.POST)
-	public String getItem(@RequestParam("id")Integer id){
-		JSONObject rs = new JSONObject();
-		JSONArray array = new JSONArray();
-		TransactionPO item = theService.getById(id);
-		rs.put("data", item.toJson());
-		rs.put("error", false);
-		return rs.toString();
-	}
+    @RequestMapping(value = "/getItem", method = RequestMethod.POST)
+    public String getItem(@RequestParam("id") Integer id) {
+        JSONObject rs = new JSONObject();
+        JSONArray array = new JSONArray();
+        TransactionPO item = theService.getById(id);
+        rs.put("data", item.toJson());
+        rs.put("error", false);
+        return rs.toString();
+    }
 
 //	@RequestMapping(value = "/saveItem", method= RequestMethod.POST)
 //	public String saveItem(@RequestBody OverseaDTO dto){

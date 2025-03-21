@@ -25,12 +25,12 @@ public class PurchaseProductViewPO extends SimpleCommonEntityOld {
     String supplier;
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

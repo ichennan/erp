@@ -47,14 +47,14 @@ public class TransactionPO extends SimpleCommonEntity {
     BigDecimal total;
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         toJson.put("transactionTime", null == transactionTime ? null : DateUtil.format(transactionTime, SimpleConstant.DATE_17));
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

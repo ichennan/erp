@@ -16,7 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @ContentRowHeight(30)
-public class OrderDownloadDTO extends BaseRowModel{
+public class OrderDownloadDTO extends BaseRowModel {
 
     @ExcelProperty(value = "transactionTime", index = 0)
     @ColumnWidth(30)
