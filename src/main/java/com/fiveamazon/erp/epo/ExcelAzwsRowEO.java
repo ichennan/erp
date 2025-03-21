@@ -39,13 +39,13 @@ public class ExcelAzwsRowEO {
     @ExcelProperty("afn-future-supply-buyable")
     Integer afnFutureSupplyBuyable;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 

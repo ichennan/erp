@@ -497,7 +497,7 @@ public class MonthServiceImpl implements MonthService {
         BigDecimal chengbenUSD = cny2usd(rate, chengben);
         monthPO.setChengben(chengben);
         monthPO.setChengbenUSD(chengbenUSD);
-        //利润 = amazonAmount - chengbenUSD
+        // 利润 = amazonAmount - chengbenUSD
         BigDecimal lirun = amazonAmount.add(chengbenUSD);
         monthPO.setLirun(lirun);
         log.info("-------------------------------------");

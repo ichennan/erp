@@ -56,7 +56,7 @@ public class TransactionServiceImpl implements TransactionService {
         theRepository.deleteByStoreIdAndTransactionTimeBetween(storeId, dateFrom, dateTo);
         log.info("theRepository.deleteByStoreIdAndTransactionTimeBetween [{}] [{}] [{}]", storeId, dateFrom, dateTo);
         List<ExcelTransactionDetailPO> list = excelService.findTransactionDetailByExcelId(excelId);
-        for(ExcelTransactionDetailPO item : list){
+        for (ExcelTransactionDetailPO item : list) {
             TransactionPO transactionPO = new TransactionPO();
             BeanUtils.copyProperties(item, transactionPO, "id");
             transactionPO.setExcelId(excelId);
@@ -68,7 +68,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public CommonTable search(TransactionSearchDTO searchDTO) {
         Sort sort = Sort.by(Sort.Direction.fromString(searchDTO.getOrder()), searchDTO.getSort());
-        PageRequest pageRequest = PageRequest.of(searchDTO.getOffset()/searchDTO.getLimit(), searchDTO.getLimit(), sort);
+        PageRequest pageRequest = PageRequest.of(searchDTO.getOffset() / searchDTO.getLimit(), searchDTO.getLimit(), sort);
         Specification<TransactionPO> specification = new Specification<TransactionPO>() {
             @Override
             public Predicate toPredicate(Root root, CriteriaQuery criteriaQuery, CriteriaBuilder criteriaBuilder) {
@@ -86,11 +86,11 @@ public class TransactionServiceImpl implements TransactionService {
                     predicates.add(criteriaBuilder.like(root.get("description"), "%" + searchDTO.getDescription() + "%"));
                 }
                 if (StringUtils.isNotEmpty(searchDTO.getType())) {
-                    if("Others".equalsIgnoreCase(searchDTO.getType())){
+                    if ("Others".equalsIgnoreCase(searchDTO.getType())) {
                         Predicate p1 = criteriaBuilder.isNull(root.get("type"));
                         Predicate p2 = criteriaBuilder.equal(root.get("type"), "");
                         predicates.add(criteriaBuilder.or(p1, p2));
-                    }else{
+                    } else {
                         predicates.add(criteriaBuilder.equal(root.get("type"), searchDTO.getType()));
                     }
                 }
@@ -107,7 +107,7 @@ public class TransactionServiceImpl implements TransactionService {
                 if (StringUtils.isNotEmpty(searchDTO.getTransactionTimeTo())) {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("transactionTime"), DateUtil.parse(searchDTO.getTransactionTimeTo(), "yyyy-MM-dd HH:mm:ss")));
                 }
-                if(StringUtils.isNotBlank(searchDTO.getSearch())){
+                if (StringUtils.isNotBlank(searchDTO.getSearch())) {
                     String searchText = "%" + searchDTO.getSearch() + "%";
                     Predicate p1 = criteriaBuilder.like(root.get("orderId"), searchText);
                     Predicate p2 = criteriaBuilder.like(root.get("sku"), searchText);

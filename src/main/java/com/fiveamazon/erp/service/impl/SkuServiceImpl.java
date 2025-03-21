@@ -53,8 +53,8 @@ public class SkuServiceImpl implements SkuService {
 
     @Override
     public SkuInfoPO save(SkuInfoPO skuInfoPO) {
-        //for unique key sku
-        if(StringUtils.isEmpty(skuInfoPO.getSku())){
+        // for unique key sku
+        if (StringUtils.isEmpty(skuInfoPO.getSku())) {
             skuInfoPO.setSku(null);
         }
         skuInfoPO.setCombineId(1);
@@ -65,8 +65,8 @@ public class SkuServiceImpl implements SkuService {
     public SkuInfoPO save(SkuInfoDTO skuInfoDTO) {
         log.warn("SkuServiceImpl.save" + new JSONObject(skuInfoDTO).toString());
         Integer skuId = skuInfoDTO.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(skuInfoDTO.getAction())){
-            if(shipmentService.countBySkuId(skuId) > 0){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(skuInfoDTO.getAction())) {
+            if (shipmentService.countBySkuId(skuId) > 0) {
                 throw new SimpleCommonException("该SKU 已存在于FBA表中，无法删除，请联系管理员");
             }
             log.error("SkuServiceImpl.deleteSku" + new JSONObject(skuInfoDTO).toString());
@@ -74,16 +74,16 @@ public class SkuServiceImpl implements SkuService {
             return null;
         }
         SkuInfoPO skuInfoPO;
-        if(skuId == null || skuId == 0){
+        if (skuId == null || skuId == 0) {
             skuInfoPO = new SkuInfoPO();
-            BeanUtil.copyProperties(skuInfoDTO, skuInfoPO,  "id");
+            BeanUtil.copyProperties(skuInfoDTO, skuInfoPO, "id");
             skuInfoPO.setCreateDate(new Date());
             skuInfoPO.setCreateUser(skuInfoDTO.getUsername());
             skuInfoPO = save(skuInfoPO);
-        }else{
+        } else {
             skuInfoPO = getById(skuId);
-            if(!skuInfoPO.getSku().equals(skuInfoDTO.getSku())){
-                if(shipmentService.countBySkuId(skuId) > 0){
+            if (!skuInfoPO.getSku().equals(skuInfoDTO.getSku())) {
+                if (shipmentService.countBySkuId(skuId) > 0) {
                     throw new SimpleCommonException("该SKU 已存在于FBA表中，无法更改，请联系管理员");
                 }
                 log.error("SkuServiceImpl.updateSku old" + new JSONObject(skuInfoPO).toString());
@@ -120,7 +120,7 @@ public class SkuServiceImpl implements SkuService {
     private JSONArray findSkuShipmentArray(Integer skuId) {
         JSONArray rs = new JSONArray();
         JSONArray array = new JSONArray(skuInfoViewRepository.findSkuShipment(skuId));
-        for(Object object : array){
+        for (Object object : array) {
             JSONArray objectArray = new JSONArray(object);
             JSONObject json = new JSONObject();
             json.put("skuId", Integer.valueOf(objectArray.get(0).toString()));
@@ -134,7 +134,7 @@ public class SkuServiceImpl implements SkuService {
     private JSONArray findSkuElseShipmentArray(Integer productId, Integer skuId) {
         JSONArray rs = new JSONArray();
         JSONArray array = new JSONArray(skuInfoViewRepository.findSkuElseShipment(productId, skuId));
-        for(Object object : array){
+        for (Object object : array) {
             JSONArray objectArray = new JSONArray(object);
             JSONObject json = new JSONObject();
             json.put("skuId", Integer.valueOf(objectArray.get(0).toString()));
@@ -150,7 +150,7 @@ public class SkuServiceImpl implements SkuService {
         JSONArray rs = new JSONArray();
         JSONArray array = new JSONArray(skuInfoViewRepository.findProductPurchase(productId));
         log.warn("array: " + array.toString());
-        for(Object object : array){
+        for (Object object : array) {
             JSONArray objectArray = new JSONArray(object);
             JSONObject json = new JSONObject();
             json.put("productId", Integer.valueOf(objectArray.get(0).toString()));
@@ -165,7 +165,7 @@ public class SkuServiceImpl implements SkuService {
     public JSONObject getSkuShipmentObject(Integer skuId) {
         JSONObject rs = new JSONObject();
         JSONArray array = findSkuShipmentArray(skuId);
-        for(JSONObject json : array.jsonIter()){
+        for (JSONObject json : array.jsonIter()) {
             rs.put(json.getStr("deliveryDate"), json.getInt("shipmentQuantity"));
         }
         return rs;
@@ -175,7 +175,7 @@ public class SkuServiceImpl implements SkuService {
     public JSONObject getSkuElseShipmentObject(Integer productId, Integer skuId) {
         JSONObject rs = new JSONObject();
         JSONArray array = findSkuElseShipmentArray(productId, skuId);
-        for(JSONObject json : array.jsonIter()){
+        for (JSONObject json : array.jsonIter()) {
             rs.put(json.getStr("deliveryDate"), json.getInt("shipmentQuantity"));
         }
         return rs;
@@ -186,7 +186,7 @@ public class SkuServiceImpl implements SkuService {
         log.info("getProductPurchaseObject: " + productId);
         JSONObject rs = new JSONObject();
         JSONArray array = findProductPurchaseArray(productId);
-        for(JSONObject json : array.jsonIter()){
+        for (JSONObject json : array.jsonIter()) {
             rs.put(json.getStr("deliveryDate"), json.getInt("purchaseQuantity"));
         }
         log.info(rs.toString());
@@ -197,7 +197,7 @@ public class SkuServiceImpl implements SkuService {
     public JSONObject getProductInventoryObjectBySkuId(Integer skuId) {
         JSONObject rs = new JSONObject();
         List<SnapshotSkuPO> snapshotSkuPOList = snapshotSkuRepository.findBySkuId(skuId);
-        for(SnapshotSkuPO snapshotSkuPO : snapshotSkuPOList){
+        for (SnapshotSkuPO snapshotSkuPO : snapshotSkuPOList) {
             rs.put(snapshotSkuPO.getSnapshotDate(), snapshotSkuPO.getProductInventoryQuantity());
         }
         return rs;
@@ -207,12 +207,12 @@ public class SkuServiceImpl implements SkuService {
     public JSONObject findAllByStoreId(Integer storeId) {
         JSONObject skuAllJson = new JSONObject();
         List<SkuInfoPO> skuInfoPOList = skuInfoRepository.findByStoreId(storeId);
-        for(SkuInfoPO skuInfoPO : skuInfoPOList){
+        for (SkuInfoPO skuInfoPO : skuInfoPOList) {
             String sku = skuInfoPO.getSku();
             JSONArray array;
-            if(skuAllJson.containsKey(sku)){
+            if (skuAllJson.containsKey(sku)) {
                 array = skuAllJson.getJSONArray(sku);
-            }else{
+            } else {
                 array = new JSONArray();
                 skuAllJson.put(sku, array);
             }

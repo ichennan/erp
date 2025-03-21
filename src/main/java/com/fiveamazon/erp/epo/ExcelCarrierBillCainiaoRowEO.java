@@ -20,13 +20,13 @@ public class ExcelCarrierBillCainiaoRowEO {
     String fbaNo;
     String amount;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 

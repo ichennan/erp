@@ -52,11 +52,11 @@ public class PacketServiceImpl implements PacketService {
     public PacketPO save(PacketDTO packetDTO) {
         Integer packetId = packetDTO.getId();
         PacketPO packetPO;
-        if(packetId == null || packetId == 0){
+        if (packetId == null || packetId == 0) {
             packetPO = new PacketPO();
             packetPO.setCreateDate(new Date());
             packetPO.setCreateUser(packetDTO.getUsername());
-        }else{
+        } else {
             packetPO = getById(packetId);
             packetPO.setUpdateDate(new Date());
             packetPO.setUpdateUser(packetDTO.getUsername());
@@ -64,7 +64,7 @@ public class PacketServiceImpl implements PacketService {
         BeanUtils.copyProperties(packetDTO, packetPO, "id");
         save(packetPO);
         packetDetailRepository.deleteByPacketIdEquals(packetId);
-        for(PacketDetailDTO packetDetailDTO: packetDTO.getPacketDetailDTOList()){
+        for (PacketDetailDTO packetDetailDTO : packetDTO.getPacketDetailDTOList()) {
             packetDetailDTO.setUsername(packetDTO.getUsername());
             packetDetailDTO.setPacketId(packetPO.getId());
             saveDetail(packetDetailDTO);
@@ -74,7 +74,7 @@ public class PacketServiceImpl implements PacketService {
 
     @Override
     public PacketDetailPO saveDetail(PacketDetailPO packetDetailPO) {
-        if(null == packetDetailPO.getQuantity()){
+        if (null == packetDetailPO.getQuantity()) {
             packetDetailPO.setQuantity(0);
         }
         return packetDetailRepository.save(packetDetailPO);
@@ -84,11 +84,11 @@ public class PacketServiceImpl implements PacketService {
     public PacketDetailPO saveDetail(PacketDetailDTO packetDetailDTO) {
         Integer packetDetailId = packetDetailDTO.getId();
         PacketDetailPO packetDetailPO;
-        if(packetDetailId == null || packetDetailId == 0){
+        if (packetDetailId == null || packetDetailId == 0) {
             packetDetailPO = new PacketDetailPO();
             packetDetailPO.setCreateDate(new Date());
             packetDetailPO.setCreateUser(packetDetailDTO.getUsername());
-        }else{
+        } else {
             packetDetailPO = getDetailById(packetDetailId);
             packetDetailPO.setUpdateDate(new Date());
             packetDetailPO.setUpdateUser(packetDetailDTO.getUsername());

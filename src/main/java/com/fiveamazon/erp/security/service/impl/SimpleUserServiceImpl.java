@@ -27,7 +27,7 @@ public class SimpleUserServiceImpl implements SimpleUserService {
     }
 
     @Override
-    public SimpleUser getByUserName(String userName){
+    public SimpleUser getByUserName(String userName) {
         return simpleUserRepository.getByUserName(userName);
     }
 

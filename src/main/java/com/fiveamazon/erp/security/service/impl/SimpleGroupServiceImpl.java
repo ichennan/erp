@@ -43,19 +43,19 @@ public class SimpleGroupServiceImpl implements SimpleGroupService {
     }
 
     @Override
-    public List<String> findSimpleAuthoriyListByUserName(String userName){
+    public List<String> findSimpleAuthoriyListByUserName(String userName) {
         List<String> list = new ArrayList<>();
         SimpleUser simpleUser = simpleUserService.getByUserName(userName);
-        if(simpleUser == null){
+        if (simpleUser == null) {
             throw new SimpleCommonException("该用户名不存在: " + userName);
         }
         Integer userId = simpleUser.getId();
         List<SimpleGroupUser> simpleGroupUserList = simpleGroupUserRepository.findByUserId(userId);
 
-        for(SimpleGroupUser simpleGroupUser : simpleGroupUserList){
+        for (SimpleGroupUser simpleGroupUser : simpleGroupUserList) {
             Integer groupId = simpleGroupUser.getGroupId();
             List<SimpleGroupAuthority> simpleGroupAuthorityList = simpleGroupAuthorityRepository.findByGroupId(groupId);
-            for(SimpleGroupAuthority simpleGroupAuthority : simpleGroupAuthorityList){
+            for (SimpleGroupAuthority simpleGroupAuthority : simpleGroupAuthorityList) {
                 Integer authorityId = simpleGroupAuthority.getAuthorityId();
                 SimpleAuthority simpleAuthority = simpleAuthorityRepository.getOne(authorityId);
                 String authorityName = simpleAuthority.getAuthorityName();

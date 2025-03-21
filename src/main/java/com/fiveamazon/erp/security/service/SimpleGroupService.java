@@ -11,13 +11,21 @@ import java.util.List;
  * @date 2018/8/7 15:51
  */
 public interface SimpleGroupService {
-	SimpleGroup getById(Integer id);
-	List<String> findSimpleAuthoriyListByUserName(String userName);
-	List<SimpleGroupAuthority> findSimpleGroupAuthorityListByGroupId(Integer groupId);
-	void deleteGroupUserByUserId(Integer userId);
-	SimpleGroupUser saveGroupUser(Integer groupId, Integer userId);
-	List<SimpleGroup> findAll();
-	SimpleGroup save(SimpleGroup simpleGroup);
-	void deleteGroupAuthorityByGroupId(Integer groupId);
-	SimpleGroupAuthority saveGroupAuthority(Integer groupId, Integer authorityId);
+    SimpleGroup getById(Integer id);
+
+    List<String> findSimpleAuthoriyListByUserName(String userName);
+
+    List<SimpleGroupAuthority> findSimpleGroupAuthorityListByGroupId(Integer groupId);
+
+    void deleteGroupUserByUserId(Integer userId);
+
+    SimpleGroupUser saveGroupUser(Integer groupId, Integer userId);
+
+    List<SimpleGroup> findAll();
+
+    SimpleGroup save(SimpleGroup simpleGroup);
+
+    void deleteGroupAuthorityByGroupId(Integer groupId);
+
+    SimpleGroupAuthority saveGroupAuthority(Integer groupId, Integer authorityId);
 }

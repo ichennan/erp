@@ -18,38 +18,38 @@ public class BarcodePdfRenameUtils {
         File fileFolder = new File(fileFolderStr);
         File[] fileList = fileFolder.listFiles();
         for (File file : fileList) {
-            if(file.isFile()){
+            if (file.isFile()) {
                 String filePath = file.getPath();
-                if(!filePath.contains(".pdf")){
+                if (!filePath.contains(".pdf")) {
                     continue;
                 }
                 String barcodeString = getBarcodeString(filePath);
-                if(StringUtils.isBlank(barcodeString)){
+                if (StringUtils.isBlank(barcodeString)) {
                     log.error("barcodeString is null");
                 }
-                try{
+                try {
                     FileUtil.copy(filePath, fileFolderStr + barcodeString + ".pdf", false);
-                }catch (Exception e){
+                } catch (Exception e) {
                     log.error("copy error: duplicate ?");
                 }
             }
         }
     }
 
-    private static String getBarcodeString(String filePath){
+    private static String getBarcodeString(String filePath) {
         log.info("filePath: " + filePath);
         String barcodeString = null;
         PdfDocument pdf = new PdfDocument(filePath);
         PdfPageBase page;
-        for (int i= 0; i<pdf.getPages().getCount();i++) {
+        for (int i = 0; i < pdf.getPages().getCount(); i++) {
             page = pdf.getPages().get(i);
             for (BufferedImage image : page.extractImages()) {
-                try{
+                try {
                     String[] datas = BarcodeScanner.scan(image, BarCodeType.Code_128);
-                    if(datas != null && datas.length > 0){
+                    if (datas != null && datas.length > 0) {
                         barcodeString = datas[0];
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     log.error("barcode: error");
                 }

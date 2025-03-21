@@ -65,13 +65,13 @@ public class ExcelTransactionRowEO {
     @ExcelProperty("total")
     BigDecimal total;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 

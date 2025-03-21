@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static  final Logger logger=Logger.getLogger(LoginAuthenticationFilter.class.getName());
+    private static final Logger logger = Logger.getLogger(LoginAuthenticationFilter.class.getName());
 
     public LoginAuthenticationFilter() {
     }
@@ -46,7 +46,7 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 //        else  if (!captcha.contentEquals(verification)) {
 //            throw new CaptchaException("验证码不匹配");
 //        }
-        //调用UsernamePasswordAuthenticationFilter的认证方法
+        // 调用UsernamePasswordAuthenticationFilter的认证方法
         return super.attemptAuthentication(request, response);
     }
 }

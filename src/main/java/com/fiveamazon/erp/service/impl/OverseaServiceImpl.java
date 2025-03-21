@@ -47,38 +47,38 @@ public class OverseaServiceImpl implements OverseaService {
     private ExcelService excelService;
 
     public OverseaPO save(OverseaPO item) {
-        if(StringUtils.isBlank(item.getSignedDate())){
+        if (StringUtils.isBlank(item.getSignedDate())) {
             item.setSignedDate("");
         }
-        if(StringUtils.isBlank(item.getWeightRemark())){
+        if (StringUtils.isBlank(item.getWeightRemark())) {
             item.setWeightRemark("");
         }
-        if(null == item.getWeight()){
+        if (null == item.getWeight()) {
             item.setWeight(new BigDecimal(0));
         }
-        if(null == item.getAmount()){
+        if (null == item.getAmount()) {
             item.setAmount(new BigDecimal(0));
         }
-        if(null == item.getWarehouseAmount()){
+        if (null == item.getWarehouseAmount()) {
             item.setWarehouseAmount(new BigDecimal(0));
         }
-        if(null == item.getUnitPrice()){
+        if (null == item.getUnitPrice()) {
             item.setUnitPrice(new BigDecimal(0));
         }
-        if(null == item.getChargeWeight()){
+        if (null == item.getChargeWeight()) {
             item.setChargeWeight(new BigDecimal(0));
         }
         return theRepository.save(item);
     }
 
-    private OverseaDetailPO saveDetail(OverseaDetailPO item){
-        if(StringUtils.isBlank(item.getFbaNo())){
+    private OverseaDetailPO saveDetail(OverseaDetailPO item) {
+        if (StringUtils.isBlank(item.getFbaNo())) {
             item.setFbaNo("");
         }
-        if(null == item.getQuantity()){
+        if (null == item.getQuantity()) {
             item.setQuantity(0);
         }
-        if(null == item.getWeight()){
+        if (null == item.getWeight()) {
             item.setWeight(new BigDecimal(0));
         }
         return theDetailRepository.save(item);
@@ -118,17 +118,17 @@ public class OverseaServiceImpl implements OverseaService {
     public OverseaPO save(OverseaDTO dto) {
         Date today = new Date();
         Integer id = dto.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())) {
             theDetailRepository.deleteByOverseaId(id);
             theRepository.deleteById(id);
             return new OverseaPO();
         }
         OverseaPO item;
-        if(id == null || id == 0){
+        if (id == null || id == 0) {
             item = new OverseaPO();
             item.setCreateDate(today);
             item.setCreateUser(dto.getUsername());
-        }else{
+        } else {
             item = getById(id);
             item.setUpdateDate(today);
             item.setUpdateUser(dto.getUsername());
@@ -141,25 +141,25 @@ public class OverseaServiceImpl implements OverseaService {
     public OverseaDetailPO saveDetail(OverseaDetailDTO dto, Boolean refreshSku) {
         Date today = new Date();
         Integer id = dto.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())) {
             theDetailRepository.deleteById(id);
             return null;
         }
         OverseaDetailPO item;
-        if(id == null || id == 0){
+        if (id == null || id == 0) {
             item = new OverseaDetailPO();
             item.setCreateDate(today);
             item.setCreateUser(dto.getUsername());
-        }else{
+        } else {
             item = getDetailById(id);
             item.setUpdateDate(today);
             item.setUpdateUser(dto.getUsername());
         }
         BeanUtils.copyProperties(dto, item, "id");
-        if(refreshSku){
+        if (refreshSku) {
             Integer skuId = dto.getSkuId();
             SkuInfoPO skuInfoPO = skuService.getById(skuId);
-            if(skuInfoPO != null){
+            if (skuInfoPO != null) {
                 item.setSku(skuInfoPO.getSku());
                 item.setProductId(skuInfoPO.getProductId());
                 item.setStoreId(skuInfoPO.getStoreId());
@@ -175,7 +175,7 @@ public class OverseaServiceImpl implements OverseaService {
         OverseaDetailPO item = getDetailById(id);
         item.setUpdateDate(today);
         item.setUpdateUser(dto.getUsername());
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())) {
             item.setFbaNo("");
             item.setFbaBox("");
             item.setFbaDate("");
@@ -193,7 +193,7 @@ public class OverseaServiceImpl implements OverseaService {
     public void batchInsert(OverseaBatchInsertDTO dto) {
         OverseaPO item = save(dto.getItem());
         Integer overseaId = item.getId();
-        for(OverseaDetailDTO detailDTO : dto.getArray()){
+        for (OverseaDetailDTO detailDTO : dto.getArray()) {
             detailDTO.setOverseaId(overseaId);
             saveDetail(detailDTO, false);
         }
@@ -208,9 +208,9 @@ public class OverseaServiceImpl implements OverseaService {
     public void updateCarrierBillByExcel(Integer excelId) {
         ExcelCarrierBillPO excelPO = excelService.getCarrierBillByExcelId(excelId);
         List<ExcelCarrierBillDetailPO> detailPOList = excelService.findCarrierBillDetailByExcelId(excelId);
-        for(ExcelCarrierBillDetailPO detailPO : detailPOList){
+        for (ExcelCarrierBillDetailPO detailPO : detailPOList) {
             Integer overseaId = detailPO.getRelatedOverseaId();
-            if(null == overseaId || overseaId == 0){
+            if (null == overseaId || overseaId == 0) {
                 continue;
             }
             OverseaPO overseaPO = getById(overseaId);

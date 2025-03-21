@@ -4,7 +4,6 @@ package com.fiveamazon.erp.security.entity;
 import com.fiveamazon.erp.common.SimpleCommonEntity;
 import lombok.Data;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -23,7 +22,7 @@ public class SimpleUser extends SimpleCommonEntity {
     String userName;
     String nickName;
     String password;
-    @Column(name="pwdChgDate")
+    @Column(name = "pwdChgDate")
     Date passwordChangeDate;
     String email;
 //    Set<SimpleGroup> simpleGroups;

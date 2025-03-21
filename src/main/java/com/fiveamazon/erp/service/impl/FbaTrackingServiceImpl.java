@@ -25,19 +25,19 @@ public class FbaTrackingServiceImpl implements FbaTrackingService {
 
 
     public FbaTrackingPO save(FbaTrackingPO item) {
-        if(StringUtils.isBlank(item.getDateSent())){
+        if (StringUtils.isBlank(item.getDateSent())) {
             item.setDateSent("");
         }
-        if(StringUtils.isBlank(item.getShipper())){
+        if (StringUtils.isBlank(item.getShipper())) {
             item.setShipper("-");
         }
-        if(StringUtils.isBlank(item.getTrackingNo())){
+        if (StringUtils.isBlank(item.getTrackingNo())) {
             item.setTrackingNo("-");
         }
-        if(null == item.getUnitPrice()){
+        if (null == item.getUnitPrice()) {
             item.setUnitPrice(new BigDecimal(0));
         }
-        if(null == item.getIsMainTrackingNo()){
+        if (null == item.getIsMainTrackingNo()) {
             item.setIsMainTrackingNo(0);
         }
         return theRepository.save(item);
@@ -59,7 +59,7 @@ public class FbaTrackingServiceImpl implements FbaTrackingService {
         Date today = new Date();
         Integer boxCount = dto.getBoxCount();
         String fbaNo = dto.getFbaNo();
-        for(Integer i = 1; i <= boxCount; i++){
+        for (Integer i = 1; i <= boxCount; i++) {
             String boxLabelStr = StrUtil.padPre(i.toString(), 6, "0");
             FbaTrackingPO item = new FbaTrackingPO();
             item.setStoreId(dto.getStoreId());
@@ -80,19 +80,19 @@ public class FbaTrackingServiceImpl implements FbaTrackingService {
         String trakcingNo = dto.getTrackingNo();
         Boolean isDeleteAction = "delete".equals(dto.getAction());
         Integer i = 0;
-        for(Integer id : dto.getIds()){
-            if(isDeleteAction){
+        for (Integer id : dto.getIds()) {
+            if (isDeleteAction) {
                 theRepository.deleteById(id);
                 continue;
             }
             FbaTrackingPO item = theRepository.getById(id);
-            if(StringUtils.isBlank(trakcingNo)){
+            if (StringUtils.isBlank(trakcingNo)) {
                 item.setRoute(dto.getRoute());
                 item.setShipper(dto.getShipper());
                 item.setUnitPrice(dto.getUnitPrice());
                 item.setDateSent(dto.getDateSent());
                 item.setRemark(dto.getRemark());
-            }else{
+            } else {
                 String trackingNoSeq = i == 0 ? "" : ("_" + i);
                 item.setTrackingNo(dto.getTrackingNo() + trackingNoSeq);
             }

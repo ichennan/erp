@@ -44,16 +44,16 @@ public class ParamConfigServiceImpl implements ParamConfigService {
     public ParamConfigPO save(ParamConfigDTO dto) {
         Date today = new Date();
         Integer id = dto.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())) {
             theRepository.deleteById(id);
             return new ParamConfigPO();
         }
         ParamConfigPO item;
-        if(id == null || id == 0){
+        if (id == null || id == 0) {
             item = new ParamConfigPO();
             item.setCreateDate(today);
             item.setCreateUser(dto.getUsername());
-        }else{
+        } else {
             item = getById(id);
             item.setUpdateDate(today);
             item.setUpdateUser(dto.getUsername());

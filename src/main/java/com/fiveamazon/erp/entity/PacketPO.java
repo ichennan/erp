@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -14,12 +13,12 @@ import java.math.BigDecimal;
 public class PacketPO extends SimpleCommonEntity {
     String deliveryDate;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

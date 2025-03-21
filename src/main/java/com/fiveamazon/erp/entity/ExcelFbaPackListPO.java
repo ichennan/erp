@@ -1,7 +1,6 @@
 package com.fiveamazon.erp.entity;
 
 import cn.hutool.json.JSONObject;
-import com.fiveamazon.erp.common.SimpleCommonEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -59,13 +58,13 @@ public class ExcelFbaPackListPO {
     String box29Qty;
     String box30Qty;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

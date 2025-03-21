@@ -22,12 +22,12 @@ public class ParamConfigPO extends SimpleCommonEntity {
     String remark5;
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

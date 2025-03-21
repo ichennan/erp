@@ -115,15 +115,13 @@ public class ExcelAzpfRowEO {
     BigDecimal azpfAzProceedsPer;
 
 
-
-
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 

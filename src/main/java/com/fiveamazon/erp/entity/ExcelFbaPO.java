@@ -24,13 +24,13 @@ public class ExcelFbaPO extends SimpleCommonEntity {
     BigDecimal weight;
     String remark;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

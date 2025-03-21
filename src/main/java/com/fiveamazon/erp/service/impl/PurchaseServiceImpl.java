@@ -49,10 +49,10 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchasePO save(PurchasePO purchasePO) {
-        if(null == purchasePO.getAmount()){
+        if (null == purchasePO.getAmount()) {
             purchasePO.setAmount(new BigDecimal(0));
         }
-        if(null == purchasePO.getFreight()){
+        if (null == purchasePO.getFreight()) {
             purchasePO.setFreight(new BigDecimal(0));
         }
         return theRepository.save(purchasePO);
@@ -60,10 +60,10 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseDetailPO saveDetail(PurchaseDetailPO purchaseDetailPO) {
-        if(null == purchaseDetailPO.getReceivedQuantity()){
+        if (null == purchaseDetailPO.getReceivedQuantity()) {
             purchaseDetailPO.setReceivedQuantity(0);
         }
-        if(null == purchaseDetailPO.getUnitPrice()){
+        if (null == purchaseDetailPO.getUnitPrice()) {
             purchaseDetailPO.setUnitPrice(new BigDecimal(0));
         }
         return theDetailRepository.save(purchaseDetailPO);
@@ -100,8 +100,8 @@ public class PurchaseServiceImpl implements PurchaseService {
                 if (StringUtils.isNotEmpty(supplier)) {
                     predicates.add(criteriaBuilder.like(root.get("supplier"), "%" + supplier + "%"));
                 }
-                if(StringUtils.isNotEmpty(dateType)){
-                    switch (dateType){
+                if (StringUtils.isNotEmpty(dateType)) {
+                    switch (dateType) {
                         case "deliveryDate":
                             if (StringUtils.isNotEmpty(dateFrom)) {
                                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("deliveryDate"), dateFrom));
@@ -136,17 +136,17 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public PurchasePO save(PurchaseDTO purchaseDTO) {
         Integer purchaseId = purchaseDTO.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(purchaseDTO.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(purchaseDTO.getAction())) {
             theDetailRepository.deleteByPurchaseId(purchaseId);
             theRepository.deleteById(purchaseId);
             return new PurchasePO();
         }
         PurchasePO purchasePO;
-        if(purchaseId == null || purchaseId == 0){
+        if (purchaseId == null || purchaseId == 0) {
             purchasePO = new PurchasePO();
             purchasePO.setCreateDate(new Date());
             purchasePO.setCreateUser(purchaseDTO.getUsername());
-        }else{
+        } else {
             purchasePO = getById(purchaseId);
             purchasePO.setUpdateDate(new Date());
             purchasePO.setUpdateUser(purchaseDTO.getUsername());
@@ -158,16 +158,16 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public PurchaseDetailPO saveDetail(PurchaseDetailDTO purchaseDetailDTO) {
         Integer purchaseDetailId = purchaseDetailDTO.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(purchaseDetailDTO.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(purchaseDetailDTO.getAction())) {
             theDetailRepository.deleteById(purchaseDetailId);
             return new PurchaseDetailPO();
         }
         PurchaseDetailPO purchaseDetailPO;
-        if(purchaseDetailId == null || purchaseDetailId == 0){
+        if (purchaseDetailId == null || purchaseDetailId == 0) {
             purchaseDetailPO = new PurchaseDetailPO();
             purchaseDetailPO.setCreateDate(new Date());
             purchaseDetailPO.setCreateUser(purchaseDetailDTO.getUsername());
-        }else{
+        } else {
             purchaseDetailPO = getDetailById(purchaseDetailId);
             purchaseDetailPO.setUpdateDate(new Date());
             purchaseDetailPO.setUpdateUser(purchaseDetailDTO.getUsername());
@@ -187,15 +187,15 @@ public class PurchaseServiceImpl implements PurchaseService {
         List<ExcelSupplierDeliveryOrderPO> orderArray = uploadSupplierDeliveryDTO.getOrderArray();
         List<ExcelSupplierDeliveryOrderDetailPO> orderDetailArray = uploadSupplierDeliveryDTO.getOrderDetailArray();
 
-        for(ExcelSupplierDeliveryOrderPO order : orderArray){
+        for (ExcelSupplierDeliveryOrderPO order : orderArray) {
             Integer excelId = order.getExcelId();
             String dingdanhao = order.getDingdanhao();
             String fahuoshijian = order.getFahuoshijian();
             String shijijiesuan = order.getShijijiesuan();
             String deliveryDate = "";
-            try{
+            try {
                 deliveryDate = DateUtil.format(DateUtil.parse(fahuoshijian, "yyyy-MM-dd HH:mm:ss"), "yyyyMMdd");
-            }catch (Exception e){
+            } catch (Exception e) {
             }
             String excelDate = DateUtil.format(new Date(), "yyyyMMdd");
             //
@@ -211,19 +211,19 @@ public class PurchaseServiceImpl implements PurchaseService {
             save(purchasePO);
         }
 
-        for(ExcelSupplierDeliveryOrderDetailPO orderDetail : orderDetailArray){
+        for (ExcelSupplierDeliveryOrderDetailPO orderDetail : orderDetailArray) {
             Integer excelId = orderDetail.getExcelId();
             Integer productId = orderDetail.getProductId();
             String dingdanhao = orderDetail.getDingdanhao();
             BigDecimal danjia = new BigDecimal(0);
             Integer shuliang = 0;
-            try{
+            try {
                 danjia = new BigDecimal(orderDetail.getDanjia());
-            }catch (Exception e){
+            } catch (Exception e) {
             }
-            try{
+            try {
                 shuliang = Integer.valueOf(orderDetail.getShuliang());
-            }catch (Exception e){
+            } catch (Exception e) {
             }
             PurchasePO purchasePO = theRepository.getByExcelIdAndExcelDingdan(excelId, dingdanhao);
             BigDecimal amount = purchasePO.getAmount();
@@ -262,7 +262,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     predicates.add(criteriaBuilder.equal(root.get("productId"), productId));
                 }
 
-                switch (dateType){
+                switch (dateType) {
                     case "excelDate":
                         if (StringUtils.isNotEmpty(dateFrom)) {
                             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("excelDate"), dateFrom));
@@ -310,7 +310,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         String dateFrom = searchDTO.getDateFrom().replaceAll("-", "");
         String dateTo = searchDTO.getDateTo().replaceAll("-", "");
         List<JSONObject> list = theProductViewRepository.donwload(searchDTO.getSupplier(), dateFrom, dateTo);
-        for(JSONObject item : list){
+        for (JSONObject item : list) {
             String sn = item.getStr("sn");
             String name = item.getStr("name");
             String color = item.getStr("color");

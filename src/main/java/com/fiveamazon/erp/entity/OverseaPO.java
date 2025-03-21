@@ -30,12 +30,12 @@ public class OverseaPO extends SimpleCommonEntity {
     String weightRemark;
     Integer storeId;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

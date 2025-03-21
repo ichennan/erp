@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class JsonRemarkUtils {
-    public static String setJsonRemark(String jsonRemarkStr, String jsonKey, String jsonValue){
+    public static String setJsonRemark(String jsonRemarkStr, String jsonKey, String jsonValue) {
         JSONObject json;
-        try{
+        try {
             json = new JSONObject(jsonRemarkStr);
-        }catch(Exception e){
+        } catch (Exception e) {
             json = new JSONObject();
         }
         json.put(jsonKey, jsonValue);

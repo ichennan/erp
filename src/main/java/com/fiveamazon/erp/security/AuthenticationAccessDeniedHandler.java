@@ -20,32 +20,32 @@ import java.io.IOException;
 
 @Component
 public class AuthenticationAccessDeniedHandler implements AccessDeniedHandler {
-	@Override
-	public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
-				.getAuthentication()
-				.getPrincipal();
-		String redirectUrl = "/login?notAuthority";
-		for(GrantedAuthority grantedAuthority :userDetails.getAuthorities()){
-			String autority = grantedAuthority.getAuthority();
-			if("SYS_FORGOTPASSWORD".equalsIgnoreCase(autority)){
-				redirectUrl = "/changePassword?FORGOTPASSWORD";
-				break;
-			}
-			if("SYS_REGISTER".equalsIgnoreCase(autority)){
-				redirectUrl = "/changePassword?REGISTER";
-				break;
-			}
-			if("SYS_PASSWORDRANDOM".equalsIgnoreCase(autority)){
-				redirectUrl = "/changePassword?PASSWORDRANDOM";
-				break;
-			}
-			if("SYS_PASSWORDEXPIRED".equalsIgnoreCase(autority)){
-				redirectUrl = "/changePassword?PASSWORDEXPIRED";
-				break;
-			}
-		}
-		RequestDispatcher dispatcher = httpServletRequest.getRequestDispatcher(redirectUrl);
-		dispatcher.forward(httpServletRequest, httpServletResponse);
-	}
+    @Override
+    public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        String redirectUrl = "/login?notAuthority";
+        for (GrantedAuthority grantedAuthority : userDetails.getAuthorities()) {
+            String autority = grantedAuthority.getAuthority();
+            if ("SYS_FORGOTPASSWORD".equalsIgnoreCase(autority)) {
+                redirectUrl = "/changePassword?FORGOTPASSWORD";
+                break;
+            }
+            if ("SYS_REGISTER".equalsIgnoreCase(autority)) {
+                redirectUrl = "/changePassword?REGISTER";
+                break;
+            }
+            if ("SYS_PASSWORDRANDOM".equalsIgnoreCase(autority)) {
+                redirectUrl = "/changePassword?PASSWORDRANDOM";
+                break;
+            }
+            if ("SYS_PASSWORDEXPIRED".equalsIgnoreCase(autority)) {
+                redirectUrl = "/changePassword?PASSWORDEXPIRED";
+                break;
+            }
+        }
+        RequestDispatcher dispatcher = httpServletRequest.getRequestDispatcher(redirectUrl);
+        dispatcher.forward(httpServletRequest, httpServletResponse);
+    }
 }

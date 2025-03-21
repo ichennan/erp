@@ -28,13 +28,13 @@ public class SmartServiceImpl implements SmartService {
     @Override
     public BigDecimal getRate(String monthOrDate, String currency) {
         Date date = new Date();
-        if(StringUtils.isBlank(currency)){
+        if (StringUtils.isBlank(currency)) {
             currency = "USD";
         }
-        if(!StringUtils.isBlank(monthOrDate)){
-            if(monthOrDate.length() == 6){
+        if (!StringUtils.isBlank(monthOrDate)) {
+            if (monthOrDate.length() == 6) {
                 date = DateUtil.parse(monthOrDate + "01000001", SimpleConstant.DATE_14);
-            }else if(monthOrDate.length() == 8){
+            } else if (monthOrDate.length() == 8) {
                 date = DateUtil.parse(monthOrDate + "000001", SimpleConstant.DATE_14);
             }
         }

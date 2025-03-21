@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductPO getByName(String name){
+    public ProductPO getByName(String name) {
         return productRepository.getByName(name);
     }
 
@@ -67,25 +67,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductPO save(ProductPO productPO) {
-        if(null == productPO.getPurchasePrice()){
+        if (null == productPO.getPurchasePrice()) {
             productPO.setPurchasePrice(SimpleConstant.BIG_DECIMAL_MAX);
         }
-        if(null == productPO.getWeight()){
+        if (null == productPO.getWeight()) {
             productPO.setWeight(SimpleConstant.BIG_DECIMAL_MAX);
         }
-        if(null == productPO.getPcsPerBox()){
+        if (null == productPO.getPcsPerBox()) {
             productPO.setPcsPerBox(1);
         }
-        if(StringUtils.isBlank(productPO.getSn())){
+        if (StringUtils.isBlank(productPO.getSn())) {
             productPO.setSn("");
         }
-        if(StringUtils.isBlank(productPO.getColor())){
+        if (StringUtils.isBlank(productPO.getColor())) {
             productPO.setColor("");
         }
-        if(StringUtils.isBlank(productPO.getSize())){
+        if (StringUtils.isBlank(productPO.getSize())) {
             productPO.setSize("");
         }
-        if(StringUtils.isBlank(productPO.getName())){
+        if (StringUtils.isBlank(productPO.getName())) {
             productPO.setName("");
         }
         return productRepository.save(productPO);
@@ -97,13 +97,13 @@ public class ProductServiceImpl implements ProductService {
         log.warn(new JSONObject(productDTO).toString());
         Integer productId = productDTO.getId();
         ProductPO productPO;
-        if(productId == null || productId == 0){
+        if (productId == null || productId == 0) {
             productPO = new ProductPO();
-            BeanUtil.copyProperties(productDTO, productPO,  "id");
+            BeanUtil.copyProperties(productDTO, productPO, "id");
             productPO.setCreateDate(new Date());
             productPO.setCreateUser(productDTO.getUsername());
             productPO = save(productPO);
-        }else{
+        } else {
             productPO = getById(productId);
             BeanUtils.copyProperties(productDTO, productPO, "id");
             productPO.setUpdateDate(new Date());
@@ -134,14 +134,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void updatePurchasePrice(Integer productId, BigDecimal purchasePrice){
+    public void updatePurchasePrice(Integer productId, BigDecimal purchasePrice) {
         log.info("ProductServiceImpl.updatePurchasePrice: productId: " + productId + " purchasePrice: " + purchasePrice);
-        if(purchasePrice == null || purchasePrice.compareTo(BigDecimal.ZERO) == 0){
+        if (purchasePrice == null || purchasePrice.compareTo(BigDecimal.ZERO) == 0) {
             return;
         }
         ProductPO productPO = getById(productId);
-        if(productPO != null){
-            if(productPO.getPurchasePrice().compareTo(purchasePrice) != 0){
+        if (productPO != null) {
+            if (productPO.getPurchasePrice().compareTo(purchasePrice) != 0) {
                 productPO.setPurchasePrice(purchasePrice);
                 save(productPO);
             }

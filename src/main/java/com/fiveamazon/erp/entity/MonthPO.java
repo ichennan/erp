@@ -17,7 +17,7 @@ public class MonthPO extends SimpleCommonEntity {
     String dateTo;
     Integer storeId;
     BigDecimal rate = new BigDecimal(0);
-    //小啰啰 10对
+    // 小啰啰 10对
     Integer amazonAdjustmentQuantity = 0;
     BigDecimal amazonAdjustmentAmount = new BigDecimal(0);
     Integer amazonFbaCustomerReturnFeeQuantity = 0;
@@ -38,7 +38,7 @@ public class MonthPO extends SimpleCommonEntity {
     BigDecimal amazonDealFeeAmount = new BigDecimal(0);
     Integer amazonCouponFeeQuantity = 0;
     BigDecimal amazonCouponFeeAmount = new BigDecimal(0);
-    //order 8
+    // order 8
     Integer amazonOrderQuantity = 0;
     BigDecimal amazonOrderAmount = new BigDecimal(0);
     BigDecimal erpOrderProductAmount = new BigDecimal(0);
@@ -47,7 +47,7 @@ public class MonthPO extends SimpleCommonEntity {
     BigDecimal erpOrderProductPurchaseAmountUSD = new BigDecimal(0);
     BigDecimal erpOrderProductFreightAmount = new BigDecimal(0);
     BigDecimal erpOrderProductFreightAmountUSD = new BigDecimal(0);
-    //refund 8
+    // refund 8
     Integer amazonRefundQuantity = 0;
     BigDecimal amazonRefundAmount = new BigDecimal(0);
     BigDecimal erpRefundProductAmount = new BigDecimal(0);
@@ -56,7 +56,7 @@ public class MonthPO extends SimpleCommonEntity {
     BigDecimal erpRefundProductPurchaseAmountUSD = new BigDecimal(0);
     BigDecimal erpRefundProductFreightAmount = new BigDecimal(0);
     BigDecimal erpRefundProductFreightAmountUSD = new BigDecimal(0);
-    //zong 9
+    // zong 9
     Integer amazonProductSalesQuantity = 0;
     BigDecimal amazonProductSalesAmount = new BigDecimal(0);
     Integer amazonProductPaymentQuantity = 0;
@@ -68,12 +68,12 @@ public class MonthPO extends SimpleCommonEntity {
     BigDecimal lirun = new BigDecimal(0);
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         return new JSONObject(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

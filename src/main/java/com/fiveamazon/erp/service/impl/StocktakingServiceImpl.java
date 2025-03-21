@@ -63,17 +63,17 @@ public class StocktakingServiceImpl implements StocktakingService {
     public StocktakingPO save(StocktakingDTO dto) {
         Date today = new Date();
         Integer id = dto.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())) {
             theDetailRepository.deleteByStocktakingId(id);
             theRepository.deleteById(id);
             return new StocktakingPO();
         }
         StocktakingPO item;
-        if(id == null || id == 0){
+        if (id == null || id == 0) {
             item = new StocktakingPO();
             item.setCreateDate(today);
             item.setCreateUser(dto.getUsername());
-        }else{
+        } else {
             item = getById(id);
             item.setUpdateDate(today);
             item.setUpdateUser(dto.getUsername());
@@ -82,14 +82,14 @@ public class StocktakingServiceImpl implements StocktakingService {
         return save(item);
     }
 
-    private StocktakingDetailPO saveDetail(StocktakingDetailPO item){
-        if(null == item.getStocktakingQuantity()){
+    private StocktakingDetailPO saveDetail(StocktakingDetailPO item) {
+        if (null == item.getStocktakingQuantity()) {
             item.setStocktakingQuantity(0);
         }
-        if(null == item.getCalculatedQuantity()){
+        if (null == item.getCalculatedQuantity()) {
             item.setStocktakingQuantity(0);
         }
-        if(null == item.getAdjustmentQuantity()){
+        if (null == item.getAdjustmentQuantity()) {
             item.setAdjustmentQuantity(0);
         }
         return theDetailRepository.save(item);
@@ -99,16 +99,16 @@ public class StocktakingServiceImpl implements StocktakingService {
     public StocktakingDetailPO saveDetail(StocktakingDetailDTO dto) {
         Date today = new Date();
         Integer id = dto.getId();
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(dto.getAction())) {
             theDetailRepository.deleteById(id);
             return null;
         }
         StocktakingDetailPO item;
-        if(id == null || id == 0){
+        if (id == null || id == 0) {
             item = new StocktakingDetailPO();
             item.setCreateDate(today);
             item.setCreateUser(dto.getUsername());
-        }else{
+        } else {
             item = getDetailById(id);
             item.setUpdateDate(today);
             item.setUpdateUser(dto.getUsername());

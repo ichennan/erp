@@ -24,14 +24,14 @@ public class FbaTrackingPO extends SimpleCommonEntity {
 
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         toJson.put("dateCreate", DateUtil.format(getCreateDate(), "yyyyMMdd"));
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

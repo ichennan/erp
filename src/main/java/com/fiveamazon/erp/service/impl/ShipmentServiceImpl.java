@@ -53,22 +53,22 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentPO save(ShipmentPO item) {
-        if(StringUtils.isBlank(item.getSignedDate())){
+        if (StringUtils.isBlank(item.getSignedDate())) {
             item.setSignedDate("");
         }
-        if(StringUtils.isBlank(item.getWeightRemark())){
+        if (StringUtils.isBlank(item.getWeightRemark())) {
             item.setWeightRemark("");
         }
-        if(null == item.getWeight()){
+        if (null == item.getWeight()) {
             item.setWeight(new BigDecimal(0));
         }
-        if(null == item.getAmount()){
+        if (null == item.getAmount()) {
             item.setAmount(new BigDecimal(0));
         }
-        if(null == item.getUnitPrice()){
+        if (null == item.getUnitPrice()) {
             item.setUnitPrice(new BigDecimal(0));
         }
-        if(null == item.getChargeWeight()){
+        if (null == item.getChargeWeight()) {
             item.setChargeWeight(new BigDecimal(0));
         }
         return theRepository.save(item);
@@ -76,13 +76,13 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentDetailPO saveDetail(ShipmentDetailPO item) {
-        if(StringUtils.isBlank(item.getBox())){
+        if (StringUtils.isBlank(item.getBox())) {
             item.setBox("");
         }
-        if(null == item.getQuantity()){
+        if (null == item.getQuantity()) {
             item.setQuantity(0);
         }
-        if(null == item.getWeight()){
+        if (null == item.getWeight()) {
             item.setWeight(new BigDecimal(0));
         }
         return theDetailRepository.save(item);
@@ -118,37 +118,37 @@ public class ShipmentServiceImpl implements ShipmentService {
         Integer shipmentId = shipmentDTO.getId();
         Integer excelId = shipmentDTO.getExcelId();
         ShipmentPO shipmentPO;
-        if(shipmentId == null || shipmentId == 0){
+        if (shipmentId == null || shipmentId == 0) {
             shipmentPO = new ShipmentPO();
             shipmentPO.setCreateDate(new Date());
             shipmentPO.setCreateUser(shipmentDTO.getUsername());
-        }else{
+        } else {
             shipmentPO = getById(shipmentId);
             shipmentPO.setUpdateDate(new Date());
             shipmentPO.setUpdateUser(shipmentDTO.getUsername());
-            //if excel, the detail can't be updated, because it will delete sku
+            // if excel, the detail can't be updated, because it will delete sku
             Boolean createNotByExcel = (null == excelId || excelId == 0);
-            if(createNotByExcel){
+            if (createNotByExcel) {
                 theDetailRepository.deleteByShipmentIdEqualsAndBoxNotLike(shipmentId, SimpleConstant.BOX_PLAN);
             }
-            //if excel, update row/box only, not delete/add
+            // if excel, update row/box only, not delete/add
             List<Integer> shipmentDetailIds = new ArrayList<>();
             List<ShipmentDetailPO> originalShipmentDetailList = theDetailRepository.findAllByShipmentIdOrderByBox(shipmentId);
-            for(ShipmentDetailDTO shipmentDetailDTO: shipmentDTO.getShipmentDetailList()){
-                if(createNotByExcel){
+            for (ShipmentDetailDTO shipmentDetailDTO : shipmentDTO.getShipmentDetailList()) {
+                if (createNotByExcel) {
                     shipmentDetailDTO.setId(null);
                 }
-                //shipmentDetailDTO.setUsername(shipmentDTO.getUsername());
+                // shipmentDetailDTO.setUsername(shipmentDTO.getUsername());
                 ShipmentDetailPO shipmentDetailPO = saveDetail(shipmentDetailDTO);
-                if(null != shipmentDetailPO){
+                if (null != shipmentDetailPO) {
                     shipmentDetailIds.add(shipmentDetailPO.getId());
                 }
             }
             log.info("shipmentDetailIds [{}]", shipmentDetailIds);
-            for(ShipmentDetailPO sd : originalShipmentDetailList){
-                //delete the shipmentDetail if not exist in new shipmentDetailList
-                if(!shipmentDetailIds.contains(sd.getId())){
-                    if(!sd.getBox().equals(SimpleConstant.BOX_PLAN)){
+            for (ShipmentDetailPO sd : originalShipmentDetailList) {
+                // delete the shipmentDetail if not exist in new shipmentDetailList
+                if (!shipmentDetailIds.contains(sd.getId())) {
+                    if (!sd.getBox().equals(SimpleConstant.BOX_PLAN)) {
                         log.info("!!!-!!!-!!! ShipmentDetailPO deleted [{}]", sd);
                         theDetailRepository.delete(sd);
                     }
@@ -156,9 +156,9 @@ public class ShipmentServiceImpl implements ShipmentService {
             }
         }
 
-        if(null == excelId || excelId == 0){
+        if (null == excelId || excelId == 0) {
             BeanUtils.copyProperties(shipmentDTO, shipmentPO, "id");
-        }else{
+        } else {
             BeanUtils.copyProperties(shipmentDTO, shipmentPO, "id", "weight");
         }
         return save(shipmentPO);
@@ -166,18 +166,18 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     public ShipmentDetailPO saveDetail(ShipmentDetailDTO shipmentDetailDTO) {
-        if(SimpleConstant.ACTION_DELETE.equalsIgnoreCase(shipmentDetailDTO.getAction())){
+        if (SimpleConstant.ACTION_DELETE.equalsIgnoreCase(shipmentDetailDTO.getAction())) {
             theDetailRepository.deleteById(shipmentDetailDTO.getId());
             return null;
         }
         Integer shipmentDetailId = shipmentDetailDTO.getId();
         ShipmentDetailPO shipmentDetailPO;
-        if(shipmentDetailId == null || shipmentDetailId == 0){
+        if (shipmentDetailId == null || shipmentDetailId == 0) {
             log.info("create");
             shipmentDetailPO = new ShipmentDetailPO();
             shipmentDetailPO.setCreateDate(new Date());
             shipmentDetailPO.setCreateUser(shipmentDetailDTO.getUsername());
-        }else{
+        } else {
             log.info("update");
             shipmentDetailPO = getDetailById(shipmentDetailId);
 //            shipmentDetailPO.setUpdateDate(new Date());
@@ -198,7 +198,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Integer boxCount = uploadFbaDTO.getBoxCount();
         List<ExcelFbaPackListPO> array = uploadFbaDTO.getArray();
         String fbaNo = uploadFbaDTO.getShipmentId();
-        if(theRepository.countByFbaNo(fbaNo) > 0){
+        if (theRepository.countByFbaNo(fbaNo) > 0) {
             throw new SimpleCommonException("Duplicate FBA Found ! 请勿重复上传该FBA: " + fbaNo);
         }
         String excelDate = DateUtil.format(new Date(), "yyyyMMdd");
@@ -222,19 +222,19 @@ public class ShipmentServiceImpl implements ShipmentService {
         Integer shipmentId = shipmentPO.getId();
         //
         JSONObject allJson = new JSONObject();
-        for(Integer i = 1; i <= boxCount; i++){
+        for (Integer i = 1; i <= boxCount; i++) {
             String iString = StringUtils.leftPad(i.toString(), 2, "0");
             allJson.put("box" + iString, new JSONArray());
         }
 
-        for(ExcelFbaPackListPO excelFbaPackListPO : array){
+        for (ExcelFbaPackListPO excelFbaPackListPO : array) {
             JSONObject excelFbaPackListJson = new JSONObject(excelFbaPackListPO);
             Integer productId = excelFbaPackListJson.getInt("productId");
             Integer skuId = excelFbaPackListJson.getInt("skuId");
             String sku = excelFbaPackListPO.getMerchantSku();
-            for(Integer i = 1; i <= boxCount; i++){
+            for (Integer i = 1; i <= boxCount; i++) {
                 String iString = StringUtils.leftPad(i.toString(), 2, "0");
-                if(StringUtils.isNotBlank(excelFbaPackListJson.getStr("box" + iString + "Qty"))){
+                if (StringUtils.isNotBlank(excelFbaPackListJson.getStr("box" + iString + "Qty"))) {
                     String boxString = "box" + iString;
                     JSONArray boxArray = allJson.getJSONArray(boxString);
                     JSONObject productJson = new JSONObject();
@@ -252,12 +252,12 @@ public class ShipmentServiceImpl implements ShipmentService {
 
 
         JSONObject planJson = new JSONObject();
-        for(String boxString : allJson.keySet()){
+        for (String boxString : allJson.keySet()) {
             log.warn("boxString: " + boxString);
             String boxNumber = boxString.substring(3, 5);
             JSONArray boxArray = allJson.getJSONArray(boxString);
             log.warn(boxString + " size: " + boxArray.size());
-            for(JSONObject boxJson : boxArray.jsonIter()){
+            for (JSONObject boxJson : boxArray.jsonIter()) {
                 log.warn("boxJson: " + boxJson.toString());
                 String skuId = boxJson.getStr("skuId");
                 Integer quantity = boxJson.getInt("quantity");
@@ -265,16 +265,16 @@ public class ShipmentServiceImpl implements ShipmentService {
                 boxJson.put("box", boxNumber);
                 createShipmentDetailByJson(boxJson);
                 //
-                if(planJson.containsKey(skuId)){
+                if (planJson.containsKey(skuId)) {
                     JSONObject planSkuJson = planJson.getJSONObject(skuId);
                     planSkuJson.put("quantity", planSkuJson.getInt("quantity") + quantity);
-                }else{
+                } else {
                     planJson.put(skuId, boxJson);
                 }
             }
         }
         //
-        for(String planJsonKey : planJson.keySet()){
+        for (String planJsonKey : planJson.keySet()) {
             JSONObject planSkuJson = planJson.getJSONObject(planJsonKey);
             planSkuJson.put("box", SimpleConstant.BOX_PLAN);
             createShipmentDetailByJson(planSkuJson);
@@ -282,7 +282,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     }
 
-    private void createShipmentDetailByJson(JSONObject boxJson){
+    private void createShipmentDetailByJson(JSONObject boxJson) {
         ShipmentDetailPO shipmentDetailPO = new ShipmentDetailPO();
         shipmentDetailPO.setBox(boxJson.getStr("box"));
         shipmentDetailPO.setQuantity(boxJson.getInt("quantity"));
@@ -314,7 +314,7 @@ public class ShipmentServiceImpl implements ShipmentService {
                     predicates.add(criteriaBuilder.equal(root.get("skuId"), skuId));
                 }
 
-                switch (dateType){
+                switch (dateType) {
                     case "excelDate":
                         if (StringUtils.isNotEmpty(dateFrom)) {
                             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("excelDate"), dateFrom));
@@ -363,7 +363,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
-    public ShipmentPO saveByOverseaDetail(OverseaDetailPO overseaDetailPO, OverseaDetailDTO overseaDetailDTO){
+    public ShipmentPO saveByOverseaDetail(OverseaDetailPO overseaDetailPO, OverseaDetailDTO overseaDetailDTO) {
         Date today = new Date();
         String username = overseaDetailDTO.getUsername();
         String action = overseaDetailDTO.getAction();
@@ -374,8 +374,8 @@ public class ShipmentServiceImpl implements ShipmentService {
         log.info("weight: " + weight);
         Long fbaNoCount = theRepository.countByFbaNo(fbaNo);
         ShipmentPO shipmentPO;
-        if("create".equalsIgnoreCase(action)){
-            if(fbaNoCount > 0){
+        if ("create".equalsIgnoreCase(action)) {
+            if (fbaNoCount > 0) {
                 throw new SimpleCommonException("该FBA单号存在 ! 请勿重复创建 或者选择 追加至已有FBA " + fbaNo);
             }
             shipmentPO = new ShipmentPO();
@@ -385,7 +385,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             shipmentPO.setFbaNo(fbaNo);
             shipmentPO.setCarrier(SimpleConstant.FBA);
             shipmentPO.setRoute(SimpleConstant.FBA);
-            //已发货
+            // 已发货
             shipmentPO.setStatusDelivery("1");
             shipmentPO.setJsonRemark(JsonRemarkUtils.setJsonRemark(
                     shipmentPO.getJsonRemark(),
@@ -393,9 +393,9 @@ public class ShipmentServiceImpl implements ShipmentService {
                     overseaDetailPO.getId().toString()));
             shipmentPO.setWeightRemark("" + weight);
             shipmentPO.setWeight(weight);
-        }else{
-            //i.e. action = update
-            if(fbaNoCount <= 0){
+        } else {
+            // i.e. action = update
+            if (fbaNoCount <= 0) {
                 throw new SimpleCommonException("该FBA单号不存在 ! 请点击创建FBA " + fbaNo);
             }
             shipmentPO = getByFbaNo(fbaNo);
@@ -404,7 +404,7 @@ public class ShipmentServiceImpl implements ShipmentService {
             shipmentPO.setWeightRemark(shipmentPO.getWeightRemark() + "+" + weight);
             shipmentPO.setWeight(weight.add(shipmentPO.getWeight()));
         }
-        if(StringUtils.isNotBlank(fbaDate)){
+        if (StringUtils.isNotBlank(fbaDate)) {
             shipmentPO.setDeliveryDate(fbaDate);
         }
         shipmentPO = save(shipmentPO);
@@ -435,9 +435,9 @@ public class ShipmentServiceImpl implements ShipmentService {
     public void updateCarrierBillByExcel(Integer excelId) {
         ExcelCarrierBillPO excelPO = excelService.getCarrierBillByExcelId(excelId);
         List<ExcelCarrierBillDetailPO> detailPOList = excelService.findCarrierBillDetailByExcelId(excelId);
-        for(ExcelCarrierBillDetailPO detailPO : detailPOList){
+        for (ExcelCarrierBillDetailPO detailPO : detailPOList) {
             Integer shipmentId = detailPO.getRelatedShipmentId();
-            if(null == shipmentId || shipmentId == 0){
+            if (null == shipmentId || shipmentId == 0) {
                 continue;
             }
             ShipmentPO shipmentPO = getById(shipmentId);

@@ -43,13 +43,13 @@ public class ExcelTransactionDetailPO extends SimpleCommonEntity {
     BigDecimal other;
     BigDecimal total;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

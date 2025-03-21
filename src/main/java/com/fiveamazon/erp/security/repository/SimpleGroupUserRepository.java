@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Repository
 public interface SimpleGroupUserRepository extends JpaRepository<SimpleGroupUser, Integer> {
-	List<SimpleGroupUser> findByUserId(Integer userId);
-	void deleteByUserId(Integer userId);
+    List<SimpleGroupUser> findByUserId(Integer userId);
+
+    void deleteByUserId(Integer userId);
 }

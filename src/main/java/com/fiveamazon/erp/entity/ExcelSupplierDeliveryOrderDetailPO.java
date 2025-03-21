@@ -1,9 +1,7 @@
 package com.fiveamazon.erp.entity;
 
 import cn.hutool.json.JSONObject;
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderDetailEO;
-import com.fiveamazon.erp.epo.ExcelSupplierDeliveryOrderEO;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -32,13 +30,13 @@ public class ExcelSupplierDeliveryOrderDetailPO extends ExcelSupplierDeliveryOrd
     String zengpin;
     String zuhezhuang;
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

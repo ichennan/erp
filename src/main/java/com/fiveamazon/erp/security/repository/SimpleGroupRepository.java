@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SimpleGroupRepository extends JpaRepository<SimpleGroup, Integer> {
-	SimpleGroup getByGroupName(String groupName);
-	SimpleGroup getById(Integer id);
+    SimpleGroup getByGroupName(String groupName);
+
+    SimpleGroup getById(Integer id);
 }

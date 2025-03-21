@@ -18,13 +18,13 @@ public class ExcelTransactionPO extends SimpleCommonEntity {
     Integer storeId;
 
     @Override
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);
         return toJson;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return toJson().toString();
     }
 }

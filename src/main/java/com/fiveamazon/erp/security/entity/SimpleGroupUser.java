@@ -2,6 +2,7 @@ package com.fiveamazon.erp.security.entity;
 
 import com.fiveamazon.erp.common.SimpleCommonEntity;
 import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 

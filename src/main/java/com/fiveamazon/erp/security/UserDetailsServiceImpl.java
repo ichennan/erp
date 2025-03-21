@@ -37,10 +37,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         grantedAuthorities.add(new SimpleGrantedAuthority("SYS_LOGIN"));
         boolean isActive = true;
         boolean isForbidden = false;
-        //问号分隔 是否忘记密码
+        // 问号分隔 是否忘记密码
         String[] array = userName.split("\\u003F");
         boolean forgotPassword = false;
-        if(array.length > 1){
+        if (array.length > 1) {
             userName = array[0];
             forgotPassword = true;
             grantedAuthorities.add(new SimpleGrantedAuthority("SYS_FORGOTPASSWORD"));
@@ -48,8 +48,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         //
         SimpleUser simpleUser = simpleUserService.getByUserName(userName);
-        if(simpleUser == null){
-            if(forgotPassword){
+        if (simpleUser == null) {
+            if (forgotPassword) {
                 throw new UsernameNotExistException("用户名不存在: + " + userName);
             }
             throw new UsernameNotFoundException("用户名不存在: + " + userName);
@@ -73,9 +73,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 //            }
 //        }
 
-        if(isActive){
+        if (isActive) {
             grantedAuthorities.add(new SimpleGrantedAuthority("SYS_ACTIVE"));
-            for (String authorityName : simpleGroupService.findSimpleAuthoriyListByUserName(userName)){
+            for (String authorityName : simpleGroupService.findSimpleAuthoriyListByUserName(userName)) {
                 grantedAuthorities.add(new SimpleGrantedAuthority(authorityName));
             }
         }

@@ -19,6 +19,6 @@ public class ErpApplication extends SpringBootServletInitializer {
         SpringApplication.run(ErpApplication.class, args);
     }
 
-    public static void test(){
+    public static void test() {
     }
 }

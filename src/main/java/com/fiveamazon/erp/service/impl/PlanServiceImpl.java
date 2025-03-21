@@ -42,7 +42,7 @@ public class PlanServiceImpl implements PlanService {
         return planDetailRepository.findAllByPlanId(planId);
     }
 
-    private PlanPO create(PlanPO planPO){
+    private PlanPO create(PlanPO planPO) {
         Date today = new Date();
         planPO.setPlanDate(DateUtil.format(today, "yyyyMMdd"));
         planPO.setCreateDate(today);
@@ -50,7 +50,7 @@ public class PlanServiceImpl implements PlanService {
         return planRepository.save(planPO);
     }
 
-    private PlanDetailPO create(PlanDetailPO planDetailPO){
+    private PlanDetailPO create(PlanDetailPO planDetailPO) {
         planDetailPO.setCreateDate(new Date());
         planDetailPO.setUpdateDate(planDetailPO.getCreateDate());
         return planDetailRepository.save(planDetailPO);
@@ -64,7 +64,7 @@ public class PlanServiceImpl implements PlanService {
         planPO = create(planPO);
         Integer planId = planPO.getId();
         List<PlanDetailCreateDTO> planDetailCreateDTOList = planCreateDTO.getArray();
-        for(PlanDetailCreateDTO planDetailCreateDTO : planDetailCreateDTOList){
+        for (PlanDetailCreateDTO planDetailCreateDTO : planDetailCreateDTOList) {
             PlanDetailPO planDetailPO = new PlanDetailPO();
             BeanUtils.copyProperties(planDetailCreateDTO, planDetailPO, "id");
             planDetailPO.setPlanId(planId);
