@@ -139,7 +139,7 @@ $(function () {
             text: "收支模块",
             roles: "ROLE_Excel",
             icon: "fa fa-money",
-            url: "finance",
+            url: "payment",
             targetType: "iframe-tab"
         },
         {
