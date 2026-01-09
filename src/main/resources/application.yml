@@ -10,33 +10,14 @@ spring:
     name: 5Amazon ERP
     version: L1.1.44
   profiles:
-    active: local
+    active: prod
   thymeleaf:
     cache: false
   mvc:
     favicon:
       enabled: true
+  main:
+    allow-circular-references: true
   jpa:
     open-in-view: true
     show-sql: true
-    hibernate:
-      ddl-auto: none
-      naming:
-        physical-strategy: com.vladmihalcea.hibernate.type.util.CamelCaseToSnakeCaseNamingStrategy
-  datasource:
-    name: test
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
-    filters: stat
-    maxActive: 20
-    initialSize: 1
-    maxWait: 60000
-    minIdle: 1
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: select 'x'
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
-    maxOpenPreparedStatements: 20

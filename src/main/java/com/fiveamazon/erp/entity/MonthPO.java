@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import com.fiveamazon.erp.common.SimpleCommonEntity;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -42,19 +43,25 @@ public class MonthPO extends SimpleCommonEntity {
     Integer amazonOrderQuantity = 0;
     BigDecimal amazonOrderAmount = new BigDecimal(0);
     BigDecimal erpOrderProductAmount = new BigDecimal(0);
+    @Column(name = "erp_order_product_amount_USD")
     BigDecimal erpOrderProductAmountUSD = new BigDecimal(0);
     BigDecimal erpOrderProductPurchaseAmount = new BigDecimal(0);
+    @Column(name = "erp_order_product_purchase_amount_USD")
     BigDecimal erpOrderProductPurchaseAmountUSD = new BigDecimal(0);
     BigDecimal erpOrderProductFreightAmount = new BigDecimal(0);
+    @Column(name = "erp_order_product_freight_amount_USD")
     BigDecimal erpOrderProductFreightAmountUSD = new BigDecimal(0);
     // refund 8
     Integer amazonRefundQuantity = 0;
     BigDecimal amazonRefundAmount = new BigDecimal(0);
     BigDecimal erpRefundProductAmount = new BigDecimal(0);
+    @Column(name = "erp_refund_product_amount_USD")
     BigDecimal erpRefundProductAmountUSD = new BigDecimal(0);
     BigDecimal erpRefundProductPurchaseAmount = new BigDecimal(0);
+    @Column(name = "erp_refund_product_purchase_amount_USD")
     BigDecimal erpRefundProductPurchaseAmountUSD = new BigDecimal(0);
     BigDecimal erpRefundProductFreightAmount = new BigDecimal(0);
+    @Column(name = "erp_refund_product_freight_amount_USD")
     BigDecimal erpRefundProductFreightAmountUSD = new BigDecimal(0);
     // zong 9
     Integer amazonProductSalesQuantity = 0;
@@ -62,6 +69,7 @@ public class MonthPO extends SimpleCommonEntity {
     Integer amazonProductPaymentQuantity = 0;
     BigDecimal amazonProductPaymentAmount = new BigDecimal(0);
     BigDecimal chengben = new BigDecimal(0);
+    @Column(name = "chengben_USD")
     BigDecimal chengbenUSD = new BigDecimal(0);
     Integer amazonQuantity = 0;
     BigDecimal amazonAmount = new BigDecimal(0);

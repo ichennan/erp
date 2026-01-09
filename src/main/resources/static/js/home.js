@@ -136,6 +136,14 @@ $(function () {
         },
         {
             id: "9090",
+            text: "收支模块",
+            roles: "ROLE_Excel",
+            icon: "fa fa-money",
+            url: "finance",
+            targetType: "iframe-tab"
+        },
+        {
+            id: "9100",
             text: "交易查询",
             roles: "ROLE_Excel",
             icon: "fa fa-dollar",
@@ -143,7 +151,7 @@ $(function () {
             targetType: "iframe-tab"
         },
         {
-            id: "9100",
+            id: "9110",
             text: "月度报表",
             roles: "ROLE_Excel",
             icon: "fa fa-bar-chart",
