@@ -1,6 +1,9 @@
 tr.inex-income{
-    background-color:#e6ffe6;
+    background-color: cadetblue;
 }
 tr.inex-expense{
-    background-color:#ffe6e6;
+    background-color: lightcoral;
+}
+tr.inex-expense-transfer{
+    background-color: lightyellow;
 }

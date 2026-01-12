@@ -88,6 +88,8 @@ public class PaymentServiceImpl implements PaymentService {
             @Override
             public Predicate toPredicate(Root root, CriteriaQuery criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>();
+                // 默认筛选：inex 不为空
+                predicates.add(criteriaBuilder.isNotNull(root.get("inex")));
                 if (StringUtils.isNotEmpty(searchDTO.getInex())) {
                     predicates.add(criteriaBuilder.equal(root.get("inex"), searchDTO.getInex()));
                 }
@@ -110,10 +112,14 @@ public class PaymentServiceImpl implements PaymentService {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("transactionAmount"), searchDTO.getTransactionAmountTo()));
                 }
                 if (StringUtils.isNotEmpty(searchDTO.getTransactionDateFrom())) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("transactionDate"), DateUtil.parse(searchDTO.getTransactionDateFrom(), "yyyy-MM-dd HH:mm:ss")));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("transactionDate"),
+                            DateUtil.format(DateUtil.parse(searchDTO.getTransactionDateFrom(), "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd")
+                    ));
                 }
                 if (StringUtils.isNotEmpty(searchDTO.getTransactionDateTo())) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("transactionDate"), DateUtil.parse(searchDTO.getTransactionDateTo(), "yyyy-MM-dd HH:mm:ss")));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("transactionDate"),
+                            DateUtil.format(DateUtil.parse(searchDTO.getTransactionDateTo(), "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd")
+                    ));
                 }
                 if (StringUtils.isNotEmpty(searchDTO.getRemark())) {
                     predicates.add(criteriaBuilder.like(root.get("remark"), "%" + searchDTO.getRemark() + "%"));

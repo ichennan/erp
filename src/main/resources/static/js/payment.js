@@ -218,10 +218,14 @@ function createListTableBody(table, rs){
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
             td.attr("columnName", theadNames[index_2]);
-            if(obj.inex == '收入'){
+            if(obj.inex == '收'){
                 tr.addClass("inex-income");
-            } else if(obj.inex == '支出'){
-                tr.addClass("inex-expense");
+            } else if(obj.inex == '支'){
+                if(obj.transactionSubject == '转英'){
+                    tr.addClass("inex-expense-transfer");
+                } else {
+                    tr.addClass("inex-expense");
+                }
             }
             tr.append(td);
         })
@@ -383,9 +387,19 @@ function draw(rs) {
     if (incomeStores.length > 0) {
         var summaryIncomeChartId = 'chart_total_income';
         var seriesData = [];
+        var totalIncomeCount = 0;
+        var totalIncomeAmount = 0;
         $.each(sortedMonths, function (i, month) {
             var summary = monthlySummary[month];
             seriesData.push(summary.income);
+            totalIncomeAmount += summary.income;
+        });
+
+        // 计算收入笔数
+        $.each(listData, function (index, item) {
+            if (item.inex === '收') {
+                totalIncomeCount++;
+            }
         });
 
         var incomeChartHtml = '<div class="col-md-12">' +
@@ -406,7 +420,7 @@ function draw(rs) {
                 type: 'line'
             },
             title: {
-                text: '月度总收入趋势'
+                text: '月度总收入趋势 （共' + totalIncomeCount + '笔，总计' + totalIncomeAmount.toFixed(2) + '）'
             },
             xAxis: {
                 categories: sortedMonths,
@@ -444,6 +458,16 @@ function draw(rs) {
 
     // 2. 总支出图表（总支出、转英支出、除转英外的支出）- 独占一行
     var summaryExpenseChartId = 'chart_total_expense';
+    var totalExpenseCount = 0;
+    var totalExpenseAmount = 0;
+
+    // 计算支出笔数和总金额
+    $.each(listData, function (index, item) {
+        if (item.inex === '支') {
+            totalExpenseCount++;
+            totalExpenseAmount += Math.abs(parseFloat(item.transactionAmount) || 0);
+        }
+    });
 
     var expenseChartHtml = '<div class="col-md-12">' +
         '<div class="box box-danger">' +
@@ -463,7 +487,7 @@ function draw(rs) {
             type: 'line'
         },
         title: {
-            text: '月度总支出趋势'
+            text: '月度总支出趋势 （共' + totalExpenseCount + '笔，总计' + totalExpenseAmount.toFixed(2) + '）'
         },
         xAxis: {
             categories: sortedMonths,
@@ -511,10 +535,14 @@ function draw(rs) {
     // 3. 总结余图表 - 独占一行
     var summaryBalanceChartId = 'chart_monthly_balance';
     var balanceData = [];
+    var cumulativeBalance = 0;
     $.each(sortedMonths, function (i, month) {
         var summary = monthlySummary[month];
         balanceData.push(summary.balance);
+        cumulativeBalance += summary.balance;
     });
+
+    var totalCount = totalIncomeCount + totalExpenseCount;
 
     var balanceChartHtml = '<div class="col-md-12">' +
         '<div class="box box-primary">' +
@@ -534,7 +562,7 @@ function draw(rs) {
             type: 'line'
         },
         title: {
-            text: '月度结余趋势'
+            text: '月度结余趋势 （共' + totalCount + '笔，累计结余' + cumulativeBalance.toFixed(2) + '）'
         },
         xAxis: {
             categories: sortedMonths,
@@ -574,12 +602,22 @@ function draw(rs) {
         $.each(incomeStores, function (index, store) {
             var chartId = 'chart_income_store_' + store.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g, '') + '_' + index;
             var seriesData = [];
+            var storeTotalAmount = 0;
+            var storeCount = 0;
             $.each(sortedMonths, function (i, month) {
                 var amount = incomeData[store][month] || 0;
                 seriesData.push(amount);
+                storeTotalAmount += amount;
             });
 
-            var chartHtml = '<div class="col-md-6">' +
+            // 计算该店铺的收入笔数
+            $.each(listData, function (idx, item) {
+                if (item.inex === '收' && (item.transactionStore || '其他') === store) {
+                    storeCount++;
+                }
+            });
+
+            var chartHtml = '<div class="col-md-12">' +
                 '<div class="box box-success">' +
                 '<div class="box-header with-border">' +
                 '<h3 class="box-title">' + store + ' - 收入趋势</h3>' +
@@ -597,7 +635,7 @@ function draw(rs) {
                     type: 'line'
                 },
                 title: {
-                    text: store + ' - 月度收入趋势'
+                    text: store + ' - 月度收入趋势 （共' + storeCount + '笔，总计' + storeTotalAmount.toFixed(2) + '）'
                 },
                 xAxis: {
                     categories: sortedMonths,
@@ -636,12 +674,22 @@ function draw(rs) {
         $.each(expenseSubjects, function (index, subject) {
             var chartId = 'chart_expense_subject_' + subject.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9\u4e00-\u9fa5_-]/g, '') + '_' + index;
             var seriesData = [];
+            var subjectTotalAmount = 0;
+            var subjectCount = 0;
             $.each(sortedMonths, function (i, month) {
                 var amount = expenseData[subject][month] || 0;
                 seriesData.push(amount);
+                subjectTotalAmount += amount;
             });
 
-            var chartHtml = '<div class="col-md-6">' +
+            // 计算该科目的支出笔数
+            $.each(listData, function (idx, item) {
+                if (item.inex === '支' && (item.transactionSubject || '其他') === subject) {
+                    subjectCount++;
+                }
+            });
+
+            var chartHtml = '<div class="col-md-12">' +
                 '<div class="box box-danger">' +
                 '<div class="box-header with-border">' +
                 '<h3 class="box-title">' + subject + ' - 支出趋势</h3>' +
@@ -659,7 +707,7 @@ function draw(rs) {
                     type: 'line'
                 },
                 title: {
-                    text: subject + ' - 月度支出趋势'
+                    text: subject + ' - 月度支出趋势 （共' + subjectCount + '笔，总计' + subjectTotalAmount.toFixed(2) + '）'
                 },
                 xAxis: {
                     categories: sortedMonths,
