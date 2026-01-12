@@ -8,6 +8,53 @@
         <section class="content">
 
             <div class="row" id="searchBox">
+                <form id="searchForm" action="#">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="form-group col-sm-2">
+                                <select class="form-control" sid="inex">
+                                    <option value="" selected="selected" defaultSelected="defaultSelected">收支</option>
+                                    <option value="收">收</option>
+                                    <option value="支">支</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <input type="text" placeholder="店铺" class="form-control search" sid="transactionStore" />
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <input type="text" placeholder="科目" class="form-control search" sid="transactionSubject" />
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <input type="text" placeholder="一级分类" class="form-control search" sid="category1st" />
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <input type="text" placeholder="二级分类" class="form-control search" sid="category2nd" />
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <button type="button" id="search" class="btn btn-primary" >Search</button>
+                                <button type="button" id="search_reset" class="btn btn-default" >Reset</button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-sm-3">
+                                <input type="text" placeholder="Date From" class="form-control search dtPicker dtPickerFrom" sid="transactionDateFrom" />
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <input type="text" placeholder="Date To" class="form-control search dtPicker dtPickerTo" sid="transactionDateTo" />
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <input type="text" placeholder="Amount From" class="form-control search" sid="transactionAmountFrom" />
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <input type="text" placeholder="Amount To" class="form-control search" sid="transactionAmountTo" />
+                            </div>
+                            <div class="form-group col-sm-2">
+                                <input type="text" placeholder="备注" class="form-control search" sid="remark" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
 
             <div class="row" id="tableBox">
@@ -20,6 +67,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="row" id="chartBox">
             </div>
 
             <div class="row" id="itemBox">
@@ -52,6 +102,7 @@
     </div>
 </div>
 <div th:replace="common/common_js :: js"></div>
+<script type="text/javascript" th:src="@{/webjars/highcharts/highcharts.js}"></script>
 <script type="text/javascript" th:src="@{'/js/common_fn.js?v=' + ${version}}"></script>
 </body>
 </html>

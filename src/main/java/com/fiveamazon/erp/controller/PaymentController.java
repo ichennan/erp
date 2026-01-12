@@ -1,17 +1,16 @@
 package com.fiveamazon.erp.controller;
 
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.fiveamazon.erp.common.CommonTable;
 import com.fiveamazon.erp.common.SimpleCommonController;
 import com.fiveamazon.erp.dto.PaymentDTO;
+import com.fiveamazon.erp.dto.search.PaymentSearchDTO;
 import com.fiveamazon.erp.entity.PaymentPO;
 import com.fiveamazon.erp.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/payment")
@@ -27,16 +26,13 @@ public class PaymentController extends SimpleCommonController {
         return mv;
     }
 
-    @RequestMapping(value = "/findList", method = RequestMethod.POST)
-    public String findList() {
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    public String search(@RequestBody PaymentSearchDTO searchDTO) {
+        log.info("PaymentController.search: " + new JSONObject(searchDTO).toString());
         JSONObject rs = new JSONObject();
-        JSONArray array = new JSONArray();
-        List<PaymentPO> list = theService.findAll();
-        for (PaymentPO item : list) {
-            array.put(item.toJson());
-        }
-        rs.put("array", array);
-        rs.put("error", false);
+        CommonTable commonTable = theService.search(searchDTO);
+        rs.putAll(commonTable.toJson());
+        rs.putOpt("error", false);
         return rs.toString();
     }
 
