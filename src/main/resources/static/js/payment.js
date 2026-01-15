@@ -405,7 +405,7 @@ function draw(rs) {
         var incomeChartHtml = '<div class="col-md-12">' +
             '<div class="box box-success">' +
             '<div class="box-header with-border">' +
-            '<h3 class="box-title">总收入趋势</h3>' +
+            '<h3 class="box-title">总收入</h3>' +
             '</div>' +
             '<div class="box-body">' +
             '<div id="' + summaryIncomeChartId + '"></div>' +
@@ -420,7 +420,7 @@ function draw(rs) {
                 type: 'line'
             },
             title: {
-                text: '月度总收入趋势 （共' + totalIncomeCount + '笔，总计' + totalIncomeAmount.toFixed(2) + '）'
+                text: '月度总收入 （共' + totalIncomeCount + '笔，总计' + totalIncomeAmount.toFixed(2) + '）'
             },
             xAxis: {
                 categories: sortedMonths,
@@ -472,7 +472,7 @@ function draw(rs) {
     var expenseChartHtml = '<div class="col-md-12">' +
         '<div class="box box-danger">' +
         '<div class="box-header with-border">' +
-        '<h3 class="box-title">总支出趋势</h3>' +
+        '<h3 class="box-title">总支出</h3>' +
         '</div>' +
         '<div class="box-body">' +
         '<div id="' + summaryExpenseChartId + '"></div>' +
@@ -487,7 +487,7 @@ function draw(rs) {
             type: 'line'
         },
         title: {
-            text: '月度总支出趋势 （共' + totalExpenseCount + '笔，总计' + totalExpenseAmount.toFixed(2) + '）'
+            text: '月度总支出 （共' + totalExpenseCount + '笔，总计' + totalExpenseAmount.toFixed(2) + '）'
         },
         xAxis: {
             categories: sortedMonths,
@@ -547,7 +547,7 @@ function draw(rs) {
     var balanceChartHtml = '<div class="col-md-12">' +
         '<div class="box box-primary">' +
         '<div class="box-header with-border">' +
-        '<h3 class="box-title">月度结余趋势</h3>' +
+        '<h3 class="box-title">月度结余</h3>' +
         '</div>' +
         '<div class="box-body">' +
         '<div id="' + summaryBalanceChartId + '"></div>' +
@@ -562,7 +562,7 @@ function draw(rs) {
             type: 'line'
         },
         title: {
-            text: '月度结余趋势 （共' + totalCount + '笔，累计结余' + cumulativeBalance.toFixed(2) + '）'
+            text: '月度结余 （共' + totalCount + '笔，累计结余' + cumulativeBalance.toFixed(2) + '）'
         },
         xAxis: {
             categories: sortedMonths,
@@ -620,7 +620,7 @@ function draw(rs) {
             var chartHtml = '<div class="col-md-12">' +
                 '<div class="box box-success">' +
                 '<div class="box-header with-border">' +
-                '<h3 class="box-title">' + store + ' - 收入趋势</h3>' +
+                '<h3 class="box-title">' + store + ' - 收入</h3>' +
                 '</div>' +
                 '<div class="box-body">' +
                 '<div id="' + chartId + '"></div>' +
@@ -635,7 +635,7 @@ function draw(rs) {
                     type: 'line'
                 },
                 title: {
-                    text: store + ' - 月度收入趋势 （共' + storeCount + '笔，总计' + storeTotalAmount.toFixed(2) + '）'
+                    text: store + ' - 月度收入 （共' + storeCount + '笔，总计' + storeTotalAmount.toFixed(2) + '）'
                 },
                 xAxis: {
                     categories: sortedMonths,
@@ -692,7 +692,7 @@ function draw(rs) {
             var chartHtml = '<div class="col-md-12">' +
                 '<div class="box box-danger">' +
                 '<div class="box-header with-border">' +
-                '<h3 class="box-title">' + subject + ' - 支出趋势</h3>' +
+                '<h3 class="box-title">' + subject + ' - 支出</h3>' +
                 '</div>' +
                 '<div class="box-body">' +
                 '<div id="' + chartId + '"></div>' +
@@ -707,7 +707,7 @@ function draw(rs) {
                     type: 'line'
                 },
                 title: {
-                    text: subject + ' - 月度支出趋势 （共' + subjectCount + '笔，总计' + subjectTotalAmount.toFixed(2) + '）'
+                    text: subject + ' - 月度支出 （共' + subjectCount + '笔，总计' + subjectTotalAmount.toFixed(2) + '）'
                 },
                 xAxis: {
                     categories: sortedMonths,
