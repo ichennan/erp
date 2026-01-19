@@ -26,6 +26,7 @@ public class PaymentPO extends SimpleCommonEntity {
     String transactionPlatform;
     String transactionAccount;
     String transactionSubject;
+    Integer imageCount;
 
 
     @Override

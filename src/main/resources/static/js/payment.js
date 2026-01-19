@@ -3,7 +3,7 @@ var $itemForm = $("#itemForm");
 var $searchForm = $("#searchForm");
 var ajaxCtx = 'payment/';
 var parentJs = parent;
-var theadNames = ['id', '日期', '收支', '一级分类', '二级分类', '三级分类', '店铺', '金额', '待付金额', '平台', '账户', '科目'];
+var theadNames = ['id', '日期', '收支', '科目', '分类', '店铺', '金额', '备注'];
 $(document).ready(function(){
     createItemForm();
     $(window).on("hashchange",function () {
@@ -204,16 +204,15 @@ function createListTableBody(table, rs){
             obj.id,
             obj.transactionDate,
             obj.inex,
+            obj.transactionSubject,
             obj.category1st,
-            obj.category2nd,
-            obj.category3rd,
             obj.transactionStore,
             obj.transactionAmount,
-            obj.pendingAmount,
-            obj.transactionPlatform,
-            obj.transactionAccount,
-            obj.transactionSubject
+            obj.remark
         ];
+        if(obj.imageCount > 0){
+            tr.addClass("hasImage");
+        }
         $.each(tds, function (index_2, obj_2) {
             obj_2 = obj_2 ? obj_2 : "";
             var td = $("<td>" + obj_2 + "</td>");
@@ -282,6 +281,7 @@ function createItemForm() {
     itemArray[++i] = {"label": "平台", "pid": "transactionPlatform", "inputType": "text"};
     itemArray[++i] = {"label": "账户", "pid": "transactionAccount", "inputType": "text"};
     itemArray[++i] = {"label": "科目", "pid": "transactionSubject", "inputType": "text"};
+    itemArray[++i] = {"label": "图片数", "pid": "imageCount", "required": true, "inputType": "text"};
     itemArray[++i] = {"label": "备注", "pid": "remark", "inputType": "text"};
     $.drawContentForm($itemForm, itemArray);
 }

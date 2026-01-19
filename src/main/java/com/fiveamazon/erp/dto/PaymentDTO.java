@@ -19,4 +19,5 @@ public class PaymentDTO extends SimpleCommonDTO {
     String transactionPlatform;
     String transactionAccount;
     String transactionSubject;
+    Integer imageCount;
 }
