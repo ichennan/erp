@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.fiveamazon</groupId>
     <artifactId>erp</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>erp</name>
     <description>5Amazon ERP</description>
 

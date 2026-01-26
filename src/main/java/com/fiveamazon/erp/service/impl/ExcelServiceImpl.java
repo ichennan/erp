@@ -2,6 +2,7 @@ package com.fiveamazon.erp.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
+import com.fiveamazon.erp.common.AppConfig;
 import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.entity.*;
 import com.fiveamazon.erp.entity.excel.*;
@@ -58,6 +59,8 @@ public class ExcelServiceImpl implements ExcelService {
     private ShipmentService shipmentService;
     @Autowired
     private OverseaService overseaService;
+    @Autowired
+    AppConfig appConfig;
 
 
     //---------------------------------------------
@@ -567,38 +570,73 @@ public class ExcelServiceImpl implements ExcelService {
                     excelFbaPackListPO.setMerchantSku(rowEO.getColumn00());
                     excelFbaPackListPO.setAsin(rowEO.getColumn02());
                     excelFbaPackListPO.setFnsku(rowEO.getColumn03());
-                    excelFbaPackListPO.setBoxedQty(rowEO.getColumn08());
+                    log.info("csvVerion: {}", appConfig.getCsvVersion());
+                    if (appConfig.getCsvVersion() < 20250122) {
+                        excelFbaPackListPO.setBoxedQty(rowEO.getColumn08());
+                        excelFbaPackListPO.setBox01Qty(rowEO.getColumn09());
+                        excelFbaPackListPO.setBox02Qty(rowEO.getColumn10());
+                        excelFbaPackListPO.setBox03Qty(rowEO.getColumn11());
+                        excelFbaPackListPO.setBox04Qty(rowEO.getColumn12());
+                        excelFbaPackListPO.setBox05Qty(rowEO.getColumn13());
+                        excelFbaPackListPO.setBox06Qty(rowEO.getColumn14());
+                        excelFbaPackListPO.setBox07Qty(rowEO.getColumn15());
+                        excelFbaPackListPO.setBox08Qty(rowEO.getColumn16());
+                        excelFbaPackListPO.setBox09Qty(rowEO.getColumn17());
+                        excelFbaPackListPO.setBox10Qty(rowEO.getColumn18());
+                        excelFbaPackListPO.setBox11Qty(rowEO.getColumn19());
+                        excelFbaPackListPO.setBox12Qty(rowEO.getColumn20());
+                        excelFbaPackListPO.setBox13Qty(rowEO.getColumn21());
+                        excelFbaPackListPO.setBox14Qty(rowEO.getColumn22());
+                        excelFbaPackListPO.setBox15Qty(rowEO.getColumn23());
+                        excelFbaPackListPO.setBox16Qty(rowEO.getColumn24());
+                        excelFbaPackListPO.setBox17Qty(rowEO.getColumn25());
+                        excelFbaPackListPO.setBox18Qty(rowEO.getColumn26());
+                        excelFbaPackListPO.setBox19Qty(rowEO.getColumn27());
+                        excelFbaPackListPO.setBox20Qty(rowEO.getColumn28());
+                        excelFbaPackListPO.setBox21Qty(rowEO.getColumn29());
+                        excelFbaPackListPO.setBox22Qty(rowEO.getColumn30());
+                        excelFbaPackListPO.setBox23Qty(rowEO.getColumn31());
+                        excelFbaPackListPO.setBox24Qty(rowEO.getColumn32());
+                        excelFbaPackListPO.setBox25Qty(rowEO.getColumn33());
+                        excelFbaPackListPO.setBox26Qty(rowEO.getColumn34());
+                        excelFbaPackListPO.setBox27Qty(rowEO.getColumn35());
+                        excelFbaPackListPO.setBox28Qty(rowEO.getColumn36());
+                        excelFbaPackListPO.setBox29Qty(rowEO.getColumn37());
+                        excelFbaPackListPO.setBox30Qty(rowEO.getColumn38());
+                    }else{
+                        excelFbaPackListPO.setBoxedQty(rowEO.getColumn06());
 
-                    excelFbaPackListPO.setBox01Qty(rowEO.getColumn09());
-                    excelFbaPackListPO.setBox02Qty(rowEO.getColumn10());
-                    excelFbaPackListPO.setBox03Qty(rowEO.getColumn11());
-                    excelFbaPackListPO.setBox04Qty(rowEO.getColumn12());
-                    excelFbaPackListPO.setBox05Qty(rowEO.getColumn13());
-                    excelFbaPackListPO.setBox06Qty(rowEO.getColumn14());
-                    excelFbaPackListPO.setBox07Qty(rowEO.getColumn15());
-                    excelFbaPackListPO.setBox08Qty(rowEO.getColumn16());
-                    excelFbaPackListPO.setBox09Qty(rowEO.getColumn17());
-                    excelFbaPackListPO.setBox10Qty(rowEO.getColumn18());
-                    excelFbaPackListPO.setBox11Qty(rowEO.getColumn19());
-                    excelFbaPackListPO.setBox12Qty(rowEO.getColumn20());
-                    excelFbaPackListPO.setBox13Qty(rowEO.getColumn21());
-                    excelFbaPackListPO.setBox14Qty(rowEO.getColumn22());
-                    excelFbaPackListPO.setBox15Qty(rowEO.getColumn23());
-                    excelFbaPackListPO.setBox16Qty(rowEO.getColumn24());
-                    excelFbaPackListPO.setBox17Qty(rowEO.getColumn25());
-                    excelFbaPackListPO.setBox18Qty(rowEO.getColumn26());
-                    excelFbaPackListPO.setBox19Qty(rowEO.getColumn27());
-                    excelFbaPackListPO.setBox20Qty(rowEO.getColumn28());
-                    excelFbaPackListPO.setBox21Qty(rowEO.getColumn29());
-                    excelFbaPackListPO.setBox22Qty(rowEO.getColumn30());
-                    excelFbaPackListPO.setBox23Qty(rowEO.getColumn31());
-                    excelFbaPackListPO.setBox24Qty(rowEO.getColumn32());
-                    excelFbaPackListPO.setBox25Qty(rowEO.getColumn33());
-                    excelFbaPackListPO.setBox26Qty(rowEO.getColumn34());
-                    excelFbaPackListPO.setBox27Qty(rowEO.getColumn35());
-                    excelFbaPackListPO.setBox28Qty(rowEO.getColumn36());
-                    excelFbaPackListPO.setBox29Qty(rowEO.getColumn37());
-                    excelFbaPackListPO.setBox30Qty(rowEO.getColumn38());
+                        excelFbaPackListPO.setBox01Qty(rowEO.getColumn07());
+                        excelFbaPackListPO.setBox02Qty(rowEO.getColumn08());
+                        excelFbaPackListPO.setBox03Qty(rowEO.getColumn09());
+                        excelFbaPackListPO.setBox04Qty(rowEO.getColumn10());
+                        excelFbaPackListPO.setBox05Qty(rowEO.getColumn11());
+                        excelFbaPackListPO.setBox06Qty(rowEO.getColumn12());
+                        excelFbaPackListPO.setBox07Qty(rowEO.getColumn13());
+                        excelFbaPackListPO.setBox08Qty(rowEO.getColumn14());
+                        excelFbaPackListPO.setBox09Qty(rowEO.getColumn15());
+                        excelFbaPackListPO.setBox10Qty(rowEO.getColumn16());
+                        excelFbaPackListPO.setBox11Qty(rowEO.getColumn17());
+                        excelFbaPackListPO.setBox12Qty(rowEO.getColumn18());
+                        excelFbaPackListPO.setBox13Qty(rowEO.getColumn19());
+                        excelFbaPackListPO.setBox14Qty(rowEO.getColumn20());
+                        excelFbaPackListPO.setBox15Qty(rowEO.getColumn21());
+                        excelFbaPackListPO.setBox16Qty(rowEO.getColumn22());
+                        excelFbaPackListPO.setBox17Qty(rowEO.getColumn23());
+                        excelFbaPackListPO.setBox18Qty(rowEO.getColumn24());
+                        excelFbaPackListPO.setBox19Qty(rowEO.getColumn25());
+                        excelFbaPackListPO.setBox20Qty(rowEO.getColumn26());
+                        excelFbaPackListPO.setBox21Qty(rowEO.getColumn27());
+                        excelFbaPackListPO.setBox22Qty(rowEO.getColumn28());
+                        excelFbaPackListPO.setBox23Qty(rowEO.getColumn29());
+                        excelFbaPackListPO.setBox24Qty(rowEO.getColumn30());
+                        excelFbaPackListPO.setBox25Qty(rowEO.getColumn31());
+                        excelFbaPackListPO.setBox26Qty(rowEO.getColumn32());
+                        excelFbaPackListPO.setBox27Qty(rowEO.getColumn33());
+                        excelFbaPackListPO.setBox28Qty(rowEO.getColumn34());
+                        excelFbaPackListPO.setBox29Qty(rowEO.getColumn35());
+                        excelFbaPackListPO.setBox30Qty(rowEO.getColumn36());
+                    }
 
                     excelFbaPackListPOList.add(excelFbaPackListPO);
                 } else if (row >= (skuCount + 9 + 2) && row < (skuCount + 9 + 2 + 4)) {
