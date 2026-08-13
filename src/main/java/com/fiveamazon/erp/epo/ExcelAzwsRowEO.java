@@ -38,6 +38,10 @@ public class ExcelAzwsRowEO {
     Integer afnReservedFutureSupply;
     @ExcelProperty("afn-future-supply-buyable")
     Integer afnFutureSupplyBuyable;
+    @ExcelProperty("afn-fc-transfer-quantity")
+    Integer afnFcTransferQuantity;
+    @ExcelProperty("afn-onhand-buyable-quantity")
+    Integer afnOnhandBuyableQuantity;
 
     public JSONObject toJson() {
         JSONObject toJson = new JSONObject(this);

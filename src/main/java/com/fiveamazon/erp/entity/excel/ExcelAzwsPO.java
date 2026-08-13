@@ -29,6 +29,8 @@ public class ExcelAzwsPO extends SimpleCommonEntity {
     Integer afnResearchingQuantity;
     Integer afnReservedFutureSupply;
     Integer afnFutureSupplyBuyable;
+    Integer afnFcTransferQuantity;
+    Integer afnOnhandBuyableQuantity;
 
     @Override
     public JSONObject toJson() {

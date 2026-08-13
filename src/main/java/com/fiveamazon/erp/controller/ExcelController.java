@@ -15,7 +15,10 @@ import com.fiveamazon.erp.common.SimpleConstant;
 import com.fiveamazon.erp.dto.UploadFbaDTO;
 import com.fiveamazon.erp.dto.UploadSupplierDeliveryDTO;
 import com.fiveamazon.erp.entity.*;
-import com.fiveamazon.erp.entity.excel.*;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillDetailPO;
+import com.fiveamazon.erp.entity.excel.ExcelCarrierBillPO;
+import com.fiveamazon.erp.entity.excel.ExcelTransactionDetailPO;
+import com.fiveamazon.erp.entity.excel.ExcelTransactionPO;
 import com.fiveamazon.erp.epo.*;
 import com.fiveamazon.erp.service.*;
 import com.fiveamazon.erp.util.CommonExcelUtils;
@@ -238,7 +241,11 @@ public class ExcelController extends SimpleCommonController {
                 tempExcelName = convertToXlsx(LoadFormat.CSV, uploadFileName);
                 //
                 AnalysisEventListener<ExcelTransactionRowEO> listenerExcelTransactionEO = CommonExcelUtils.getListener(this.batchInsertTransactionRow(excelId), 1000);
-                EasyExcel.read(uploadFileFolder + tempExcelName, ExcelTransactionRowEO.class, listenerExcelTransactionEO).sheet(0).headRowNumber(8).doRead();
+                Integer headRowNumber = 10;
+                if (uploadFileName.contains("xxx8")) {
+                    headRowNumber = 8;
+                }
+                EasyExcel.read(uploadFileFolder + tempExcelName, ExcelTransactionRowEO.class, listenerExcelTransactionEO).sheet(0).headRowNumber(headRowNumber).doRead();
                 rs.put("excelId", excelId);
                 break;
             case SimpleConstant.FILE_CATEGORY_CarrierBillCainiao:
